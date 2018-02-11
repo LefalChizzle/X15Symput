@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="key_height">60dp</dimen>
+    <dimen name="bottom_keys_height">70dp</dimen>
+    <dimen name="font_height">16sp</dimen>
+</resources>
