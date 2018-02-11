@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="grey">#DADCDC</color>
+    <color name="grey_medium">#545454</color>
+    <color name="grey_dark">#3e3e3e</color>
+    <color name="white">#FFFFFF</color>
+    <color name="pink">#EE92C2</color>
+
+    <color name="keyBackgroundColor">@color/grey</color>
+    <color name="keyboardDivider">@color/grey_dark</color>
+    <color name="keyboardPressed">@color/pink</color>
+    <color name="keyTextColor">@color/grey_medium</color>
+
+    <color name="keyPreviewBackgroundColor">@color/colorAccent</color>
+    <color name="keyPreviewTextColor">@color/white</color>
+</resources>
