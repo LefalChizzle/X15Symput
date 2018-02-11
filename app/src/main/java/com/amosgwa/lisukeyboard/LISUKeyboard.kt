@@ -11,12 +11,15 @@ import android.view.View
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
     private var keyboardView: KeyboardView? = null
     private var keyboard: Keyboard? = null
+    private var keyboardShift: Keyboard? = null
 
-    private var isCaps = false
+    private var isShift = false
 
     override fun onCreateInputView(): View? {
-        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?;
-        keyboard = Keyboard(this, R.xml.qwerty)
+        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
+//        keyboard = Keyboard(this, R.xml.qwerty)
+        keyboard = Keyboard(this, R.xml.lisu)
+        keyboardShift = Keyboard(this, R.xml.lisu_shift)
 
         keyboardView?.keyboard = keyboard
         keyboardView?.setOnKeyboardActionListener(this)
@@ -49,8 +52,12 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 inputConnection.deleteSurroundingText(1, 0)
             }
             Keyboard.KEYCODE_SHIFT -> {
-                isCaps = !isCaps
-                keyboard?.isShifted = isCaps
+                isShift = !isShift
+                if (isShift) {
+                    keyboardView?.keyboard = keyboardShift
+                } else {
+                    keyboardView?.keyboard = keyboard
+                }
                 keyboardView?.invalidateAllKeys()
             }
             Keyboard.KEYCODE_DONE -> {
@@ -58,7 +65,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             }
             else -> {
                 var code = primaryCode.toChar()
-                if (Character.isLetter(code) && isCaps) {
+                if (Character.isLetter(code) && isShift) {
                     code = Character.toUpperCase(code)
                 }
                 inputConnection.commitText(code.toString(), 1)

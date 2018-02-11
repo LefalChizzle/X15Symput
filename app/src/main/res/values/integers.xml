@@ -10,6 +10,6 @@
 
     <!--Custom Key codes-->
     <integer name="switch_next_keyboard_key_code">-101</integer>
-    <integer name="new_line_key_code">10</integer>
-    <integer name="space_key_code">32</integer>
+    <integer name="keycode_newline">10</integer>
+    <integer name="keycode_space">32</integer>
 </resources>
