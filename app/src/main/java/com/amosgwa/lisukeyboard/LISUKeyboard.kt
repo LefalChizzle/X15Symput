@@ -10,18 +10,21 @@ import android.view.View
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
     private var keyboardView: KeyboardView? = null
-    private var keyboard: Keyboard? = null
+    private var keyboardNormal: Keyboard? = null
     private var keyboardShift: Keyboard? = null
 
     private var isShift = false
 
+    init {
+    }
+
     override fun onCreateInputView(): View? {
-        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
-//        keyboard = Keyboard(this, R.xml.qwerty)
-        keyboard = Keyboard(this, R.xml.lisu)
+        keyboardNormal = Keyboard(this, R.xml.lisu)
         keyboardShift = Keyboard(this, R.xml.lisu_shift)
 
-        keyboardView?.keyboard = keyboard
+        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
+        keyboardView?.keyboard = keyboardNormal
+
         keyboardView?.setOnKeyboardActionListener(this)
         return keyboardView
     }
@@ -56,7 +59,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 if (isShift) {
                     keyboardView?.keyboard = keyboardShift
                 } else {
-                    keyboardView?.keyboard = keyboard
+                    keyboardView?.keyboard = keyboardNormal
                 }
                 keyboardView?.invalidateAllKeys()
             }

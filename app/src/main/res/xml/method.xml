@@ -3,6 +3,6 @@
     android:supportsSwitchingToNextInputMethod="true">
     <subtype
         android:imeSubtypeLocale="en_US"
-        android:imeSubtypeMode="keyboard"
+        android:imeSubtypeMode="keyboardNormal"
         android:label="English (US)" />
 </input-method>

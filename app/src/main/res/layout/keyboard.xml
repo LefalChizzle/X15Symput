@@ -2,7 +2,7 @@
 <android.inputmethodservice.KeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/lib/com.example.amosgwa"
-    android:id="@+id/keyboard"
+    android:id="@+id/keyboardNormal"
     android:layout_alignParentBottom="true"
 
     android:keyTextColor="@color/keyTextColor"
