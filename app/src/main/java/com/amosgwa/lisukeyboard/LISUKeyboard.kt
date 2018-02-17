@@ -25,6 +25,8 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
         keyboardView?.keyboard = keyboardNormal
 
+        keyboardView.add
+
         keyboardView?.setOnKeyboardActionListener(this)
         return keyboardView
     }
