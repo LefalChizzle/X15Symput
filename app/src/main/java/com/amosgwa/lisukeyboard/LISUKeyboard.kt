@@ -15,11 +15,9 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private var keyboardShift: Keyboard? = null
     private var keyboard123: Keyboard? = null
 
-    init {
-        loadKeyCodes()
-    }
-
     override fun onCreateInputView(): View? {
+        loadKeyCodes()
+
         keyboardNormal = Keyboard(this, R.xml.lisu)
         keyboardShift = Keyboard(this, R.xml.lisu_shift)
         keyboard123 = Keyboard(this, R.xml.lisu_num)

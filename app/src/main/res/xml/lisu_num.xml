@@ -74,7 +74,8 @@
         <Key
             android:codes="37"
             android:keyEdgeFlags="left"
-            android:keyLabel="%"/>
+            android:keyLabel="%"
+            android:keyWidth="15%p" />
         <Key
             android:codes="35"
             android:keyLabel="#" />
@@ -109,7 +110,7 @@
         <Key
             android:codes="@integer/keycode_abc"
             android:keyEdgeFlags="left"
-            android:keyLabel="ABC"
+            android:keyLabel="ꓐꓑꓒ"
             android:keyWidth="15%p" />
         <Key
             android:codes="@integer/keycode_switch_next_keyboard"
