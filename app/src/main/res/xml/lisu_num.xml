@@ -45,7 +45,7 @@
             android:keyLabel="/" />
         <Key
             android:codes="92"
-            android:keyLabel="\" />
+            android:keyLabel="\\" />
         <Key
             android:codes="42233, 42236"
             android:keyLabel="ꓹꓼ" />
