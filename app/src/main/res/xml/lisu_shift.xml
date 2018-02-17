@@ -78,11 +78,11 @@
 
     <Row>
         <Key
-            android:codes="@integer/keycode_shift"
+            android:codes="@integer/keycode_unshift"
             android:isModifier="true"
             android:isSticky="true"
             android:keyEdgeFlags="left"
-            android:keyIcon="@drawable/ic_keyboard_arrow_up"
+            android:keyIcon="@drawable/ic_keyboard_arrow_up_blue"
             android:keyWidth="15%p" />
         <Key
             android:codes="42233"
@@ -116,12 +116,12 @@
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">
         <Key
-            android:codes="@integer/keycode_mode_change"
+            android:codes="@integer/keycode_123"
             android:keyEdgeFlags="left"
             android:keyLabel="123"
             android:keyWidth="15%p" />
         <Key
-            android:codes="@integer/switch_next_keyboard_key_code"
+            android:codes="@integer/keycode_switch_next_keyboard"
             android:keyIcon="@drawable/ic_language"
             android:keyWidth="10%p" />
         <Key

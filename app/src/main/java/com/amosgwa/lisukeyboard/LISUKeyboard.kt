@@ -9,18 +9,20 @@ import android.view.KeyEvent
 import android.view.View
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
+
     private var keyboardView: KeyboardView? = null
     private var keyboardNormal: Keyboard? = null
     private var keyboardShift: Keyboard? = null
-
-    private var isShift = false
+    private var keyboard123: Keyboard? = null
 
     init {
+        loadKeyCodes()
     }
 
     override fun onCreateInputView(): View? {
         keyboardNormal = Keyboard(this, R.xml.lisu)
         keyboardShift = Keyboard(this, R.xml.lisu_shift)
+        keyboard123 = Keyboard(this, R.xml.lisu_num)
 
         keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
         keyboardView?.keyboard = keyboardNormal
@@ -54,13 +56,20 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             Keyboard.KEYCODE_DELETE -> {
                 inputConnection.deleteSurroundingText(1, 0)
             }
+            KEYCODE_ABC -> {
+                keyboardView?.keyboard = keyboardNormal
+                keyboardView?.invalidateAllKeys()
+            }
             Keyboard.KEYCODE_SHIFT -> {
-                isShift = !isShift
-                if (isShift) {
-                    keyboardView?.keyboard = keyboardShift
-                } else {
-                    keyboardView?.keyboard = keyboardNormal
-                }
+                keyboardView?.keyboard = keyboardShift
+                keyboardView?.invalidateAllKeys()
+            }
+            KEYCODE_UNSHIFT -> {
+                keyboardView?.keyboard = keyboardNormal
+                keyboardView?.invalidateAllKeys()
+            }
+            KEYCODE_123 -> {
+                keyboardView?.keyboard = keyboard123
                 keyboardView?.invalidateAllKeys()
             }
             Keyboard.KEYCODE_DONE -> {
@@ -68,9 +77,6 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             }
             else -> {
                 var code = primaryCode.toChar()
-                if (Character.isLetter(code) && isShift) {
-                    code = Character.toUpperCase(code)
-                }
                 inputConnection.commitText(code.toString(), 1)
             }
         }
@@ -86,6 +92,19 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         }
     }
 
+    private fun loadKeyCodes() {
+        KEYCODE_UNSHIFT = resources.getInteger(R.integer.keycode_unshift)
+        KEYCODE_ABC = resources.getInteger(R.integer.keycode_abc)
+        KEYCODE_123 = resources.getInteger(R.integer.keycode_123)
+    }
+
     override fun onText(text: CharSequence?) {
+    }
+
+    companion object {
+        var KEYCODE_NONE = -777
+        var KEYCODE_UNSHIFT = KEYCODE_NONE
+        var KEYCODE_ABC = KEYCODE_NONE
+        var KEYCODE_123 = KEYCODE_NONE
     }
 }
