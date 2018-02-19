@@ -7,6 +7,7 @@ import android.inputmethodservice.KeyboardView
 import android.media.AudioManager
 import android.view.KeyEvent
 import android.view.View
+import com.amosgwa.lisukeyboard.KeyboardView.GwaKeyboardView
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
@@ -25,7 +26,8 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
         keyboardView?.keyboard = keyboardNormal
 
-        keyboardView.add
+        // Disable preview for keyboard
+        keyboardView?.isPreviewEnabled = false
 
         keyboardView?.setOnKeyboardActionListener(this)
         return keyboardView

@@ -13,6 +13,8 @@
         <Key
             android:codes="81"
             android:keyEdgeFlags="left"
+            android:popupCharacters="qH"
+            android:popupKeyboard="@xml/popup"
             android:keyLabel="Q" />
         <Key
             android:codes="42218"

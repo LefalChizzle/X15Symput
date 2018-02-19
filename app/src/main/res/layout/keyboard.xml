@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.inputmethodservice.KeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.amosgwa.lisukeyboard.KeyboardView.GwaKeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/lib/com.example.amosgwa"
     android:id="@+id/keyboardNormal"
     android:layout_width="match_parent"
+    android:paddingTop="30dp"
 
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
