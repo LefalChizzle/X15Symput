@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:keyHeight="@dimen/key_height">
     <Row>
         <Key
@@ -47,7 +46,7 @@
             android:codes="92"
             android:keyLabel="\\" />
         <Key
-            android:codes="42233, 42236"
+            android:codes="42233,42236"
             android:keyLabel="ꓹꓼ" />
         <Key
             android:codes="40"

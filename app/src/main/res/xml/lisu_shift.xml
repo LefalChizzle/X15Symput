@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:keyHeight="@dimen/key_height">
 
-    <!--[["\'", "ꓼ", "ꓱ", "ꓤ", "ꓕ", "ꓻ", "ꓵ", "꓾", "ˍ", "ꓒ"],-->
-    <!--["ꓯ", "ꓸꓼ", "ꓷ", "ꓞ", "ꓨ", "ꓺ", "ꓩ", "ꓘ", "ꓶ"],-->
-    <!--["unshift","ꓹ", ":", "ꓛ", "ꓥ", "ꓭ", "-", "=","backspace"],-->
-    <!--["123","keyboardchange", "space","?", "return"]-->
     <!--Shift Page-->
     <Row>
         <Key
@@ -50,7 +45,7 @@
             android:keyEdgeFlags="left"
             android:keyLabel="ꓯ" />
         <Key
-            android:codes="42232, 42236"
+            android:codes="42232,42236"
             android:keyLabel="ꓸꓼ" />
         <Key
             android:codes="42231"

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
 import android.util.AttributeSet
 import com.amosgwa.lisukeyboard.R
@@ -20,32 +19,31 @@ class GwaKeyboardView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         loadKeyCodes()
-
         super.onDraw(canvas)
-        drawCustomKeys(canvas, keyboard)
+        drawCustomKeys(canvas)
     }
 
-    private fun drawCustomKeys(canvas: Canvas, keyboard: Keyboard?) {
+    private fun drawCustomKeys(canvas: Canvas) {
         if (keyboard != null) {
-            val keys = keyboard.keys
-
             val paint = Paint()
             paint.textAlign = Paint.Align.CENTER
             paint.textSize = 25f
             paint.color = Color.RED
 
-            for (key in keys) {
-                if (key.codes.isNotEmpty() && key.codes[0] == KEYCODE_SPACE) {
-                    val dr = resources.getDrawable(R.drawable.ic_space)
-                    val width = Math.round(key.width * 0.8).toInt()
-                    val height = Math.round(key.height * 0.25).toInt()
-                    val startX = (key.width - width) / 2 + key.x
-                    val startY = (key.height - height) / 2 + key.y
-                    val endX = startX + width
-                    val endY = startY + height
-                    dr.setBounds(startX, startY, endX, endY)
-                    dr.draw(canvas)
-//                    key.icon = ScaleDrawable(resources.getDrawable(R.drawable.ic_space), 0, width.toFloat(), height.toFloat()).drawable
+            for (i in 0 until keyboard.keys.size) {
+                for (key in keyboard.keys) {
+                    val key = keyboard.keys[i]
+                    if (key.codes.isNotEmpty() && key.codes[0] == KEYCODE_SPACE) {
+                        val dr = resources.getDrawable(R.drawable.ic_space)
+                        val width = Math.round(key.width * 0.8).toInt()
+                        val height = Math.round(key.height * 0.2).toInt()
+                        val startX = (key.width - width) / 2 + key.x
+                        val startY = (key.height - height) / 2 + (key.y * 1.05).toInt()
+                        val endX = startX + width
+                        val endY = startY + height
+                        dr.setBounds(startX, startY, endX, endY)
+                        dr.draw(canvas)
+                    }
                 }
             }
         }

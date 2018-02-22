@@ -3,11 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:keyHeight="@dimen/key_height">
 
-    <!--[["Q", "ꓪ", "ꓰ", "ꓣ", "ꓔ", "ꓬ", "ꓴ", "ꓲ", "ꓳ", "ꓑ"],-->
-    <!--["ꓮ", "ꓢ", "ꓓ", "ꓝ", "ꓖ", "ꓧ", "ꓙ", "ꓗ", "ꓡ"],-->
-    <!--["shift","ꓜ", "ꓫ", "ꓚ", "ꓦ", "ꓐ", "ꓠ", "ꓟ","backspace"],-->
-    <!--["123","keyboardchange", "space",".", "return"] -->
-
     <!--First Page-->
     <Row>
         <Key

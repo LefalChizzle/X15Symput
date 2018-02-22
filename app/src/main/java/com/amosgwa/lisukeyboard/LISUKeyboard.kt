@@ -78,8 +78,20 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
             }
             else -> {
-                var code = primaryCode.toChar()
-                inputConnection.commitText(code.toString(), 1)
+                var output = ""
+                var cursorPosition = 0
+                keyCodes?.let {
+                    val first = keyCodes[0]
+                    val second = keyCodes[1]
+                    if (first != -1 && second != -1) {
+                        output = first.toChar().toString() + second.toChar()
+                        cursorPosition = 2
+                    } else {
+                        output = primaryCode.toChar().toString()
+                        cursorPosition = 1
+                    }
+                }
+                inputConnection.commitText(output, cursorPosition)
             }
         }
     }

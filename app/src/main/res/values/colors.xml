@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="grey">#f0f1f1</color>
-    <color name="grey_medium">#545454</color>
+    <color name="grey_medium">#cecece</color>
     <color name="grey_dark">#3e3e3e</color>
 
     <color name="blue_dark">#37474f</color>
@@ -16,7 +16,7 @@
 
     <color name="keyBackgroundColor">@color/grey</color>
     <color name="keyboardDivider">@color/blue_dark</color>
-    <color name="keyboardPressed">@color/pink</color>
+    <color name="keyboardPressed">@color/grey_medium</color>
     <color name="keyTextColor">@color/blue_dark</color>
 
     <color name="keyPreviewBackgroundColor">@color/colorAccent</color>
