@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.inputmethodservice.KeyboardView
 import android.util.AttributeSet
+import android.view.MotionEvent
 import com.amosgwa.lisukeyboard.R
 
 /**
@@ -17,10 +18,22 @@ class GwaKeyboardView @JvmOverloads constructor(
         attrs: AttributeSet
 ) : KeyboardView(context, attrs) {
 
+    var canvas: Canvas? = null
+
     override fun onDraw(canvas: Canvas) {
+        this.canvas = canvas
         loadKeyCodes()
         super.onDraw(canvas)
         drawCustomKeys(canvas)
+    }
+
+    override fun onTouchEvent(me: MotionEvent?): Boolean {
+        isPreviewEnabled
+        return super.onTouchEvent(me)
+    }
+
+    private fun drawPopup(){
+
     }
 
     private fun drawCustomKeys(canvas: Canvas) {
@@ -38,7 +51,7 @@ class GwaKeyboardView @JvmOverloads constructor(
                         val width = Math.round(key.width * 0.8).toInt()
                         val height = Math.round(key.height * 0.2).toInt()
                         val startX = (key.width - width) / 2 + key.x
-                        val startY = (key.height - height) / 2 + (key.y * 1.05).toInt()
+                        val startY = (key.height - height) / 2 + (key.y * 1.03).toInt()
                         val endX = startX + width
                         val endY = startY + height
                         dr.setBounds(startX, startY, endX, endY)

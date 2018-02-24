@@ -8,7 +8,6 @@ import android.media.AudioManager
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import com.amosgwa.lisukeyboard.KeyboardView.GwaKeyboardView
 import android.view.MotionEvent
 
 

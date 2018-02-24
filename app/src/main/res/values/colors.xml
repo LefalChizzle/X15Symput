@@ -6,6 +6,7 @@
 
     <color name="grey">#f0f1f1</color>
     <color name="grey_medium">#cecece</color>
+    <color name="keyboard_grey">#696969</color>
     <color name="grey_dark">#3e3e3e</color>
 
     <color name="blue_dark">#37474f</color>
