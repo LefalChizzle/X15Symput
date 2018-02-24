@@ -46,7 +46,7 @@
             android:codes="92"
             android:keyLabel="\\" />
         <Key
-            android:codes="42233,42236"
+            android:codes="@integer/keycode_na_po_mya_na"
             android:keyLabel="ꓹꓼ" />
         <Key
             android:codes="40"
@@ -125,7 +125,7 @@
             android:keyLabel=","
             android:keyWidth="10%p" />
         <Key
-            android:codes="@integer/keycode_newline"
+            android:codes="@integer/keycode_done"
             android:keyEdgeFlags="right"
             android:keyIcon="@drawable/ic_keyboard_return"
             android:keyWidth="15%p" />

@@ -9,11 +9,20 @@
     <integer name="keycode_alt">-6</integer>
 
     <!--Other Key codes-->
-    <integer name="keycode_switch_next_keyboard">-101</integer>
+    <integer name="keycode_switch_next_keyboard">-995</integer>
     <integer name="keycode_newline">10</integer>
     <integer name="keycode_space">32</integer>
 
     <integer name="keycode_abc">-998</integer>
     <integer name="keycode_123">-997</integer>
     <integer name="keycode_unshift">-996</integer>
+
+     <!--Key combos codes-->
+    <integer name="keycode_mya_ti_mya_na">-899</integer>
+    <integer name="keycode_na_po_mya_na">-898</integer>
+
+    <!--Character codes-->
+    <integer name="keycode_mya_na">42236</integer>
+    <integer name="keycode_mya_ti">42232</integer>
+    <integer name="keycode_na_po">42233</integer>
 </resources>

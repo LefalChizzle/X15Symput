@@ -7,7 +7,11 @@ import android.inputmethodservice.KeyboardView
 import android.media.AudioManager
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.amosgwa.lisukeyboard.KeyboardView.GwaKeyboardView
+import android.view.MotionEvent
+
+
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
@@ -74,24 +78,33 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 keyboardView?.keyboard = keyboard123
                 keyboardView?.invalidateAllKeys()
             }
+            KEYCODE_123 -> {
+                keyboardView?.keyboard = keyboard123
+                keyboardView?.invalidateAllKeys()
+            }
+            KEYCODE_MYA_TI_MYA_NA -> {
+                val output = KEYCODE_MYA_TI.toChar().toString() + KEYCODE_MYA_NA.toChar()
+                inputConnection.commitText(output, 2)
+                return
+            }
+            KEYCODE_NA_PO_MYA_NA -> {
+                val output = KEYCODE_NA_PO.toChar().toString() + KEYCODE_MYA_NA.toChar()
+                inputConnection.commitText(output, 2)
+                return
+            }
+            KEYCODE_LANGUAGE -> {
+                val mgr = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                mgr?.showInputMethodPicker()
+            }
             Keyboard.KEYCODE_DONE -> {
-                inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
+                val event = (KeyEvent(0, 0, MotionEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ENTER, 0, 0, 0, 0,
+                        KeyEvent.FLAG_SOFT_KEYBOARD))
+                inputConnection.sendKeyEvent(event)
+                return
             }
             else -> {
-                var output = ""
-                var cursorPosition = 0
-                keyCodes?.let {
-                    val first = keyCodes[0]
-                    val second = keyCodes[1]
-                    if (first != -1 && second != -1) {
-                        output = first.toChar().toString() + second.toChar()
-                        cursorPosition = 2
-                    } else {
-                        output = primaryCode.toChar().toString()
-                        cursorPosition = 1
-                    }
-                }
-                inputConnection.commitText(output, cursorPosition)
+                inputConnection.commitText(primaryCode.toChar().toString(), 1)
             }
         }
     }
@@ -110,6 +123,12 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         KEYCODE_UNSHIFT = resources.getInteger(R.integer.keycode_unshift)
         KEYCODE_ABC = resources.getInteger(R.integer.keycode_abc)
         KEYCODE_123 = resources.getInteger(R.integer.keycode_123)
+        KEYCODE_LANGUAGE = resources.getInteger(R.integer.keycode_switch_next_keyboard)
+        KEYCODE_NA_PO_MYA_NA = resources.getInteger(R.integer.keycode_na_po_mya_na)
+        KEYCODE_MYA_TI_MYA_NA = resources.getInteger(R.integer.keycode_mya_ti_mya_na)
+        KEYCODE_MYA_TI = resources.getInteger(R.integer.keycode_mya_ti)
+        KEYCODE_MYA_NA = resources.getInteger(R.integer.keycode_mya_na)
+        KEYCODE_NA_PO = resources.getInteger(R.integer.keycode_na_po)
     }
 
     override fun onText(text: CharSequence?) {
@@ -120,5 +139,11 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         var KEYCODE_UNSHIFT = KEYCODE_NONE
         var KEYCODE_ABC = KEYCODE_NONE
         var KEYCODE_123 = KEYCODE_NONE
+        var KEYCODE_NA_PO_MYA_NA = KEYCODE_NONE
+        var KEYCODE_MYA_TI_MYA_NA = KEYCODE_NONE
+        var KEYCODE_LANGUAGE = KEYCODE_NONE
+        var KEYCODE_NA_PO = KEYCODE_NONE
+        var KEYCODE_MYA_NA = KEYCODE_NONE
+        var KEYCODE_MYA_TI = KEYCODE_NONE
     }
 }

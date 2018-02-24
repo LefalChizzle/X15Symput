@@ -45,7 +45,7 @@
             android:keyEdgeFlags="left"
             android:keyLabel="ꓯ" />
         <Key
-            android:codes="42232,42236"
+            android:codes="@integer/keycode_mya_ti_mya_na"
             android:keyLabel="ꓸꓼ" />
         <Key
             android:codes="42231"
@@ -129,7 +129,7 @@
             android:keyLabel="?"
             android:keyWidth="10%p" />
         <Key
-            android:codes="@integer/keycode_newline"
+            android:codes="@integer/keycode_done"
             android:keyEdgeFlags="right"
             android:keyIcon="@drawable/ic_keyboard_return"
             android:keyWidth="15%p" />
