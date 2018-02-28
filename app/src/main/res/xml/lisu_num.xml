@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
-    android:keyHeight="@dimen/key_height">
-    <Row>
+    android:verticalGap="0dp">
+
+    <Row android:keyHeight="@dimen/large_key_height">
         <Key
             android:codes="49"
             android:keyEdgeFlags="left"
@@ -36,7 +37,7 @@
             android:keyLabel="0" />
     </Row>
 
-    <Row>
+    <Row android:keyHeight="@dimen/large_key_height">
         <Key
             android:codes="47"
             android:horizontalGap="5%p"
@@ -69,7 +70,7 @@
             android:keyLabel="!" />
     </Row>
 
-    <Row>
+    <Row android:keyHeight="@dimen/large_key_height">
         <Key
             android:codes="37"
             android:keyEdgeFlags="left"
@@ -103,6 +104,7 @@
             android:keyIcon="@drawable/ic_backspace"
             android:keyWidth="15%p" />
     </Row>
+
     <Row
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">
