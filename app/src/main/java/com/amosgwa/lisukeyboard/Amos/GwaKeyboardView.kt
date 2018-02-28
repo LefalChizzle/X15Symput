@@ -1,4 +1,4 @@
-package com.amosgwa.lisukeyboard.KeyboardView
+package com.amosgwa.lisukeyboard.Amos
 
 import android.content.Context
 import android.graphics.Canvas

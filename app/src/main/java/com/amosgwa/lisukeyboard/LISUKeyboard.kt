@@ -9,24 +9,26 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.view.MotionEvent
-
+import com.amosgwa.lisukeyboard.Amos.GwaKeyboard
+import com.amosgwa.lisukeyboard.Amos.GwaKeyboardView
 
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
-    private var keyboardView: KeyboardView? = null
-    private var keyboardNormal: Keyboard? = null
-    private var keyboardShift: Keyboard? = null
-    private var keyboard123: Keyboard? = null
+    private var keyboardView: GwaKeyboardView? = null
+    private var keyboardNormal: GwaKeyboard? = null
+    private var keyboardShift: GwaKeyboard? = null
+    private var keyboard123: GwaKeyboard? = null
+
 
     override fun onCreateInputView(): View? {
         loadKeyCodes()
 
-        keyboardNormal = Keyboard(this, R.xml.lisu)
-        keyboardShift = Keyboard(this, R.xml.lisu_shift)
-        keyboard123 = Keyboard(this, R.xml.lisu_num)
+        keyboardNormal = GwaKeyboard(this, R.xml.lisu, TYPE_LISU)
+        keyboardShift = GwaKeyboard(this, R.xml.lisu_shift, TYPE_SHIFT)
+        keyboard123 = GwaKeyboard(this, R.xml.lisu_num, TYPE_123)
 
-        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as KeyboardView?
+        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as GwaKeyboardView?
         keyboardView?.keyboard = keyboardNormal
 
         // Disable preview for keyboard
@@ -64,32 +66,35 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             KEYCODE_ABC -> {
                 keyboardView?.keyboard = keyboardNormal
                 keyboardView?.invalidateAllKeys()
+                return
             }
             Keyboard.KEYCODE_SHIFT -> {
                 keyboardView?.keyboard = keyboardShift
                 keyboardView?.invalidateAllKeys()
+                return
             }
             KEYCODE_UNSHIFT -> {
                 keyboardView?.keyboard = keyboardNormal
                 keyboardView?.invalidateAllKeys()
+                return
             }
             KEYCODE_123 -> {
                 keyboardView?.keyboard = keyboard123
                 keyboardView?.invalidateAllKeys()
+                return
             }
             KEYCODE_123 -> {
                 keyboardView?.keyboard = keyboard123
                 keyboardView?.invalidateAllKeys()
+                return
             }
             KEYCODE_MYA_TI_MYA_NA -> {
                 val output = KEYCODE_MYA_TI.toChar().toString() + KEYCODE_MYA_NA.toChar()
                 inputConnection.commitText(output, 2)
-                return
             }
             KEYCODE_NA_PO_MYA_NA -> {
                 val output = KEYCODE_NA_PO.toChar().toString() + KEYCODE_MYA_NA.toChar()
                 inputConnection.commitText(output, 2)
-                return
             }
             KEYCODE_LANGUAGE -> {
                 val mgr = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
@@ -100,11 +105,16 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                         KeyEvent.KEYCODE_ENTER, 0, 0, 0, 0,
                         KeyEvent.FLAG_SOFT_KEYBOARD))
                 inputConnection.sendKeyEvent(event)
-                return
             }
             else -> {
                 inputConnection.commitText(primaryCode.toChar().toString(), 1)
             }
+        }
+        // Switch back to normal if the selected page type is shift.
+        val keyboard = keyboardView?.keyboard as GwaKeyboard
+        if (keyboard.type == TYPE_SHIFT) {
+            keyboardView?.keyboard = keyboardNormal
+            keyboardView?.invalidateAllKeys()
         }
     }
 
@@ -144,5 +154,9 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         var KEYCODE_NA_PO = KEYCODE_NONE
         var KEYCODE_MYA_NA = KEYCODE_NONE
         var KEYCODE_MYA_TI = KEYCODE_NONE
+
+        const val TYPE_LISU = 0
+        const val TYPE_SHIFT = 1
+        const val TYPE_123 = 2
     }
 }
