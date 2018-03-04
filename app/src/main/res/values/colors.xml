@@ -6,6 +6,7 @@
 
     <color name="grey">#f0f1f1</color>
     <color name="grey_medium">#cecece</color>
+    <color name="sub_script_grey">#838383</color>
     <color name="keyboard_grey">#696969</color>
     <color name="grey_dark">#3e3e3e</color>
 
@@ -19,6 +20,7 @@
     <color name="keyboardDivider">@color/blue_dark</color>
     <color name="keyboardPressed">@color/grey_medium</color>
     <color name="keyTextColor">@color/blue_dark</color>
+    <color name="subKeyTextColor">@color/sub_script_grey</color>
 
     <color name="keyPreviewBackgroundColor">@color/colorAccent</color>
     <color name="keyPreviewTextColor">@color/white</color>

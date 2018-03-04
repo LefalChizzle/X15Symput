@@ -45,25 +45,13 @@ class GwaKeyboardView @JvmOverloads constructor(
                 var key = keyboard.keys[i] as GwaKeyboardKey
                 if (key.subLabel != null) {
                     val subKeyPaint = Paint()
-                    subKeyPaint.color = Color.RED
-                    subKeyPaint.textSize = 26f
-                    val paddingX = key.width * 0.2
-                    val paddingY = key.height * 0.2
+                    subKeyPaint.color = resources.getColor(R.color.subKeyTextColor)
+                    subKeyPaint.textSize = 30f
+                    val paddingX = key.width * 0.35
+                    val paddingY = key.height * 0.35
                     val startX = (key.width + key.x - paddingX).toFloat()
                     val startY = (paddingY + key.y).toFloat()
                     canvas?.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
-                }
-
-                if (key.codes.isNotEmpty() && key.codes[0] == KEYCODE_SPACE) {
-                    val dr = resources.getDrawable(R.drawable.ic_space)
-                    val width = Math.round(key.width * 0.8).toInt()
-                    val height = Math.round(key.height * 0.2).toInt()
-                    val startX = (key.width - width) / 2 + key.x
-                    val startY = (key.height - height) / 2 + (key.y * 1.03).toInt()
-                    val endX = startX + width
-                    val endY = startY + height
-                    dr.setBounds(startX, startY, endX, endY)
-                    dr.draw(canvas)
                 }
             }
         }
