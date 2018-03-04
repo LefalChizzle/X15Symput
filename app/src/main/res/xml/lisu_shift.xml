@@ -142,6 +142,7 @@
             android:keyIcon="@drawable/ic_backspace"
             android:keyWidth="15%p" />
     </Row>
+
     <Row
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">

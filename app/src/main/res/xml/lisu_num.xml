@@ -36,6 +36,40 @@
             android:keyEdgeFlags="right"
             android:keyLabel="0" />
     </Row>
+    <!--<Row>-->
+        <!--<Key-->
+            <!--android:codes="39"-->
+            <!--android:keyEdgeFlags="left"-->
+            <!--android:keyLabel="'" />-->
+        <!--<Key-->
+            <!--android:codes="42236"-->
+            <!--android:keyLabel="ꓼ" />-->
+        <!--<Key-->
+            <!--android:codes="42225"-->
+            <!--android:keyLabel="ꓱ" />-->
+        <!--<Key-->
+            <!--android:codes="42212"-->
+            <!--android:keyLabel="ꓤ" />-->
+        <!--<Key-->
+            <!--android:codes="42197"-->
+            <!--android:keyLabel="ꓕ" />-->
+        <!--<Key-->
+            <!--android:codes="42235"-->
+            <!--android:keyLabel="ꓻ" />-->
+        <!--<Key-->
+            <!--android:codes="42229"-->
+            <!--android:keyLabel="ꓵ" />-->
+        <!--<Key-->
+            <!--android:codes="42238"-->
+            <!--android:keyLabel="꓾" />-->
+        <!--<Key-->
+            <!--android:codes="717"-->
+            <!--android:keyLabel="ˍ" />-->
+        <!--<Key-->
+            <!--android:codes="42194"-->
+            <!--android:keyEdgeFlags="right"-->
+            <!--android:keyLabel="ꓒ" />-->
+    <!--</Row>-->
 
     <Row>
         <Key

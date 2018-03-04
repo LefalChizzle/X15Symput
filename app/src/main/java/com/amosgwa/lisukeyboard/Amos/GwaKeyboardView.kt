@@ -23,10 +23,10 @@ class GwaKeyboardView @JvmOverloads constructor(
     var canvas: Canvas? = null
 
     override fun onDraw(canvas: Canvas) {
-        this.canvas = canvas
         loadKeyCodes()
         super.onDraw(canvas)
-        drawCustomKeys(canvas)
+        this.canvas = canvas
+        drawCustomKeys(this.canvas)
     }
 
     override fun onTouchEvent(me: MotionEvent?): Boolean {
@@ -38,27 +38,20 @@ class GwaKeyboardView @JvmOverloads constructor(
 
     }
 
-    private fun drawCustomKeys(canvas: Canvas) {
+    private fun drawCustomKeys(canvas: Canvas?) {
         if (keyboard != null) {
-//            val paint = Paint()
-//            paint.textAlign = Paint.Align.CENTER
-//            paint.textSize = 25f
-//            paint.color = Color.RED
 
             for (i in 0 until keyboard.keys.size) {
                 var key = keyboard.keys[i] as GwaKeyboardKey
-//            for (key in keyboard.keys) {
                 if (key.subLabel != null) {
                     val subKeyPaint = Paint()
-//                    canvas.drawPaint(subKeyPaint)
                     subKeyPaint.color = Color.RED
-//                    subKeyPaint.textAlign = Paint.Align.CENTER
                     subKeyPaint.textSize = 26f
                     val paddingX = key.width * 0.2
                     val paddingY = key.height * 0.2
                     val startX = (key.width + key.x - paddingX).toFloat()
                     val startY = (paddingY + key.y).toFloat()
-                    canvas.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
+                    canvas?.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
                 }
 
                 if (key.codes.isNotEmpty() && key.codes[0] == KEYCODE_SPACE) {
