@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:verticalGap="0dp"
-    android:keyHeight="@dimen/key_height">
+    android:keyHeight="@dimen/key_height"
+    android:verticalGap="0dp">
 
     <Row>
         <Key
@@ -44,37 +44,46 @@
         <Key
             android:codes="81"
             android:keyEdgeFlags="left"
-            android:popupCharacters="qH"
+            android:keyLabel="Q"
             android:popupKeyboard="@xml/popup"
-            android:keyLabel="Q" />
+            app:subLabel="q" />
         <Key
             android:codes="42218"
-            android:keyLabel="ꓪ" />
+            android:keyLabel="ꓪ"
+            app:subLabel="w" />
         <Key
             android:codes="42224"
-            android:keyLabel="ꓰ" />
+            android:keyLabel="ꓰ"
+            app:subLabel="e" />
         <Key
             android:codes="42211"
-            android:keyLabel="ꓣ" />
+            android:keyLabel="ꓣ"
+            app:subLabel="r" />
         <Key
             android:codes="42196"
-            android:keyLabel="ꓔ" />
+            android:keyLabel="ꓔ"
+            app:subLabel="t" />
         <Key
             android:codes="42220"
-            android:keyLabel="ꓬ" />
+            android:keyLabel="ꓬ"
+            app:subLabel="y" />
         <Key
             android:codes="42228"
-            android:keyLabel="ꓴ" />
+            android:keyLabel="ꓴ"
+            app:subLabel="u" />
         <Key
             android:codes="42226"
-            android:keyLabel="ꓲ" />
+            android:keyLabel="ꓲ"
+            app:subLabel="i" />
         <Key
             android:codes="42227"
-            android:keyLabel="ꓳ" />
+            android:keyLabel="ꓳ"
+            app:subLabel="o" />
         <Key
             android:codes="42193"
             android:keyEdgeFlags="right"
-            android:keyLabel="ꓑ" />
+            android:keyLabel="ꓑ"
+            app:subLabel="p" />
     </Row>
     <Row>
         <Key
@@ -148,6 +157,7 @@
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">
         <Key
+
             android:codes="@integer/keycode_123"
             android:keyEdgeFlags="left"
             android:keyLabel="123"

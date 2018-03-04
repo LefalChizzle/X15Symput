@@ -1,5 +1,6 @@
 package com.amosgwa.lisukeyboard.Amos
 
+import android.R.attr.*
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,9 +9,6 @@ import android.inputmethodservice.KeyboardView
 import android.util.AttributeSet
 import android.view.MotionEvent
 import com.amosgwa.lisukeyboard.R
-import android.R.attr.y
-import android.R.attr.x
-
 
 
 /**
@@ -47,8 +45,10 @@ class GwaKeyboardView @JvmOverloads constructor(
 //            paint.textSize = 25f
 //            paint.color = Color.RED
 
-            for (key in keyboard.keys) {
-                if(key.label != null) {
+            for (i in 0 until keyboard.keys.size) {
+                var key = keyboard.keys[i] as GwaKeyboardKey
+//            for (key in keyboard.keys) {
+                if (key.subLabel != null) {
                     val subKeyPaint = Paint()
 //                    canvas.drawPaint(subKeyPaint)
                     subKeyPaint.color = Color.RED
@@ -58,7 +58,7 @@ class GwaKeyboardView @JvmOverloads constructor(
                     val paddingY = key.height * 0.2
                     val startX = (key.width + key.x - paddingX).toFloat()
                     val startY = (paddingY + key.y).toFloat()
-//                    canvas.drawText(key.label as String?, startX, startY, subKeyPaint)
+                    canvas.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
                 }
 
                 if (key.codes.isNotEmpty() && key.codes[0] == KEYCODE_SPACE) {
