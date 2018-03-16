@@ -5,6 +5,7 @@ import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
 import android.media.AudioManager
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -19,7 +20,6 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private var keyboardNormal: GwaKeyboard? = null
     private var keyboardShift: GwaKeyboard? = null
     private var keyboard123: GwaKeyboard? = null
-
 
     override fun onCreateInputView(): View? {
         loadKeyCodes()
@@ -57,6 +57,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
+        Log.d("///AMOS","onKEY");
         val inputConnection = currentInputConnection
         playClick(primaryCode)
         when (primaryCode) {
@@ -118,6 +119,16 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         }
     }
 
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+        Log.d("///AMOS","PRINGING LONGGGGG");
+        return super.onKeyLongPress(keyCode, event)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        Log.d("///AMOS","KEY DOWNNNN");
+        return super.onKeyDown(keyCode, event)
+    }
+
     private fun playClick(keyCode: Int) {
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         when (keyCode) {
@@ -132,6 +143,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         KEYCODE_UNSHIFT = resources.getInteger(R.integer.keycode_unshift)
         KEYCODE_ABC = resources.getInteger(R.integer.keycode_abc)
         KEYCODE_123 = resources.getInteger(R.integer.keycode_123)
+        KEYCODE_SPACE = resources.getInteger(R.integer.keycode_space)
         KEYCODE_LANGUAGE = resources.getInteger(R.integer.keycode_switch_next_keyboard)
         KEYCODE_NA_PO_MYA_NA = resources.getInteger(R.integer.keycode_na_po_mya_na)
         KEYCODE_MYA_TI_MYA_NA = resources.getInteger(R.integer.keycode_mya_ti_mya_na)
@@ -148,6 +160,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         var KEYCODE_UNSHIFT = KEYCODE_NONE
         var KEYCODE_ABC = KEYCODE_NONE
         var KEYCODE_123 = KEYCODE_NONE
+        var KEYCODE_SPACE = KEYCODE_NONE
         var KEYCODE_NA_PO_MYA_NA = KEYCODE_NONE
         var KEYCODE_MYA_TI_MYA_NA = KEYCODE_NONE
         var KEYCODE_LANGUAGE = KEYCODE_NONE
