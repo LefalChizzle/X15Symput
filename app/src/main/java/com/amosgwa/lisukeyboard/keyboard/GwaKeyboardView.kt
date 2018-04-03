@@ -1,9 +1,8 @@
-package com.amosgwa.lisukeyboard.Amos
+package com.amosgwa.lisukeyboard.keyboard
 
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PixelFormat
@@ -11,15 +10,9 @@ import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
 import android.os.Build
 import android.util.AttributeSet
-import android.view.KeyEvent
 import android.view.MotionEvent
 import com.amosgwa.lisukeyboard.R
 import android.view.WindowManager
-import com.amosgwa.lisukeyboard.LanguagePickerDialog
-import com.amosgwa.lisukeyboard.view.PickLanguage
-import android.R.attr.y
-import android.R.attr.x
-import android.os.SystemClock
 import android.widget.Toast
 
 
@@ -53,9 +46,9 @@ class GwaKeyboardView @JvmOverloads constructor(
             KEYCODE_SPACE -> {
                 val builder = AlertDialog.Builder(context)
                 builder.setTitle(context.getString(R.string.language_picker_title))
-                builder.setItems(R.array.languages, DialogInterface.OnClickListener { dialog, item ->
+                builder.setItems(R.array.languages, { _, item ->
                     // Do something with the selection
-                    Toast.makeText(context,String.format("You picked %s", item), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, String.format("You picked %s", item), Toast.LENGTH_SHORT).show()
                 })
                 val alert = builder.create()
                 val window = alert.window

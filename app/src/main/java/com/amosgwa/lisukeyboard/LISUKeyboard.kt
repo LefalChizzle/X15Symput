@@ -10,8 +10,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.view.MotionEvent
-import com.amosgwa.lisukeyboard.Amos.GwaKeyboard
-import com.amosgwa.lisukeyboard.Amos.GwaKeyboardView
+import com.amosgwa.lisukeyboard.keyboard.GwaKeyboard
+import com.amosgwa.lisukeyboard.keyboard.GwaKeyboardView
 
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {

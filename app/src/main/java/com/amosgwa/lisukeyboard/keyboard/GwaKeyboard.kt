@@ -1,4 +1,4 @@
-package com.amosgwa.lisukeyboard.Amos
+package com.amosgwa.lisukeyboard.keyboard
 
 import android.content.Context
 import android.content.res.Resources
