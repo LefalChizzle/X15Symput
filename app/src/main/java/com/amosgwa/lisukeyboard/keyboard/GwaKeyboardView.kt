@@ -2,7 +2,6 @@ package com.amosgwa.lisukeyboard.keyboard
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PixelFormat
@@ -10,17 +9,16 @@ import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
 import android.os.Build
 import android.util.AttributeSet
-import android.view.MotionEvent
 import com.amosgwa.lisukeyboard.R
 import android.view.WindowManager
-import android.widget.Toast
+import com.amosgwa.lisukeyboard.extensions.showToast
 
 
 /**
  * Created by Amos Gwa on 2/18/2018.
  */
 
-class GwaKeyboardView @JvmOverloads constructor(
+class GwaKeyboardView constructor(
         context: Context,
         attrs: AttributeSet
 ) : KeyboardView(context, attrs) {
@@ -35,21 +33,19 @@ class GwaKeyboardView @JvmOverloads constructor(
         drawSubKeys(this.canvas)
     }
 
-    override fun onTouchEvent(me: MotionEvent?): Boolean {
-        isPreviewEnabled
-        return super.onTouchEvent(me)
-    }
-
     override fun onLongPress(popupKey: Keyboard.Key?): Boolean {
         val primaryCode = popupKey?.codes?.get(0)
         when (primaryCode) {
             KEYCODE_SPACE -> {
                 val builder = AlertDialog.Builder(context)
+                // Load languages from the array resources.
+                val languages = resources.getStringArray(R.array.languages)
                 builder.setTitle(context.getString(R.string.language_picker_title))
-                builder.setItems(R.array.languages, { _, item ->
-                    // Do something with the selection
-                    Toast.makeText(context, String.format("You picked %s", item), Toast.LENGTH_SHORT).show()
+                builder.setItems(languages, { _, itemIdx ->
+                    context.showToast(String.format("You picked %s", languages[itemIdx]))
                 })
+
+                // Create the dialog that overlays over the keyboard.
                 val alert = builder.create()
                 val window = alert.window
                 val lp = window.attributes
@@ -73,7 +69,7 @@ class GwaKeyboardView @JvmOverloads constructor(
     private fun drawSubKeys(canvas: Canvas?) {
         if (keyboard != null) {
             for (i in 0 until keyboard.keys.size) {
-                var key = keyboard.keys[i] as GwaKeyboardKey
+                val key = keyboard.keys[i] as GwaKeyboardKey
                 if (key.subLabel != null) {
                     val subKeyPaint = Paint()
                     subKeyPaint.color = resources.getColor(R.color.subKeyTextColor)
