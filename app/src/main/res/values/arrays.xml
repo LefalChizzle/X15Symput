@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="languages">
-        <item>LISU</item>
+    <array name="languages">
+        <item>@array/lisu</item>
+        <item>@array/english</item>
+    </array>
+
+    <array name="english">
         <item>English</item>
-    </string-array>
+        <item>@xml/qwerty</item>
+        <item>@xml/qwerty_shift</item>
+    </array>
+
+    <array name="lisu">
+        <item>LISU</item>
+        <item>@xml/lisu</item>
+        <item>@xml/lisu_shift</item>
+    </array>
 </resources>

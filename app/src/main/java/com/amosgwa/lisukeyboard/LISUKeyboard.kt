@@ -5,13 +5,15 @@ import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
 import android.media.AudioManager
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.view.MotionEvent
 import com.amosgwa.lisukeyboard.keyboard.GwaKeyboard
 import com.amosgwa.lisukeyboard.keyboard.GwaKeyboardView
+import com.amosgwa.lisukeyboard.keyboard.OnLanguageSelectionListener
+import android.content.res.TypedArray
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 
 
 class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
@@ -21,21 +23,92 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private var keyboardShift: GwaKeyboard? = null
     private var keyboard123: GwaKeyboard? = null
 
-    override fun onCreateInputView(): View? {
+    private var languageNames: MutableList<String> = mutableListOf()
+    private var languageXmlRes: MutableList<Int> = mutableListOf()
+    private var languageShiftXmlRes: MutableList<Int> = mutableListOf()
+
+    private var preferences: KeyboardPreferences? = null
+    private var lastSavedLanguageIdx: Int = 0
+    private var currentLanguageIdx: Int = 0
+        set(value) {
+            field = value
+            preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
+            keyboardNormal = GwaKeyboard(this@LISUKeyboard, languageXmlRes[value], TYPE_NORMAL)
+            keyboardShift = GwaKeyboard(this@LISUKeyboard, languageShiftXmlRes[value], TYPE_SHIFT)
+            keyboardView?.keyboard = keyboardNormal
+            keyboardView?.currentLanguage = languageNames[value]
+            keyboardView?.invalidateAllKeys()
+        }
+
+    override fun onCreate() {
+        super.onCreate()
+        loadSharedPreferences()
         loadKeyCodes()
+        loadLanguages()
+    }
 
-        keyboardNormal = GwaKeyboard(this, R.xml.lisu, TYPE_LISU)
-        keyboardShift = GwaKeyboard(this, R.xml.lisu_shift, TYPE_SHIFT)
-        keyboard123 = GwaKeyboard(this, R.xml.lisu_num, TYPE_123)
+    private fun loadSharedPreferences() {
+        preferences = KeyboardPreferences(applicationContext)
+        lastSavedLanguageIdx = preferences?.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, 0)
+                ?: 0
+    }
 
+    override fun onCreateInputView(): View? {
+        keyboardNormal = GwaKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
+        keyboardShift = GwaKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
+        keyboard123 = GwaKeyboard(this, R.xml.symbol, TYPE_SYMBOL)
+        setupKeyboardView()
+        return keyboardView
+    }
+
+    private fun setupKeyboardView() {
+        // Setup keyboard view.
         keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as GwaKeyboardView?
-        keyboardView?.keyboard = keyboardNormal
-
+        keyboardView?.languages = languageNames
+        keyboardView?.currentLanguage = languageNames[lastSavedLanguageIdx]
+        keyboardView?.onLanguageSelectionListener = object : OnLanguageSelectionListener {
+            override fun onLanguageSelected(languageIdx: Int) {
+                currentLanguageIdx = languageIdx
+            }
+        }
         // Disable preview for keyboard
         keyboardView?.isPreviewEnabled = false
-
         keyboardView?.setOnKeyboardActionListener(this)
-        return keyboardView
+        // Set the default view to keyboard normal.
+        keyboardView?.keyboard = keyboardNormal
+    }
+
+    private fun loadLanguages() {
+        val languagesArray = resources.obtainTypedArray(R.array.languages)
+        var eachLanguageTypedArray: TypedArray? = null
+        for (i in 0 until languagesArray.length()) {
+            val id = languagesArray.getResourceId(i, -1)
+            if (id == -1) {
+                throw IllegalStateException("Invalid language array resource")
+            }
+            eachLanguageTypedArray = resources.obtainTypedArray(id)
+            eachLanguageTypedArray?.let {
+                val nameIdx = 0
+                val resIdx = 1
+                val shiftResIdx = 2
+
+                val languageName = it.getString(nameIdx)
+                val xmlRes = it.getResourceId(resIdx, -1)
+                val shiftXmlRes = it.getResourceId(shiftResIdx, -1)
+
+                if (languageName == null || xmlRes == -1 || shiftXmlRes == -1) {
+                    throw IllegalStateException("Make sure the arrays resources contain name, xml, and shift xml")
+                }
+
+                languageNames.add(languageName)
+                languageXmlRes.add(xmlRes)
+                languageShiftXmlRes.add(shiftXmlRes)
+            }
+        }
+        if (eachLanguageTypedArray != null) {
+            eachLanguageTypedArray.recycle()
+        }
+        languagesArray.recycle()
     }
 
     override fun swipeRight() {
@@ -57,7 +130,6 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
-        Log.d("///AMOS","onKEY");
         val inputConnection = currentInputConnection
         playClick(primaryCode)
         when (primaryCode) {
@@ -119,16 +191,6 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         }
     }
 
-    override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.d("///AMOS","PRINGING LONGGGGG");
-        return super.onKeyLongPress(keyCode, event)
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.d("///AMOS","KEY DOWNNNN");
-        return super.onKeyDown(keyCode, event)
-    }
-
     private fun playClick(keyCode: Int) {
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         when (keyCode) {
@@ -142,7 +204,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private fun loadKeyCodes() {
         KEYCODE_UNSHIFT = resources.getInteger(R.integer.keycode_unshift)
         KEYCODE_ABC = resources.getInteger(R.integer.keycode_abc)
-        KEYCODE_123 = resources.getInteger(R.integer.keycode_123)
+        KEYCODE_123 = resources.getInteger(R.integer.keycode_sym)
         KEYCODE_SPACE = resources.getInteger(R.integer.keycode_space)
         KEYCODE_LANGUAGE = resources.getInteger(R.integer.keycode_switch_next_keyboard)
         KEYCODE_NA_PO_MYA_NA = resources.getInteger(R.integer.keycode_na_po_mya_na)
@@ -168,8 +230,8 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         var KEYCODE_MYA_NA = KEYCODE_NONE
         var KEYCODE_MYA_TI = KEYCODE_NONE
 
-        const val TYPE_LISU = 0
+        const val TYPE_NORMAL = 0
         const val TYPE_SHIFT = 1
-        const val TYPE_123 = 2
+        const val TYPE_SYMBOL = 2
     }
 }

@@ -78,6 +78,7 @@
     <Row>
         <Key
             android:codes="97"
+            android:horizontalGap="5%p"
             android:keyEdgeFlags="left"
             android:keyLabel="a" />
         <Key
@@ -136,9 +137,6 @@
             android:codes="109"
             android:keyLabel="m" />
         <Key
-            android:codes="46"
-            android:keyLabel="." />
-        <Key
             android:codes="@integer/keycode_delete"
             android:isRepeatable="true"
             android:keyEdgeFlags="right"
@@ -151,9 +149,9 @@
         android:rowEdgeFlags="bottom">
         <Key
 
-            android:codes="@integer/keycode_123"
+            android:codes="@integer/keycode_sym"
             android:keyEdgeFlags="left"
-            android:keyLabel="123"
+            android:keyLabel="+!="
             android:keyWidth="15%p" />
         <Key
             android:codes="@integer/keycode_switch_next_keyboard"

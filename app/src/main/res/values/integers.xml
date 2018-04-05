@@ -14,7 +14,7 @@
     <integer name="keycode_space">32</integer>
 
     <integer name="keycode_abc">-998</integer>
-    <integer name="keycode_123">-997</integer>
+    <integer name="keycode_sym">-997</integer>
     <integer name="keycode_unshift">-996</integer>
 
      <!--Key combos codes-->

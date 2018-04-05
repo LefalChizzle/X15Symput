@@ -11,6 +11,8 @@ import android.os.Build
 import android.util.AttributeSet
 import com.amosgwa.lisukeyboard.R
 import android.view.WindowManager
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences
+import android.graphics.Typeface
 import com.amosgwa.lisukeyboard.extensions.showToast
 
 
@@ -23,14 +25,29 @@ class GwaKeyboardView constructor(
         attrs: AttributeSet
 ) : KeyboardView(context, attrs) {
 
-    var canvas: Canvas = Canvas()
+    private var canvas: Canvas = Canvas()
+    private var textPaint = Paint()
+    private val BaseTextSize = 30f
+
+    var currentLanguage: String = ""
+    var languages: List<String> = mutableListOf()
+    var onLanguageSelectionListener: OnLanguageSelectionListener? = null
+
+    init {
+        textPaint.isAntiAlias = true
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        loadKeyCodes()
+    }
 
     override fun onDraw(canvas: Canvas) {
-        loadKeyCodes()
         super.onDraw(canvas)
 
         this.canvas = canvas
         drawSubKeys(this.canvas)
+        drawLanguageOnSpaceBar(this.canvas)
     }
 
     override fun onLongPress(popupKey: Keyboard.Key?): Boolean {
@@ -38,11 +55,9 @@ class GwaKeyboardView constructor(
         when (primaryCode) {
             KEYCODE_SPACE -> {
                 val builder = AlertDialog.Builder(context)
-                // Load languages from the array resources.
-                val languages = resources.getStringArray(R.array.languages)
                 builder.setTitle(context.getString(R.string.language_picker_title))
-                builder.setItems(languages, { _, itemIdx ->
-                    context.showToast(String.format("You picked %s", languages[itemIdx]))
+                builder.setItems(languages.toTypedArray(), { _, itemIdx ->
+                    onLanguageSelectionListener?.onLanguageSelected(itemIdx)
                 })
 
                 // Create the dialog that overlays over the keyboard.
@@ -66,24 +81,46 @@ class GwaKeyboardView constructor(
         return super.onLongPress(popupKey)
     }
 
-    private fun drawSubKeys(canvas: Canvas?) {
+    private fun drawSubKeys(canvas: Canvas) {
         if (keyboard != null) {
             for (i in 0 until keyboard.keys.size) {
                 val key = keyboard.keys[i] as GwaKeyboardKey
                 if (key.subLabel != null) {
-                    val subKeyPaint = Paint()
+                    val subKeyPaint = textPaint
                     subKeyPaint.color = resources.getColor(R.color.subKeyTextColor)
-                    subKeyPaint.textSize = 30f
+                    subKeyPaint.typeface = Typeface.DEFAULT
+                    subKeyPaint.textSize = BaseTextSize
                     val paddingX = key.width * 0.35
                     val paddingY = key.height * 0.35
                     val startX = (key.width + key.x - paddingX).toFloat()
                     val startY = (paddingY + key.y).toFloat()
-                    canvas?.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
+                    canvas.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
                 }
             }
         }
     }
 
+    private fun drawLanguageOnSpaceBar(canvas: Canvas) {
+        keyboard?.let {
+            for (i in 0 until keyboard.keys.size) {
+                val key = keyboard.keys[i] as GwaKeyboardKey
+                if (key.codes.isNotEmpty() && key.codes[0] == KEYCODE_SPACE) {
+                    val languagePaint = textPaint
+                    languagePaint.color = resources.getColor(R.color.languageTextColor)
+                    languagePaint.typeface = Typeface.DEFAULT
+                    languagePaint.textSize = BaseTextSize * 1.5f
+                    languagePaint.textAlign = Paint.Align.CENTER
+                    val startX = key.x.toFloat() + key.width * 0.5f
+                    val startY = key.y.toFloat() + key.height * 0.7f
+                    canvas.drawText(
+                            currentLanguage,
+                            startX,
+                            startY,
+                            languagePaint)
+                }
+            }
+        }
+    }
 
     private fun loadKeyCodes() {
         KEYCODE_SPACE = resources.getInteger(R.integer.keycode_space)
@@ -95,3 +132,6 @@ class GwaKeyboardView constructor(
     }
 }
 
+interface OnLanguageSelectionListener {
+    fun onLanguageSelected(languageIdx: Int)
+}
