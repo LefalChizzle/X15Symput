@@ -9,11 +9,13 @@
         <item>English</item>
         <item>@xml/qwerty</item>
         <item>@xml/qwerty_shift</item>
+        <item>@xml/qwerty_symbol</item>
     </array>
 
     <array name="lisu">
         <item>LISU</item>
         <item>@xml/lisu</item>
         <item>@xml/lisu_shift</item>
+        <item>@xml/symbol</item>
     </array>
 </resources>

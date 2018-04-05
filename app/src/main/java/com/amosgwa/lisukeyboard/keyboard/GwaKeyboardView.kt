@@ -11,9 +11,8 @@ import android.os.Build
 import android.util.AttributeSet
 import com.amosgwa.lisukeyboard.R
 import android.view.WindowManager
-import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 import android.graphics.Typeface
-import com.amosgwa.lisukeyboard.extensions.showToast
+import android.util.Log
 
 
 /**
@@ -27,7 +26,7 @@ class GwaKeyboardView constructor(
 
     private var canvas: Canvas = Canvas()
     private var textPaint = Paint()
-    private val BaseTextSize = 30f
+    private val baseTextSize = 30f
 
     var currentLanguage: String = ""
     var languages: List<String> = mutableListOf()
@@ -44,6 +43,8 @@ class GwaKeyboardView constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        count++
+        Log.d("///AMOS", "Drawing" + count.toString())
 
         this.canvas = canvas
         drawSubKeys(this.canvas)
@@ -89,11 +90,11 @@ class GwaKeyboardView constructor(
                     val subKeyPaint = textPaint
                     subKeyPaint.color = resources.getColor(R.color.subKeyTextColor)
                     subKeyPaint.typeface = Typeface.DEFAULT
-                    subKeyPaint.textSize = BaseTextSize
-                    val paddingX = key.width * 0.35
-                    val paddingY = key.height * 0.35
-                    val startX = (key.width + key.x - paddingX).toFloat()
-                    val startY = (paddingY + key.y).toFloat()
+                    subKeyPaint.textSize = baseTextSize
+                    val paddingX = key.width * resources.getFraction(R.fraction.sub_key_padding_x_fraction, 1, 1)
+                    val paddingY = key.height * resources.getFraction(R.fraction.sub_key_padding_y_fraction, 1, 1)
+                    val startX = key.width + key.x - paddingX
+                    val startY = paddingY + key.y
                     canvas.drawText(key.subLabel as String?, startX, startY, subKeyPaint)
                 }
             }
@@ -108,7 +109,7 @@ class GwaKeyboardView constructor(
                     val languagePaint = textPaint
                     languagePaint.color = resources.getColor(R.color.languageTextColor)
                     languagePaint.typeface = Typeface.DEFAULT
-                    languagePaint.textSize = BaseTextSize * 1.5f
+                    languagePaint.textSize = baseTextSize * 1.5f
                     languagePaint.textAlign = Paint.Align.CENTER
                     val startX = key.x.toFloat() + key.width * 0.5f
                     val startY = key.y.toFloat() + key.height * 0.7f
@@ -129,6 +130,7 @@ class GwaKeyboardView constructor(
     companion object {
         var KEYCODE_NONE = -777
         var KEYCODE_SPACE = KEYCODE_NONE
+        var count = 0
     }
 }
 

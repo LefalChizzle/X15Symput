@@ -21,11 +21,12 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private var keyboardView: GwaKeyboardView? = null
     private var keyboardNormal: GwaKeyboard? = null
     private var keyboardShift: GwaKeyboard? = null
-    private var keyboard123: GwaKeyboard? = null
+    private var keyboardSymbol: GwaKeyboard? = null
 
     private var languageNames: MutableList<String> = mutableListOf()
     private var languageXmlRes: MutableList<Int> = mutableListOf()
     private var languageShiftXmlRes: MutableList<Int> = mutableListOf()
+    private var languageSymbolXmlRes: MutableList<Int> = mutableListOf()
 
     private var preferences: KeyboardPreferences? = null
     private var lastSavedLanguageIdx: Int = 0
@@ -35,6 +36,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
             keyboardNormal = GwaKeyboard(this@LISUKeyboard, languageXmlRes[value], TYPE_NORMAL)
             keyboardShift = GwaKeyboard(this@LISUKeyboard, languageShiftXmlRes[value], TYPE_SHIFT)
+            keyboardSymbol = GwaKeyboard(this@LISUKeyboard, languageSymbolXmlRes[value], TYPE_SYMBOL)
             keyboardView?.keyboard = keyboardNormal
             keyboardView?.currentLanguage = languageNames[value]
             keyboardView?.invalidateAllKeys()
@@ -42,7 +44,6 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
 
     override fun onCreate() {
         super.onCreate()
-        loadSharedPreferences()
         loadKeyCodes()
         loadLanguages()
     }
@@ -54,14 +55,16 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     }
 
     override fun onCreateInputView(): View? {
+        loadSharedPreferences()
         keyboardNormal = GwaKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
         keyboardShift = GwaKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
-        keyboard123 = GwaKeyboard(this, R.xml.symbol, TYPE_SYMBOL)
-        setupKeyboardView()
+        keyboardSymbol = GwaKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
+        keyboardSymbol = GwaKeyboard(this, R.xml.symbol, TYPE_SYMBOL)
+        initialSetupKeyboardView()
         return keyboardView
     }
 
-    private fun setupKeyboardView() {
+    private fun initialSetupKeyboardView() {
         // Setup keyboard view.
         keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as GwaKeyboardView?
         keyboardView?.languages = languageNames
@@ -91,18 +94,21 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 val nameIdx = 0
                 val resIdx = 1
                 val shiftResIdx = 2
+                val symbolResIdx = 2
 
                 val languageName = it.getString(nameIdx)
                 val xmlRes = it.getResourceId(resIdx, -1)
                 val shiftXmlRes = it.getResourceId(shiftResIdx, -1)
+                val symbolXmlRes = it.getResourceId(symbolResIdx, -1)
 
-                if (languageName == null || xmlRes == -1 || shiftXmlRes == -1) {
+                if (languageName == null || xmlRes == -1 || shiftXmlRes == -1 || symbolXmlRes == -1) {
                     throw IllegalStateException("Make sure the arrays resources contain name, xml, and shift xml")
                 }
 
                 languageNames.add(languageName)
                 languageXmlRes.add(xmlRes)
                 languageShiftXmlRes.add(shiftXmlRes)
+                languageSymbolXmlRes.add(symbolXmlRes)
             }
         }
         if (eachLanguageTypedArray != null) {
@@ -152,12 +158,12 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 return
             }
             KEYCODE_123 -> {
-                keyboardView?.keyboard = keyboard123
+                keyboardView?.keyboard = keyboardSymbol
                 keyboardView?.invalidateAllKeys()
                 return
             }
             KEYCODE_123 -> {
-                keyboardView?.keyboard = keyboard123
+                keyboardView?.keyboard = keyboardSymbol
                 keyboardView?.invalidateAllKeys()
                 return
             }

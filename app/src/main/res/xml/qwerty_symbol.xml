@@ -146,7 +146,7 @@
         <Key
             android:codes="@integer/keycode_abc"
             android:keyEdgeFlags="left"
-            android:keyLabel="ꓐꓑꓒ"
+            android:keyLabel="ABC"
             android:keyWidth="15%p" />
         <Key
             android:codes="@integer/keycode_switch_next_keyboard"

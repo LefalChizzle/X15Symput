@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <fraction name="sub_key_padding_x_fraction">20%</fraction>
+    <fraction name="sub_key_padding_y_fraction">45%</fraction>
+</resources>

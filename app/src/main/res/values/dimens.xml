@@ -2,5 +2,4 @@
 <resources>
     <dimen name="key_height">60dp</dimen>
     <dimen name="bottom_keys_height">65dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
 </resources>
