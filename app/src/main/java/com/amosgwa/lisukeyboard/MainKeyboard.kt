@@ -16,7 +16,7 @@ import android.content.res.TypedArray
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 
 
-class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
+class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
     private var keyboardView: GwaKeyboardView? = null
     private var keyboardNormal: GwaKeyboard? = null
@@ -34,9 +34,9 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         set(value) {
             field = value
             preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
-            keyboardNormal = GwaKeyboard(this@LISUKeyboard, languageXmlRes[value], TYPE_NORMAL)
-            keyboardShift = GwaKeyboard(this@LISUKeyboard, languageShiftXmlRes[value], TYPE_SHIFT)
-            keyboardSymbol = GwaKeyboard(this@LISUKeyboard, languageSymbolXmlRes[value], TYPE_SYMBOL)
+            keyboardNormal = GwaKeyboard(this@MainKeyboard, languageXmlRes[value], TYPE_NORMAL)
+            keyboardShift = GwaKeyboard(this@MainKeyboard, languageShiftXmlRes[value], TYPE_SHIFT)
+            keyboardSymbol = GwaKeyboard(this@MainKeyboard, languageSymbolXmlRes[value], TYPE_SYMBOL)
             keyboardView?.keyboard = keyboardNormal
             keyboardView?.currentLanguage = languageNames[value]
             keyboardView?.invalidateAllKeys()
@@ -59,7 +59,6 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         keyboardNormal = GwaKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
         keyboardShift = GwaKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
         keyboardSymbol = GwaKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
-        keyboardSymbol = GwaKeyboard(this, R.xml.symbol, TYPE_SYMBOL)
         initialSetupKeyboardView()
         return keyboardView
     }
@@ -71,6 +70,7 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         keyboardView?.currentLanguage = languageNames[lastSavedLanguageIdx]
         keyboardView?.onLanguageSelectionListener = object : OnLanguageSelectionListener {
             override fun onLanguageSelected(languageIdx: Int) {
+                currentInputConnection.deleteSurroundingText(1, 0)
                 currentLanguageIdx = languageIdx
             }
         }
@@ -92,14 +92,11 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             eachLanguageTypedArray = resources.obtainTypedArray(id)
             eachLanguageTypedArray?.let {
                 val nameIdx = 0
-                val resIdx = 1
-                val shiftResIdx = 2
-                val symbolResIdx = 2
 
                 val languageName = it.getString(nameIdx)
-                val xmlRes = it.getResourceId(resIdx, -1)
-                val shiftXmlRes = it.getResourceId(shiftResIdx, -1)
-                val symbolXmlRes = it.getResourceId(symbolResIdx, -1)
+                val xmlRes = it.getResourceId(RES_IDX, -1)
+                val shiftXmlRes = it.getResourceId(SHIFT_IDX, -1)
+                val symbolXmlRes = it.getResourceId(SYM_IDX, -1)
 
                 if (languageName == null || xmlRes == -1 || shiftXmlRes == -1 || symbolXmlRes == -1) {
                     throw IllegalStateException("Make sure the arrays resources contain name, xml, and shift xml")
@@ -140,7 +137,16 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         playClick(primaryCode)
         when (primaryCode) {
             Keyboard.KEYCODE_DELETE -> {
-                inputConnection.deleteSurroundingText(1, 0)
+                val selectedText: CharSequence? = inputConnection.getSelectedText(0)
+                if (selectedText == null) {
+                    inputConnection.deleteSurroundingText(1, 0)
+                } else {
+                    if (selectedText.isEmpty()) {
+                        inputConnection.deleteSurroundingText(1, 0)
+                    } else {
+                        inputConnection.commitText("", 1)
+                    }
+                }
             }
             KEYCODE_ABC -> {
                 keyboardView?.keyboard = keyboardNormal
@@ -239,5 +245,10 @@ class LISUKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         const val TYPE_NORMAL = 0
         const val TYPE_SHIFT = 1
         const val TYPE_SYMBOL = 2
+
+
+        const val RES_IDX = 1
+        const val SHIFT_IDX = 2
+        const val SYM_IDX = 3
     }
 }

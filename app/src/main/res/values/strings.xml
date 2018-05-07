@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">lisuKeyboard</string>
-    <string name="language_picker_title">Pick a language</string>
+    <string name="language_picker_title">Change language</string>
 </resources>

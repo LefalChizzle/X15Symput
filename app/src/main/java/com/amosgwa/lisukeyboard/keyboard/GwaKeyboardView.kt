@@ -13,7 +13,7 @@ import com.amosgwa.lisukeyboard.R
 import android.view.WindowManager
 import android.graphics.Typeface
 import android.util.Log
-
+import com.amosgwa.lisukeyboard.BuildConfig
 
 /**
  * Created by Amos Gwa on 2/18/2018.
@@ -43,8 +43,10 @@ class GwaKeyboardView constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        count++
-        Log.d("///AMOS", "Drawing" + count.toString())
+        if (BuildConfig.DEBUG) {
+            count++
+            Log.d("///AMOS", "Drawing" + count.toString())
+        }
 
         this.canvas = canvas
         drawSubKeys(this.canvas)
@@ -55,31 +57,36 @@ class GwaKeyboardView constructor(
         val primaryCode = popupKey?.codes?.get(0)
         when (primaryCode) {
             KEYCODE_SPACE -> {
-                val builder = AlertDialog.Builder(context)
-                builder.setTitle(context.getString(R.string.language_picker_title))
-                builder.setItems(languages.toTypedArray(), { _, itemIdx ->
-                    onLanguageSelectionListener?.onLanguageSelected(itemIdx)
-                })
-
-                // Create the dialog that overlays over the keyboard.
-                val alert = builder.create()
-                val window = alert.window
-                val lp = window.attributes
-                lp.token = windowToken
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-                } else {
-                    lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
-                }
-                window.setFormat(PixelFormat.OPAQUE)
-                window.setDimAmount(0.5F)
-                window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM or
-                        WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                alert.show()
-                return false
+                showLanguagePicker()
+                return true
             }
         }
         return super.onLongPress(popupKey)
+    }
+
+    private fun showLanguagePicker() {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(context.getString(R.string.language_picker_title))
+        builder.setItems(languages.toTypedArray(), { _, itemIdx ->
+            onLanguageSelectionListener?.onLanguageSelected(itemIdx)
+        })
+
+        // Create the dialog that overlays over the keyboard.
+        val alert = builder.create()
+        val window = alert.window
+        val lp = window.attributes
+        lp.token = windowToken
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            lp.type = WindowManager.LayoutParams.TYPE_PHONE
+        }
+
+        window.setFormat(PixelFormat.OPAQUE)
+        window.setDimAmount(0.5F)
+        window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM or
+                WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        alert.show()
     }
 
     private fun drawSubKeys(canvas: Canvas) {
