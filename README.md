@@ -11,7 +11,18 @@ lisuKeyboard is an opensource Android custom keyboard for Lisu Language using Ko
 </p>
 
 # Contribution/Forking
-I would be very grateful if you are willing to contribute to this project. There are a lot of optimizations to be done.Then, feel free to modify and create your own custom keyboard using this. I just would like to request for credit should you have created a new keyboard based on this repo. :)
+I would be very grateful if you are willing to contribute to this project. There are a lot of optimizations to be done.Then, I would love to get your feedbacks!
 
 # To Do
 - Create a setting page
+
+# License
+MIT License
+
+Copyright (c) 2018 AmosGwa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
