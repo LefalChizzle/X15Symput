@@ -1,19 +1,21 @@
 package com.amosgwa.lisukeyboard.keyboard
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PixelFormat
+import android.content.Intent
+import android.databinding.DataBindingUtil
+import android.graphics.*
 import android.inputmethodservice.Keyboard
 import android.inputmethodservice.KeyboardView
-import android.os.Build
 import android.util.AttributeSet
 import com.amosgwa.lisukeyboard.R
-import android.view.WindowManager
-import android.graphics.Typeface
 import android.util.Log
 import com.amosgwa.lisukeyboard.BuildConfig
+import android.os.Build
+import android.view.*
+import com.amosgwa.lisukeyboard.databinding.LanguagePickerDialogBinding
+import com.amosgwa.lisukeyboard.view.LanguagePickerActivity
+
 
 /**
  * Created by Amos Gwa on 2/18/2018.
@@ -27,6 +29,8 @@ class GwaKeyboardView constructor(
     private var canvas: Canvas = Canvas()
     private var textPaint = Paint()
     private val baseTextSize = 30f
+
+    var alert: CustomDialog? = null
 
     var currentLanguage: String = ""
     var languages: List<String> = mutableListOf()
@@ -64,29 +68,184 @@ class GwaKeyboardView constructor(
         return super.onLongPress(popupKey)
     }
 
-    private fun showLanguagePicker() {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(context.getString(R.string.language_picker_title))
-        builder.setItems(languages.toTypedArray(), { _, itemIdx ->
-            onLanguageSelectionListener?.onLanguageSelected(itemIdx)
-        })
+    private fun startLanguagePickerDialogActivity() {
+        val dialogIntent = Intent(context, LanguagePickerActivity::class.java)
+        context.startActivity(dialogIntent)
+    }
 
-        // Create the dialog that overlays over the keyboard.
-        val alert = builder.create()
-        val window = alert.window
+    private fun createLanguagePickerDialog(): CustomDialog {
+        val dialog = CustomDialog(context)
+        dialog.setTitle("Change language")
+        val hovering = false
+        val showing = false
+        val window = dialog.window
+        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+        dialog.setCanceledOnTouchOutside(true)
+        val res = context.resources
         val lp = window.attributes
         lp.token = windowToken
+        lp.format = PixelFormat.TRANSLUCENT
+        lp.title = "Choose Language"
+        lp.gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
+        lp.windowAnimations = -1
+//        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
             lp.type = WindowManager.LayoutParams.TYPE_PHONE
         }
+//
+//
+        val dialogBinding = DataBindingUtil.inflate<LanguagePickerDialogBinding>(LayoutInflater.from(context), R.layout.language_picker_dialog, null, false)
+        dialog.setContentView(dialogBinding.root)
 
-        window.setFormat(PixelFormat.OPAQUE)
-        window.setDimAmount(0.5F)
-        window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM or
-                WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-        alert.show()
+        dialogBinding.root.setOnClickListener(OnClickListener {
+            Log.d("///Dialog","Tapped")
+            dialog.dismiss()
+        })
+//        dialog.setContentView(R.layout.language_picker_dialog)
+        return dialog
+//
+//        val mDialogView = dialog.findViewById(R.id.volume_dialog) as ViewGroup
+//        mDialogView.setOnHoverListener(object : View.OnHoverListener() {
+//            fun onHover(v: View, event: MotionEvent): Boolean {
+//                val action = event.actionMasked
+//                hovering = action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_MOVE
+//                rescheduleTimeoutH()
+//                return true
+//            }
+//        })
+//        mDialogContentView = dialog.findViewById(R.id.volume_dialog_content)
+//        mDialogRowsView = mDialogContentView.findViewById(R.id.volume_dialog_rows)
+//        mExpanded = false
+//        mExpandButton = mDialogView.findViewById(R.id.volume_expand_button) as ImageButton
+//        mExpandButton.setOnClickListener(mClickExpand)
+//        mExpandButton.setVisibility(
+//                if (AudioSystem.isSingleVolume(context)) View.GONE else View.VISIBLE)
+//        updateWindowWidthH()
+//        updateExpandButtonH()
+//        mMotion = VolumeDialogMotion(dialog, mDialogView, mDialogContentView, mExpandButton,
+//                object : VolumeDialogMotion.Callback() {
+//                    fun onAnimatingChanged(animating: Boolean) {
+//                        if (animating) return
+//                        if (mPendingStateChanged) {
+//                            mHandler.sendEmptyMessage(H.STATE_CHANGED)
+//                            mPendingStateChanged = false
+//                        }
+//                        if (mPendingRecheckAll) {
+//                            mHandler.sendEmptyMessage(H.RECHECK_ALL)
+//                            mPendingRecheckAll = false
+//                        }
+//                    }
+//                })
+//        if (mRows.isEmpty()) {
+//            addRow(AudioManager.STREAM_MUSIC,
+//                    R.drawable.ic_volume_media, R.drawable.ic_volume_media_mute, true)
+//            if (!AudioSystem.isSingleVolume(context)) {
+//                addRow(AudioManager.STREAM_RING,
+//                        R.drawable.ic_volume_ringer, R.drawable.ic_volume_ringer_mute, true)
+//                addRow(AudioManager.STREAM_ALARM,
+//                        R.drawable.ic_volume_alarm, R.drawable.ic_volume_alarm_mute, false)
+//                addRow(AudioManager.STREAM_VOICE_CALL,
+//                        R.drawable.ic_volume_voice, R.drawable.ic_volume_voice, false)
+//                addRow(AudioManager.STREAM_BLUETOOTH_SCO,
+//                        R.drawable.ic_volume_bt_sco, R.drawable.ic_volume_bt_sco, false)
+//                addRow(AudioManager.STREAM_SYSTEM,
+//                        R.drawable.ic_volume_system, R.drawable.ic_volume_system_mute, false)
+//                addRow(AudioManager.STREAM_ACCESSIBILITY, R.drawable.ic_volume_accessibility,
+//                        R.drawable.ic_volume_accessibility, true)
+//            }
+//        } else {
+//            addExistingRows()
+//        }
+//        mExpandButtonAnimationDuration = res.getInteger(R.integer.volume_expand_animation_duration)
+//        mZenFooter = dialog.findViewById(R.id.volume_zen_footer) as ZenFooter
+//        mZenFooter.init(mZenModeController)
+//        mZenPanel = dialog.findViewById(R.id.tuner_zen_mode_panel) as TunerZenModePanel
+//        mZenPanel.init(mZenModeController)
+//        mZenPanel.setCallback(mZenPanelCallback)
+    }
+
+
+    private fun showLanguagePicker() {
+//        val builder = AlertDialog.Builder(context)
+//        builder.setTitle(context.getString(R.string.language_picker_title))
+//        builder.setItems(languages.toTypedArray(), { _, itemIdx ->
+//            onLanguageSelectionListener?.onLanguageSelected(itemIdx)
+//        })
+//
+//        // Create the dialog that overlays over the keyboard.
+//        alert = builder.create() as CustomDialog
+//        alert?.let {
+//            val window = it.window
+//            val lp = window.attributes
+//            lp.token = windowToken
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//            } else {
+//                lp.type = WindowManager.LayoutParams.TYPE_PHONE
+//            }
+//
+//            window.setFormat(PixelFormat.OPAQUE)
+//            window.setDimAmount(0.5F)
+//            window.addFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or
+//                    WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+//            it.show()
+//        }
+
+//        createLanguagePickerDialog().show()
+        startLanguagePickerDialogActivity()
+    }
+
+    class CustomDialog(context: Context?) : Dialog(context) {
+        override fun onTouchEvent(event: MotionEvent?): Boolean {
+            if (isShowing) {
+                if (event?.action == MotionEvent.ACTION_OUTSIDE) {
+                    dismiss()
+                    return true
+                }
+            }
+            return super.onTouchEvent(event)
+        }
+
+        override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+            if(event?.keyCode != KeyEvent.KEYCODE_UNKNOWN) {
+                dismiss();
+            }
+            return super.dispatchKeyEvent(event)
+        }
+
+        override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+            return super.dispatchTouchEvent(ev)
+        }
+
+        class Builder {
+
+        }
+    }
+//
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//
+//     if (event?.keyCode != KeyEvent.KEYCODE_UNKNOWN) {
+//            alert?.dismiss()
+//            return true
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
+
+    override fun onDisplayHint(hint: Int) {
+        super.onDisplayHint(hint)
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        if (event?.keyCode != KeyEvent.KEYCODE_UNKNOWN) {
+            alert?.dismiss()
+            return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     private fun drawSubKeys(canvas: Canvas) {

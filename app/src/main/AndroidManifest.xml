@@ -36,5 +36,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".view.LanguagePickerActivity"
+            android:documentLaunchMode="always"
+            android:excludeFromRecents="true"
+            android:screenOrientation="behind"
+            android:theme="@style/Theme.UserDialog"
+            android:windowSoftInputMode="stateUnchanged" />
     </application>
 </manifest>
