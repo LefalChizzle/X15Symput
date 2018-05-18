@@ -13,7 +13,9 @@ import com.amosgwa.lisukeyboard.keyboard.GwaKeyboard
 import com.amosgwa.lisukeyboard.keyboard.GwaKeyboardView
 import com.amosgwa.lisukeyboard.keyboard.OnLanguageSelectionListener
 import android.content.res.TypedArray
+import android.view.ViewGroup
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
+import com.amosgwa.lisukeyboard.view.CustomKeyboardView
 
 
 class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
@@ -54,13 +56,36 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 ?: 0
     }
 
+    override fun onCreateCandidatesView(): View? {
+        return null
+    }
+
     override fun onCreateInputView(): View? {
         loadSharedPreferences()
         keyboardNormal = GwaKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
         keyboardShift = GwaKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
         keyboardSymbol = GwaKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
         initialSetupKeyboardView()
-        return keyboardView
+//        return keyboardView
+        return CustomKeyboardView(applicationContext)
+    }
+
+    override fun setInputView(view: View?) {
+        super.setInputView(view)
+        view?.let {
+            disableParentClipping(view)
+        }
+    }
+
+    private fun disableParentClipping(v: View) {
+        if (v is ViewGroup) {
+            v.clipToPadding = false
+            v.clipChildren = false
+        }
+        val parent = v.parent ?: return
+        if (parent is View) {
+            disableParentClipping(parent)
+        }
     }
 
     private fun initialSetupKeyboardView() {

@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="GwaKeyboardKey">
+
+    <declare-styleable name="GlobalAttrDeclare">
+        <attr name="text" format="string" />
+        <attr name="textColor" format="color" />
+        <attr name="textSize" format="dimension" />
         <attr name="subLabel" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="GwaKeyboardKey">
+        <attr name="subLabel" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomKeyView">
+        <attr name="text" />
+        <attr name="textColor" />
+        <attr name="textSize" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomKey">
+        <attr name="subLabel" />
     </declare-styleable>
 </resources>
