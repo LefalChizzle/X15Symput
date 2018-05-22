@@ -12,6 +12,7 @@ import android.view.*
 import android.util.DisplayMetrics
 import com.amosgwa.lisukeyboard.keyboard.CustomKey
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
+import com.amosgwa.lisukeyboard.keyboard.CustomRow
 
 
 class CustomKeyboardView @JvmOverloads constructor(
@@ -46,13 +47,38 @@ class CustomKeyboardView @JvmOverloads constructor(
         orientation = VERTICAL
 
         // Create key views and add them to this view
-        keyboard?.let {
-            populateRowsAndKeys(it)
-            populateKeyViews()
+        CustomKeyboard.rows.let {
+            populateKeyViews(it)
         }
 
         // Set listener to the keyboard
         setOnTouchListener(this)
+    }
+
+    private fun populateKeyViews(rows: List<CustomRow>) {
+        for (row in rows) {
+            val rowLinearLayout = LinearLayout(context)
+            rowLinearLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            rowLinearLayout.orientation = HORIZONTAL
+            if (row.keys == null) return
+            for (key in row.keys) {
+                val keyView = CustomKeyView(
+                        context,
+                        codes = key.codes,
+                        textColor = keyTextColor,
+                        background = keyBackground
+                )
+                keyView.layoutParams = LinearLayout.LayoutParams(
+                        0,
+                        key.height,
+                        1.0f
+                )
+                // Keeps track of all of the key views
+                keyViews.add(keyView)
+                rowLinearLayout.addView(keyViews.last())
+            }
+            this.addView(rowLinearLayout)
+        }
     }
 
     private fun populateRowsAndKeys(keyboard: Keyboard) {
