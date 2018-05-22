@@ -26,10 +26,6 @@ class CustomKeyView @JvmOverloads constructor(
         // recycle the typed array
         a.recycle()
 
-        // Disable clipping
-        this.clipChildren = false
-        this.clipToPadding = false
-
         keyTextView.text = text
         keyTextView.textAlignment = View.TEXT_ALIGNMENT_CENTER
         addView(keyTextView)

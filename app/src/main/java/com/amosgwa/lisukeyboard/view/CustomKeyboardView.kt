@@ -2,6 +2,8 @@ package com.amosgwa.lisukeyboard.view
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.inputmethodservice.Keyboard
+import android.inputmethodservice.KeyboardView
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.util.AttributeSet
@@ -9,10 +11,12 @@ import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.databinding.CustomKeyboardViewBinding
 import android.view.*
+import com.amosgwa.lisukeyboard.keyboard.GwaKeyboard
 
 
 class CustomKeyboardView @JvmOverloads constructor(
         context: Context,
+        val keyboard: GwaKeyboard,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), View.OnTouchListener {
@@ -25,10 +29,8 @@ class CustomKeyboardView @JvmOverloads constructor(
     //TODO Add setKeyBoard in MainKeyboard
 
     init {
-        this.clipChildren = false
-        this.clipToPadding = false
         background = context.getDrawable(R.color.pink)
-        setOnTouchListener(this)
+        setOnTouchListener(this) // Set listener to the keyboard
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -76,5 +78,12 @@ class CustomKeyboardView @JvmOverloads constructor(
 
     companion object {
         var pointers = 0
+    }
+
+    interface OnKeyboardActionListener {
+        fun onPress()
+        fun onKey()
+        fun onRelease()
+        fun onSwipe()
     }
 }

@@ -21,9 +21,11 @@ import com.amosgwa.lisukeyboard.view.CustomKeyboardView
 class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
     private var keyboardView: GwaKeyboardView? = null
-    private var keyboardNormal: GwaKeyboard? = null
+    private lateinit var keyboardNormal: GwaKeyboard
     private var keyboardShift: GwaKeyboard? = null
     private var keyboardSymbol: GwaKeyboard? = null
+
+    private var customKeyboardView: CustomKeyboardView? = null
 
     private var languageNames: MutableList<String> = mutableListOf()
     private var languageXmlRes: MutableList<Int> = mutableListOf()
@@ -35,13 +37,13 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private var currentLanguageIdx: Int = 0
         set(value) {
             field = value
-            preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
-            keyboardNormal = GwaKeyboard(this@MainKeyboard, languageXmlRes[value], TYPE_NORMAL)
-            keyboardShift = GwaKeyboard(this@MainKeyboard, languageShiftXmlRes[value], TYPE_SHIFT)
-            keyboardSymbol = GwaKeyboard(this@MainKeyboard, languageSymbolXmlRes[value], TYPE_SYMBOL)
-            keyboardView?.keyboard = keyboardNormal
-            keyboardView?.currentLanguage = languageNames[value]
-            keyboardView?.invalidateAllKeys()
+//            preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
+//            keyboardNormal = GwaKeyboard(applicationContext, languageXmlRes[value], TYPE_NORMAL)
+//            keyboardShift = GwaKeyboard(applicationContext, languageShiftXmlRes[value], TYPE_SHIFT)
+//            keyboardSymbol = GwaKeyboard(applicationContext, languageSymbolXmlRes[value], TYPE_SYMBOL)
+//            keyboardView?.keyboard = keyboardNormal
+//            keyboardView?.currentLanguage = languageNames[value]
+//            keyboardView?.invalidateAllKeys()
         }
 
     override fun onCreate() {
@@ -65,46 +67,32 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         keyboardNormal = GwaKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
         keyboardShift = GwaKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
         keyboardSymbol = GwaKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
-        initialSetupKeyboardView()
+
+//        initialSetupKeyboardView()
 //        return keyboardView
-        return CustomKeyboardView(applicationContext)
-    }
 
-    override fun setInputView(view: View?) {
-        super.setInputView(view)
-        view?.let {
-            disableParentClipping(view)
-        }
+        customKeyboardView = CustomKeyboardView(applicationContext, keyboard = keyboardNormal)
+        return customKeyboardView
     }
-
-    private fun disableParentClipping(v: View) {
-        if (v is ViewGroup) {
-            v.clipToPadding = false
-            v.clipChildren = false
-        }
-        val parent = v.parent ?: return
-        if (parent is View) {
-            disableParentClipping(parent)
-        }
-    }
-
-    private fun initialSetupKeyboardView() {
-        // Setup keyboard view.
-        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as GwaKeyboardView?
-        keyboardView?.languages = languageNames
-        keyboardView?.currentLanguage = languageNames[lastSavedLanguageIdx]
-        keyboardView?.onLanguageSelectionListener = object : OnLanguageSelectionListener {
-            override fun onLanguageSelected(languageIdx: Int) {
-                currentInputConnection.deleteSurroundingText(1, 0)
-                currentLanguageIdx = languageIdx
-            }
-        }
-        // Disable preview for keyboard
-        keyboardView?.isPreviewEnabled = false
-        keyboardView?.setOnKeyboardActionListener(this)
-        // Set the default view to keyboard normal.
-        keyboardView?.keyboard = keyboardNormal
-    }
+//
+//    private fun initialSetupKeyboardView() {
+//        // Setup keyboard view.
+//        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as GwaKeyboardView?
+//        keyboardView?.languages = languageNames
+//        keyboardView?.currentLanguage = languageNames[lastSavedLanguageIdx]
+//        keyboardView?.onLanguageSelectionListener = object : OnLanguageSelectionListener {
+//            override fun onLanguageSelected(languageIdx: Int) {
+//                currentInputConnection.deleteSurroundingText(1, 0)
+//                currentLanguageIdx = languageIdx
+//            }
+//        }
+//        // Disable preview for keyboard
+//        keyboardView?.isPreviewEnabled = false
+//        keyboardView?.setOnKeyboardActionListener(this)
+//        // Set the default view to keyboard normal.
+//        keyboardView?.keyboard = keyboardNormal
+//
+//    }
 
     private fun loadLanguages() {
         val languagesArray = resources.obtainTypedArray(R.array.languages)
