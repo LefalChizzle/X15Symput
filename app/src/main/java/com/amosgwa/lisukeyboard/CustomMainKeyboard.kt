@@ -15,17 +15,14 @@ import com.amosgwa.lisukeyboard.keyboard.OnLanguageSelectionListener
 import android.content.res.TypedArray
 import android.view.ViewGroup
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
+import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.CustomKeyboardView
 
 
-class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
+class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
-    private var keyboardView: GwaKeyboardView? = null
-    private lateinit var keyboardNormal: GwaKeyboard
-    private var keyboardShift: GwaKeyboard? = null
-    private var keyboardSymbol: GwaKeyboard? = null
-
-    private var customKeyboardView: CustomKeyboardView? = null
+    private lateinit var keyboardNormal: CustomKeyboard
+    private lateinit var customKeyboardView: CustomKeyboardView
 
     private var languageNames: MutableList<String> = mutableListOf()
     private var languageXmlRes: MutableList<Int> = mutableListOf()
@@ -34,7 +31,6 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
 
     private var preferences: KeyboardPreferences? = null
     private var lastSavedLanguageIdx: Int = 0
-    private var currentLanguageIdx: Int = 0
         set(value) {
             field = value
 //            preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
@@ -50,46 +46,20 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         super.onCreate()
         loadKeyCodes()
         loadLanguages()
+        loadSharedPreferences()
     }
 
     private fun loadSharedPreferences() {
-        preferences = KeyboardPreferences(applicationContext)
-        lastSavedLanguageIdx = preferences?.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, 0)
-                ?: 0
-    }
-
-    override fun onCreateCandidatesView(): View? {
-        return null
+//        preferences = KeyboardPreferences(applicationContext)
+//        lastSavedLanguageIdx = preferences?.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, 0)
+//                ?: 0
     }
 
     override fun onCreateInputView(): View? {
-        loadSharedPreferences()
-        keyboardNormal = GwaKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
-        keyboardShift = GwaKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
-        keyboardSymbol = GwaKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
-
-//        initialSetupKeyboardView()
-        return keyboardView
+        keyboardNormal = CustomKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
+        customKeyboardView = CustomKeyboardView(applicationContext, keyboard = keyboardNormal)
+        return customKeyboardView
     }
-//
-//    private fun initialSetupKeyboardView() {
-//        // Setup keyboard view.
-//        keyboardView = layoutInflater.inflate(R.layout.keyboard, null) as GwaKeyboardView?
-//        keyboardView?.languages = languageNames
-//        keyboardView?.currentLanguage = languageNames[lastSavedLanguageIdx]
-//        keyboardView?.onLanguageSelectionListener = object : OnLanguageSelectionListener {
-//            override fun onLanguageSelected(languageIdx: Int) {
-//                currentInputConnection.deleteSurroundingText(1, 0)
-//                currentLanguageIdx = languageIdx
-//            }
-//        }
-//        // Disable preview for keyboard
-//        keyboardView?.isPreviewEnabled = false
-//        keyboardView?.setOnKeyboardActionListener(this)
-//        // Set the default view to keyboard normal.
-//        keyboardView?.keyboard = keyboardNormal
-//
-//    }
 
     private fun loadLanguages() {
         val languagesArray = resources.obtainTypedArray(R.array.languages)
@@ -159,28 +129,8 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 }
             }
             KEYCODE_ABC -> {
-                keyboardView?.keyboard = keyboardNormal
-                keyboardView?.invalidateAllKeys()
-                return
-            }
-            Keyboard.KEYCODE_SHIFT -> {
-                keyboardView?.keyboard = keyboardShift
-                keyboardView?.invalidateAllKeys()
-                return
-            }
-            KEYCODE_UNSHIFT -> {
-                keyboardView?.keyboard = keyboardNormal
-                keyboardView?.invalidateAllKeys()
-                return
-            }
-            KEYCODE_123 -> {
-                keyboardView?.keyboard = keyboardSymbol
-                keyboardView?.invalidateAllKeys()
-                return
-            }
-            KEYCODE_123 -> {
-                keyboardView?.keyboard = keyboardSymbol
-                keyboardView?.invalidateAllKeys()
+                customKeyboardView.keyboard = keyboardNormal
+                customKeyboardView.invalidate()
                 return
             }
             KEYCODE_MYA_TI_MYA_NA -> {
@@ -206,10 +156,9 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             }
         }
         // Switch back to normal if the selected page type is shift.
-        val keyboard = keyboardView?.keyboard as GwaKeyboard
-        if (keyboard.type == TYPE_SHIFT) {
-            keyboardView?.keyboard = keyboardNormal
-            keyboardView?.invalidateAllKeys()
+        if (customKeyboardView.keyboard?.type == TYPE_SHIFT) {
+            customKeyboardView.keyboard = keyboardNormal
+            customKeyboardView.invalidate()
         }
     }
 

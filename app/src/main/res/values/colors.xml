@@ -26,4 +26,8 @@
 
     <color name="keyPreviewBackgroundColor">@color/colorAccent</color>
     <color name="keyPreviewTextColor">@color/white</color>
+
+    <!--Custom Keyboard Colors-->
+    <color name="custom_keyboard_grey_medium">#cecece</color>
+    <color name="custom_keyboard_blue_dark">#37474f</color>
 </resources>

@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.amosgwa.lisukeyboard.keyboard.GwaKeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.amosgwa.lisukeyboard.view.CustomKeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/keyboardNormal"
     android:layout_width="match_parent"
-
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:keyBackground="@drawable/key_background"
     android:background="@color/grey"
-    android:keyPreviewLayout="@layout/key_preview"
-    android:paddingTop="5dp"
-
-    android:keyTextColor="@color/keyTextColor"
-    android:shadowRadius="0.0" />
+    app:keyBackground="@drawable/key_background"
+    app:keyTextColor="@color/keyTextColor" />
 
 
 

@@ -1,7 +1,10 @@
 package com.amosgwa.lisukeyboard.view
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
+import android.support.annotation.ColorInt
+import android.support.annotation.DrawableRes
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -13,22 +16,21 @@ import android.widget.TextView
 import com.amosgwa.lisukeyboard.R
 
 class CustomKeyView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr){
-    private val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyView)
-    private var text = a.getString(R.styleable.CustomKeyView_text)
-    private var textColor = a.getColor(R.styleable.CustomKeyView_textColor, context.getColor(R.color.blue_dark))
-    private var textSize = a.getDimensionPixelSize(R.styleable.CustomKeyView_textSize, 14)
-
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        var codes: IntArray? = null,
+        @ColorInt var textColor: Int? = null,
+        @DrawableRes var background: Int? = null
+) : FrameLayout(context, attrs, defStyleAttr) {
     private val keyTextView = CustomKeyTextView(context)
 
     init {
-        // recycle the typed array
-        a.recycle()
-
-        keyTextView.text = text
-        keyTextView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-        addView(keyTextView)
+        codes?.first()?.let {
+            keyTextView.text = it.toChar().toString()
+            keyTextView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            addView(keyTextView)
+        }
 //        setOnTouchListener(this)
     }
 
@@ -38,7 +40,7 @@ class CustomKeyView @JvmOverloads constructor(
 
 //    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
 
-        // Add margin top and bottom to the divider view to overlap over flight items.
+    // Add margin top and bottom to the divider view to overlap over flight items.
 //        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 //        val marginOffset = -keyTextView.height
 //        params.setMargins(0, marginOffset, 0, 0)
@@ -90,6 +92,7 @@ class CustomKeyPreview @JvmOverloads constructor(
 ) : TextView(context, attrs, defStyleAttr, defStyleRes) {
     var x = 0
     var y = 0
+
     init {
         this.height = height
     }

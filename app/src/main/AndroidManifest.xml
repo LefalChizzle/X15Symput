@@ -11,11 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <service
-            android:name=".MainKeyboard"
+            android:name=".CustomMainKeyboard"
             android:exported="false"
             android:label="LISUKeyboard"
             android:permission="android.permission.BIND_INPUT_METHOD">
+
             <meta-data
                 android:name="android.view.im"
                 android:resource="@xml/method" />
