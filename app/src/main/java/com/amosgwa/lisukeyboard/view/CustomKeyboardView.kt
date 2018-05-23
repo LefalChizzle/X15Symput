@@ -1,7 +1,11 @@
 package com.amosgwa.lisukeyboard.view
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.PixelFormat
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.inputmethodservice.Keyboard
 import android.os.Build
 import android.support.annotation.RequiresApi
@@ -10,68 +14,77 @@ import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.R
 import android.view.*
 import android.util.DisplayMetrics
+import android.util.Xml
 import com.amosgwa.lisukeyboard.keyboard.CustomKey
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
-import com.amosgwa.lisukeyboard.keyboard.CustomRow
-
 
 class CustomKeyboardView @JvmOverloads constructor(
         context: Context,
-        var keyboard: CustomKeyboard? = null,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), View.OnTouchListener {
-//    private val binding: CustomKeyboardViewBinding = CustomKeyboardViewBinding.inflate(LayoutInflater.from(context), this, true)
-
     private val renderedKeys = mutableListOf<CustomKeyPreview>()
 
     var currentX = 0
     var currentY = 0
 
-    /*
-    * Load the styles from the keyboard xml for the child keys. Keyboard should be the only place
-    * where we set the styles for the children views.
-    * */
-    private val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboardView)
-    private var keyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.custom_keyboard_blue_dark))
-    private var keyBackground = a.getResourceId(R.styleable.CustomKeyboardView_keyBackground, context.getColor(R.color.custom_keyboard_grey_medium))
+    var keyTextColor: Int = 0
+    var keyBackground: Drawable? = null
+
+    var keyboard: CustomKeyboard? = null
+        set(value) {
+            // Create key views and add them to this view
+            field = value
+            value?.let { keyboard ->
+                keyboard.getRows().let { rows ->
+                    populateKeyViews(keyboard, rows)
+                }
+            }
+            requestLayout()
+        }
 
     private var keys = mutableListOf<List<CustomKey>>()
     private var keyViews = mutableListOf<CustomKeyView>()
 
     init {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboardView)
+        /*
+        * Load the styles from the keyboard xml for the child keys. Keyboard should be the only place
+        * where we set the styles for the children views.
+        * */
+        keyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.default_key_text_color))
+        keyBackground = a.getDrawable(R.styleable.CustomKeyboardView_keyBackground)
+
         // recycle the typed array
         a.recycle()
 
         // Set orientation for the rows
         orientation = VERTICAL
 
-        // Create key views and add them to this view
-        CustomKeyboard.rows.let {
-            populateKeyViews(it)
-        }
+        // Clear the keys
+        keys.clear()
 
         // Set listener to the keyboard
         setOnTouchListener(this)
     }
 
-    private fun populateKeyViews(rows: List<CustomRow>) {
+    private fun populateKeyViews(keyboard: Keyboard, rows: List<List<CustomKey>>) {
+        val keyboardMinWidth = keyboard.minWidth
         for (row in rows) {
             val rowLinearLayout = LinearLayout(context)
             rowLinearLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             rowLinearLayout.orientation = HORIZONTAL
-            if (row.keys == null) return
-            for (key in row.keys) {
+            for (key in row) {
                 val keyView = CustomKeyView(
                         context,
                         codes = key.codes,
                         textColor = keyTextColor,
-                        background = keyBackground
+                        keyBackground = keyBackground
                 )
                 keyView.layoutParams = LinearLayout.LayoutParams(
                         0,
                         key.height,
-                        1.0f
+                        (key.width.toFloat() / keyboardMinWidth) + (key.gap / keyboardMinWidth)
                 )
                 // Keeps track of all of the key views
                 keyViews.add(keyView)

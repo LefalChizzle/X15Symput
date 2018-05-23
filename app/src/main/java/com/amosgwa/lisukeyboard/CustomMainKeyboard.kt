@@ -57,7 +57,9 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
 
     override fun onCreateInputView(): View? {
         keyboardNormal = CustomKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
-        customKeyboardView = CustomKeyboardView(applicationContext, keyboard = keyboardNormal)
+        customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
+        customKeyboardView.keyboard = keyboardNormal
+
         return customKeyboardView
     }
 

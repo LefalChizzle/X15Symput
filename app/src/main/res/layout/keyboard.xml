@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/grey"
     app:keyBackground="@drawable/key_background"
-    app:keyTextColor="@color/keyTextColor" />
+    app:keyTextColor="@color/blue_dark" />
 
 
 

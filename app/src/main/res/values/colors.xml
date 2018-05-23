@@ -30,4 +30,8 @@
     <!--Custom Keyboard Colors-->
     <color name="custom_keyboard_grey_medium">#cecece</color>
     <color name="custom_keyboard_blue_dark">#37474f</color>
+    <color name="custom_keyboard_key_text_color">#fff</color>
+
+    <!--Default colors-->
+    <color name="default_key_text_color">@color/grey_dark</color>
 </resources>
