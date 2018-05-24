@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.inputmethodservice.KeyboardView
 import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
 import android.util.AttributeSet
@@ -22,6 +23,7 @@ class CustomKeyView @JvmOverloads constructor(
         var textSize: Float? = null,
         @DrawableRes var keyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
     private val keyTextView = CustomKeyTextView(
             context,
             color = textColor,
@@ -29,6 +31,12 @@ class CustomKeyView @JvmOverloads constructor(
     )
 
     init {
+        setUpKeyView()
+    }
+
+    private fun setUpKeyView() {
+        removeAllViews()
+
         // Set the key background.
         background = keyBackground
 
@@ -47,11 +55,10 @@ class CustomKeyView @JvmOverloads constructor(
             keyTextView.text = label
             addView(keyTextView)
         }
-//        setOnTouchListener(this)
     }
 
-    fun showPopUpPreview() {
-
+    fun updateLabel(newLabel: String) {
+        keyTextView.text = newLabel
     }
 
 //    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
