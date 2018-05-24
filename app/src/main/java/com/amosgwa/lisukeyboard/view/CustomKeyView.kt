@@ -9,7 +9,7 @@ import android.support.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
 import com.amosgwa.lisukeyboard.R
 
@@ -21,25 +21,33 @@ class CustomKeyView @JvmOverloads constructor(
         var label: String? = null,
         var icon: Drawable? = null,
         @ColorInt var textColor: Int? = null,
+        var textSize: Float? = null,
         @DrawableRes var keyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val keyTextView = CustomKeyTextView(context, color = textColor)
+    private val keyTextView = CustomKeyTextView(
+            context,
+            color = textColor,
+            size = textSize
+    )
 
     init {
         // Set the key background.
         background = keyBackground
 
-        // Center the text view inside the framelayout and style the text view.
-        val textViewParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        textViewParams.gravity = Gravity.CENTER
-        keyTextView.layoutParams = textViewParams
+        // Center the text view inside the FrameLayout and style the text view.
+        val childLayoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        childLayoutParams.gravity = Gravity.CENTER
+        keyTextView.layoutParams = childLayoutParams
 
         // Icons get priority in the key view.
-        if (icon == null) {
+        if (icon != null) {
+            val imageView = ImageView(context)
+            imageView.layoutParams = childLayoutParams
+            imageView.setImageDrawable(icon)
+            addView(imageView)
+        } else {
             keyTextView.text = label
             addView(keyTextView)
-        } else {
-
         }
 //        setOnTouchListener(this)
     }
@@ -96,14 +104,21 @@ class CustomKeyTextView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
         defStyleRes: Int = R.style.CustomKeyDefaultStyle,
-        @ColorInt var color: Int? = null
+        @ColorInt var color: Int? = null,
+        var size: Float? = null
 ) : TextView(context, attrs, defStyleAttr, defStyleRes) {
     init {
         background = ColorDrawable(Color.TRANSPARENT)
 
-        setTextColor(color ?: Color.BLACK)
+        setTextColor(color ?: DEFAULT_TEXT_COLOR)
 
+        textSize = size ?: DEFAULT_TEXT_SIZE
         textAlignment = View.TEXT_ALIGNMENT_CENTER
+    }
+
+    companion object {
+        const val DEFAULT_TEXT_SIZE = 12.0f
+        const val DEFAULT_TEXT_COLOR = Color.BLACK
     }
 }
 

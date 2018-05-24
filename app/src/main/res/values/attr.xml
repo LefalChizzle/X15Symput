@@ -5,6 +5,7 @@
         <attr name="subLabel" format="string" />
         <attr name="keyBackground" format="reference" />
         <attr name="keyTextColor" format="color" />
+        <attr name="keyTextSize" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="GwaKeyboardKey">
@@ -13,6 +14,7 @@
 
     <declare-styleable name="CustomKeyboardView">
         <attr name="keyTextColor" />
+        <attr name="keyTextSize" />
         <attr name="keyBackground" />
     </declare-styleable>
 

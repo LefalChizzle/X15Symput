@@ -29,6 +29,7 @@ class CustomKeyboardView @JvmOverloads constructor(
     var currentY = 0
 
     var keyTextColor: Int = 0
+    var keyTextSize: Float = 0.0f
     var keyBackground: Drawable? = null
 
     var keyboard: CustomKeyboard? = null
@@ -53,6 +54,7 @@ class CustomKeyboardView @JvmOverloads constructor(
         * where we set the styles for the children views.
         * */
         keyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.default_key_text_color))
+        keyTextSize = a.getDimension(R.styleable.CustomKeyboardView_keyTextSize, CustomKeyTextView.DEFAULT_TEXT_SIZE)
         keyBackground = a.getDrawable(R.styleable.CustomKeyboardView_keyBackground)
 
         // recycle the typed array
@@ -81,6 +83,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                         label = key.label?.toString(),
                         icon = key.icon,
                         textColor = keyTextColor,
+                        textSize = keyTextSize,
                         keyBackground = keyBackground
                 )
                 keyView.layoutParams = LinearLayout.LayoutParams(
