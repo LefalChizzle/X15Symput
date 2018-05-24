@@ -19,24 +19,27 @@ class CustomKeyView @JvmOverloads constructor(
         defStyleAttr: Int = 0,
         var codes: IntArray? = null,
         var label: String? = null,
-        var keyIcon: Drawable? = null,
-        @ColorInt var textColor: Int = Color.BLACK,
+        var icon: Drawable? = null,
+        @ColorInt var textColor: Int? = null,
         @DrawableRes var keyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val keyTextView = CustomKeyTextView(context)
+    private val keyTextView = CustomKeyTextView(context, color = textColor)
 
     init {
-        val textViewParams = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        // Set the key background.
+        background = keyBackground
+
+        // Center the text view inside the framelayout and style the text view.
+        val textViewParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         textViewParams.gravity = Gravity.CENTER
         keyTextView.layoutParams = textViewParams
 
-        keyTextView.background = keyBackground
-        keyTextView.setTextColor(textColor)
-
-        codes?.first()?.let {
-            keyTextView.text = it.toChar().toString()
-            keyTextView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        // Icons get priority in the key view.
+        if (icon == null) {
+            keyTextView.text = label
             addView(keyTextView)
+        } else {
+
         }
 //        setOnTouchListener(this)
     }
@@ -89,9 +92,17 @@ class CustomKeyView @JvmOverloads constructor(
 }
 
 class CustomKeyTextView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = R.style.CustomKeyDefaultStyle
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = R.style.CustomKeyDefaultStyle,
+        @ColorInt var color: Int? = null
 ) : TextView(context, attrs, defStyleAttr, defStyleRes) {
     init {
+        background = ColorDrawable(Color.TRANSPARENT)
+
+        setTextColor(color ?: Color.BLACK)
+
         textAlignment = View.TEXT_ALIGNMENT_CENTER
     }
 }

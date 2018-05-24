@@ -79,7 +79,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                         context,
                         codes = key.codes,
                         label = key.label?.toString(),
-                        keyIcon = key.icon,
+                        icon = key.icon,
                         textColor = keyTextColor,
                         keyBackground = keyBackground
                 )
