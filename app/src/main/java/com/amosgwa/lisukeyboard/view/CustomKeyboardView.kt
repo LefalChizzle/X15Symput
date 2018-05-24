@@ -78,6 +78,8 @@ class CustomKeyboardView @JvmOverloads constructor(
                 val keyView = CustomKeyView(
                         context,
                         codes = key.codes,
+                        label = key.label?.toString(),
+                        keyIcon = key.icon,
                         textColor = keyTextColor,
                         keyBackground = keyBackground
                 )
