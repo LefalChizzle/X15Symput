@@ -8,9 +8,7 @@ import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.*
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import com.amosgwa.lisukeyboard.R
 
 class CustomKeyView @JvmOverloads constructor(

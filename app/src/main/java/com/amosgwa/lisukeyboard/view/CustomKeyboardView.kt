@@ -1,10 +1,7 @@
 package com.amosgwa.lisukeyboard.view
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.inputmethodservice.Keyboard
 import android.os.Build
@@ -14,7 +11,6 @@ import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.R
 import android.view.*
 import android.util.DisplayMetrics
-import android.util.Xml
 import com.amosgwa.lisukeyboard.keyboard.CustomKey
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
 
@@ -36,11 +32,7 @@ class CustomKeyboardView @JvmOverloads constructor(
         set(value) {
             // Create key views and add them to this view
             field = value
-            value?.let { keyboard ->
-                keyboard.getRows().let { rows ->
-                    populateKeyViews(keyboard, rows)
-                }
-            }
+            populateKeyViews()
             requestLayout()
         }
 
@@ -70,13 +62,15 @@ class CustomKeyboardView @JvmOverloads constructor(
         setOnTouchListener(this)
     }
 
-    private fun populateKeyViews(keyboard: Keyboard, rows: List<List<CustomKey>>) {
+    private fun addKeyViews(keyboard: Keyboard, rows: List<List<CustomKey>>) {
         val keyboardMinWidth = keyboard.minWidth
         for (row in rows) {
             val rowLinearLayout = LinearLayout(context)
             rowLinearLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             rowLinearLayout.orientation = HORIZONTAL
             for (key in row) {
+                // The background of the key has to be duplicate since the keys have different widths.
+                val keyBackgroundCopy = keyBackground?.constantState?.newDrawable()?.mutate()
                 val keyView = CustomKeyView(
                         context,
                         codes = key.codes,
@@ -84,7 +78,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                         icon = key.icon,
                         textColor = keyTextColor,
                         textSize = keyTextSize,
-                        keyBackground = keyBackground
+                        keyBackground = keyBackgroundCopy
                 )
                 keyView.layoutParams = LinearLayout.LayoutParams(
                         0,
@@ -99,6 +93,17 @@ class CustomKeyboardView @JvmOverloads constructor(
         }
     }
 
+    private fun populateKeyViews() {
+        keyboard?.let { keyboard ->
+            keyboard.getRows().let { rows ->
+                addKeyViews(keyboard, rows)
+            }
+        }
+    }
+
+    /*
+    * Returns the size of the display.
+    * */
     private fun getDisplayMetrics(): DisplayMetrics {
         val displayMetrics = DisplayMetrics()
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
