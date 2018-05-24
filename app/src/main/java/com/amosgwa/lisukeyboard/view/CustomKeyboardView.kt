@@ -55,19 +55,17 @@ class CustomKeyboardView @JvmOverloads constructor(
         // Set orientation for the rows
         orientation = VERTICAL
 
-        // Clear the keys
-        keys.clear()
-
         // Set listener to the keyboard
         setOnTouchListener(this)
     }
 
-    private fun addKeyViews(keyboard: Keyboard, rows: List<List<CustomKey>>) {
-        val keyboardMinWidth = keyboard.minWidth
+    private fun addKeyViews(rows: List<List<CustomKey>>) {
         for (row in rows) {
+            // Create row linear layout for the key views.
             val rowLinearLayout = LinearLayout(context)
             rowLinearLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             rowLinearLayout.orientation = HORIZONTAL
+            rowLinearLayout.gravity = Gravity.CENTER
             for (key in row) {
                 // The background of the key has to be duplicate since the keys have different widths.
                 val keyBackgroundCopy = keyBackground?.constantState?.newDrawable()?.mutate()
@@ -80,11 +78,11 @@ class CustomKeyboardView @JvmOverloads constructor(
                         textSize = keyTextSize,
                         keyBackground = keyBackgroundCopy
                 )
-                keyView.layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        key.height,
-                        (key.width.toFloat() / keyboardMinWidth) + (key.gap / keyboardMinWidth)
+                val params = LinearLayout.LayoutParams(
+                        key.width,
+                        key.height
                 )
+                keyView.layoutParams = params
                 // Keeps track of all of the key views
                 keyViews.add(keyView)
                 rowLinearLayout.addView(keyViews.last())
@@ -94,9 +92,10 @@ class CustomKeyboardView @JvmOverloads constructor(
     }
 
     private fun populateKeyViews() {
+        keys.clear()
         keyboard?.let { keyboard ->
             keyboard.getRows().let { rows ->
-                addKeyViews(keyboard, rows)
+                addKeyViews(rows)
             }
         }
     }
