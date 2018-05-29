@@ -22,7 +22,7 @@ class CustomKeyboardView @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val renderedKeys = mutableListOf<CustomKeyPreview>()
-    private val pressedKeys = mutableListOf<CustomKeyView>()
+    private val pressedKeys = SparseArray<CustomKeyView>()
 
     private lateinit var mHandler: Handler
 
@@ -51,11 +51,11 @@ class CustomKeyboardView @JvmOverloads constructor(
     }
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboardView)
         /*
         * Load the styles from the keyboard xml for the child keys. Keyboard should be the only place
         * where we set the styles for the children views.
         * */
+        val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboardView)
         keyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.default_key_text_color))
         keyTextSize = a.getDimension(R.styleable.CustomKeyboardView_keyTextSize, CustomKeyTextView.DEFAULT_TEXT_SIZE)
         keyBackground = a.getDrawable(R.styleable.CustomKeyboardView_keyBackground)
@@ -186,18 +186,23 @@ class CustomKeyboardView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                detectRow(event.x, event.y)?.let {
+        if (event == null) return true
+        val pointerIndex = event.actionIndex
+        val pointerId = event.getPointerId(pointerIndex)
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN,
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
                     val timings = TimingLogger(LOG_TAG, "populateKeyViews")
-                    pressedKeys.add(it)
+                    pressedKeys.append(pointerId, pressedKey)
                     timings.addSplit("Action Down")
                     timings.dumpToLog()
                 }
                 return false
             }
-            MotionEvent.ACTION_UP -> {
-                sendKey()
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_POINTER_UP -> {
+                sendKey(pointerId)
                 return false
             }
         }
@@ -208,7 +213,7 @@ class CustomKeyboardView @JvmOverloads constructor(
     * Key views are stored in 2d format. First, we check if the tap position is within the parent of
     * the key view's bounds. If so, find the key in that row.
     * */
-    private fun detectRow(x: Float, y: Float): CustomKeyView? {
+    private fun detectKey(x: Float, y: Float): CustomKeyView? {
         preloadedRowsWithKeyViews[currentKeyboardType].forEach { row ->
             // Each row is composed in linear layout. Thus, we have to use it to find which row
             // the pointer falls into.
@@ -231,15 +236,16 @@ class CustomKeyboardView @JvmOverloads constructor(
         return null
     }
 
-    private fun sendKey() {
-        if (pressedKeys.size == 0) return
-        pressedKeys.last().let { key ->
-            key.codes?.first()?.let { primaryCode ->
+    private fun sendKey(pointerId: Int) {
+        if (pressedKeys.size() == 0) return
+        pressedKeys.get(pointerId).codes?.let { codes ->
+            if (codes.isEmpty()) return
+            codes.first().let { primaryCode ->
                 val timings = TimingLogger("", "populateKeyViews")
-                keyboardViewListener?.onKey(primaryCode, key.codes)
+                keyboardViewListener?.onKey(primaryCode, codes)
                 timings.addSplit("Keyboard listener called")
                 timings.dumpToLog()
-                pressedKeys.clear()
+                pressedKeys.remove(pointerId)
             }
         }
     }
