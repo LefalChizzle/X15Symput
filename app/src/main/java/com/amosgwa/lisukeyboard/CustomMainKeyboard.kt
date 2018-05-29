@@ -13,6 +13,7 @@ import com.amosgwa.lisukeyboard.keyboard.GwaKeyboard
 import com.amosgwa.lisukeyboard.keyboard.GwaKeyboardView
 import com.amosgwa.lisukeyboard.keyboard.OnLanguageSelectionListener
 import android.content.res.TypedArray
+import android.util.Log
 import android.view.ViewGroup
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
@@ -21,8 +22,11 @@ import com.amosgwa.lisukeyboard.view.CustomKeyboardView
 
 class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
-    private lateinit var keyboardNormal: CustomKeyboard
     private lateinit var customKeyboardView: CustomKeyboardView
+
+    private lateinit var keyboardNormal: CustomKeyboard
+    private lateinit var keyboardShift: CustomKeyboard
+    private lateinit var keyboardSymbol: CustomKeyboard
 
     private var languageNames: MutableList<String> = mutableListOf()
     private var languageXmlRes: MutableList<Int> = mutableListOf()
@@ -57,9 +61,14 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
 
     override fun onCreateInputView(): View? {
         keyboardNormal = CustomKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
+        keyboardShift = CustomKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
+        keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
+
         customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
         customKeyboardView.keyboardViewListener = this
         customKeyboardView.keyboard = keyboardNormal
+        customKeyboardView.keyboards = mutableListOf(keyboardNormal, keyboardShift, keyboardSymbol)
+        customKeyboardView.currentIndex = 0
 
         return customKeyboardView
     }
@@ -133,6 +142,19 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
             }
             KEYCODE_ABC -> {
                 customKeyboardView.keyboard = keyboardNormal
+                customKeyboardView.currentIndex = 0
+                customKeyboardView.invalidate()
+                return
+            }
+            Keyboard.KEYCODE_SHIFT -> {
+                customKeyboardView.keyboard = keyboardShift
+                customKeyboardView.currentIndex = 1
+                customKeyboardView.invalidate()
+                return
+            }
+            KEYCODE_UNSHIFT -> {
+                customKeyboardView.keyboard = keyboardNormal
+                customKeyboardView.currentIndex = 0
                 customKeyboardView.invalidate()
                 return
             }
@@ -161,6 +183,7 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         // Switch back to normal if the selected page type is shift.
         if (customKeyboardView.keyboard?.type == TYPE_SHIFT) {
             customKeyboardView.keyboard = keyboardNormal
+            customKeyboardView.currentIndex = 0
             customKeyboardView.invalidate()
         }
     }

@@ -1,10 +1,11 @@
 package com.amosgwa.lisukeyboard.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.inputmethodservice.KeyboardView
-import android.os.Build
+import android.os.*
 import android.support.annotation.RequiresApi
 import android.util.AttributeSet
 import android.widget.LinearLayout
@@ -14,6 +15,9 @@ import android.util.DisplayMetrics
 import android.util.Log
 import com.amosgwa.lisukeyboard.keyboard.CustomKey
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
+import kotlin.properties.Delegates
+import android.util.TimingLogger
+
 
 class CustomKeyboardView @JvmOverloads constructor(
         context: Context,
@@ -21,6 +25,9 @@ class CustomKeyboardView @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val renderedKeys = mutableListOf<CustomKeyPreview>()
+    private val pressedKeys = mutableListOf<CustomKeyView>()
+
+    private lateinit var mHandler: Handler
 
     var currentX = 0
     var currentY = 0
@@ -30,18 +37,25 @@ class CustomKeyboardView @JvmOverloads constructor(
     var keyBackground: Drawable? = null
 
     var keyboardViewListener: KeyboardView.OnKeyboardActionListener? = null
-    val firstKeyLocation = IntArray(2)
-    val lastKeyLocation = IntArray(2)
 
-    var keyboard: CustomKeyboard? = null
-        set(value) {
-            // Create key views and add them to this view
-            field = value
-            populateKeyViews()
-            requestLayout()
-        }
+    var keyboard: CustomKeyboard? by Delegates.observable<CustomKeyboard?>(null) { _, _, _ ->
+//        invalidate()
+//        populateKeyViews()
+    }
 
-    private var rowsWithKeyViews = mutableListOf<List<CustomKeyView>>()
+    var keyboards: MutableList<CustomKeyboard> by Delegates.observable(mutableListOf()) { _, _, _ ->
+        preloadKeyViews()
+    }
+
+    var currentIndex: Int by Delegates.observable(0) { _, _, newValue ->
+        invalidate()
+        addKeysToTheParent(this, newValue)
+    }
+
+    private var rowsWithKeyViews = mutableListOf<MutableList<CustomKeyView>>()
+
+    private var preloadedViews = mutableListOf<LinearLayout>()
+    private var preloadedRowsWithKeyViews = mutableListOf<MutableList<MutableList<CustomKeyView>>>()
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboardView)
@@ -60,16 +74,53 @@ class CustomKeyboardView @JvmOverloads constructor(
         orientation = VERTICAL
     }
 
-    private fun addKeyViews(rows: List<List<CustomKey>>) {
-        for (row in rows) {
-            // Keep track of the row keys.
-            val rowKeyViews = mutableListOf<CustomKeyView>()
-            // Create row linear layout for the key views.
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        mHandler = Handler()
+        val r = Runnable {
+
+        }
+    }
+
+    private fun getKeyboardView(keyboard: CustomKeyboard) {
+        val keyboardView = CustomKeyboardView(context)
+    }
+
+    private fun addKeysToTheParent(parent: ViewGroup, index: Int) {
+        removeAllKeyViews(index)
+        // The keys are added to the row linear layout which is added to the parent view.
+        // Therefore, they need to be removed as well.
+        parent.removeAllViews()
+        for (row in preloadedRowsWithKeyViews[index]) {
             val rowLinearLayout = LinearLayout(context)
             rowLinearLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             rowLinearLayout.orientation = HORIZONTAL
             rowLinearLayout.gravity = Gravity.CENTER
+            for (key in row) {
+                rowLinearLayout.addView(key)
+            }
+            parent.addView(rowLinearLayout)
+        }
+    }
 
+    /*
+    * Remove the parents of the keys in order to add new keys to the view.
+    * */
+    private fun removeAllKeyViews(index: Int) {
+         for (row in preloadedRowsWithKeyViews[index]) {
+            for (key in row) {
+                val parent = key.parent as ViewGroup?
+                parent?.removeView(key)
+            }
+        }
+    }
+
+    private fun addKeyViews(rows: List<List<CustomKey>>): MutableList<MutableList<CustomKeyView>> {
+        val keyViews = mutableListOf<MutableList<CustomKeyView>>()
+        for (row in rows) {
+            // Keep track of the row keys.
+            val rowKeyViews = mutableListOf<CustomKeyView>()
+            // Create row linear layout for the key views.
             for (key in row) {
                 // The background of the key has to be duplicate since the keys have different widths.
                 val keyBackgroundCopy = keyBackground?.constantState?.newDrawable()?.mutate()
@@ -89,20 +140,37 @@ class CustomKeyboardView @JvmOverloads constructor(
                 keyView.layoutParams = params
                 // Keeps track of all of the key views
                 rowKeyViews.add(keyView)
-                rowLinearLayout.addView(rowKeyViews.last())
             }
-            // Add the row with keys to this view.
-            this.addView(rowLinearLayout)
             // Key tracks of the rows with key views.
-            rowsWithKeyViews.add(rowKeyViews)
+            keyViews.add(rowKeyViews.toMutableList())
+            rowKeyViews.clear()
         }
+        return keyViews
     }
 
     private fun populateKeyViews() {
+        this.removeAllViews()
         rowsWithKeyViews.clear()
-        keyboard?.let { keyboard ->
+        keyboards.first().let { keyboard ->
             keyboard.getRows().let { rows ->
-                addKeyViews(rows)
+                val timings = TimingLogger(LOG_TAG, "populateKeyViews")
+                rowsWithKeyViews = addKeyViews(rows)
+                timings.addSplit("AddKeyViews")
+                timings.dumpToLog()
+            }
+        }
+        keyboards.removeAt(currentIndex)
+    }
+
+    private fun preloadKeyViews() {
+        for (keyboard in keyboards) {
+            keyboard.getRows().let { rows ->
+                val timings = TimingLogger(LOG_TAG, "preloadKeyViews")
+                val preloadedView = CustomKeyboardView(context)
+                preloadedViews.add(preloadedView)
+                preloadedRowsWithKeyViews.add(addKeyViews(rows))
+                timings.addSplit("preloadKeyViews")
+                timings.dumpToLog()
             }
         }
     }
@@ -137,17 +205,32 @@ class CustomKeyboardView @JvmOverloads constructor(
 //        return true
 //    }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                detectRow(event.x, event.y)
+                detectRow(event.x, event.y)?.let {
+                    val timings = TimingLogger(LOG_TAG, "populateKeyViews")
+                    pressedKeys.add(it)
+                    timings.addSplit("Action Down")
+                    timings.dumpToLog()
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP -> {
+                sendKey()
+                return true
             }
         }
         return false
     }
 
-    private fun detectRow(x: Float, y: Float) {
-        for (row in rowsWithKeyViews) {
+    /*
+    * Key views are stored in 2d format. First, we check if the tap position is within the parent of
+    * the key view's bounds. If so, find the key in that row.
+    * */
+    private fun detectRow(x: Float, y: Float): CustomKeyView? {
+        for (row in preloadedRowsWithKeyViews[currentIndex]) {
             // Each row is composed in linear layout. Thus, we have to use it to find which row
             // the pointer falls into.
             val rowLinearLayout = row.first().parent as LinearLayout?
@@ -159,11 +242,25 @@ class CustomKeyboardView @JvmOverloads constructor(
                     for (key in row) {
                         if (x - rowLinearLayout.left in key.left..key.right &&
                                 y - rowLinearLayout.top in key.top..key.bottom) {
-                            Log.d("///Amos", "pressed : ${key.label}")
-                            return
+                            Log.d(LOG_TAG, "pressed : ${key.label}")
+                            return key
                         }
                     }
                 }
+            }
+        }
+        return null
+    }
+
+    private fun sendKey() {
+        if (pressedKeys.size == 0) return
+        pressedKeys.last().let { key ->
+            key.codes?.first()?.let { primaryCode ->
+                val timings = TimingLogger("", "populateKeyViews")
+                keyboardViewListener?.onKey(primaryCode, key.codes)
+                timings.addSplit("Keyboard listener called")
+                timings.dumpToLog()
+                pressedKeys.clear()
             }
         }
     }
@@ -193,6 +290,13 @@ class CustomKeyboardView @JvmOverloads constructor(
 
     companion object {
         var pointers = 0
+
+        // Message for handler
+        fun logTimeDiff(start: Long, end: Long, tag: String) {
+            Log.d(tag, "${(end - start) / 1000} micro second")
+        }
+
+        const val LOG_TAG = "AMOS"
     }
 
     interface OnKeyboardActionListener {

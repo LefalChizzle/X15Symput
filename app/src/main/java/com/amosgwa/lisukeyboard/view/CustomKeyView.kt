@@ -31,12 +31,6 @@ class CustomKeyView @JvmOverloads constructor(
     )
 
     init {
-        setUpKeyView()
-    }
-
-    private fun setUpKeyView() {
-        removeAllViews()
-
         // Set the key background.
         background = keyBackground
 
@@ -60,48 +54,6 @@ class CustomKeyView @JvmOverloads constructor(
     fun updateLabel(newLabel: String) {
         keyTextView.text = newLabel
     }
-
-//    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-
-    // Add margin top and bottom to the divider view to overlap over flight items.
-//        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-//        val marginOffset = -keyTextView.height
-//        params.setMargins(0, marginOffset, 0, 0)
-//
-//        when (event?.action) {
-//            MotionEvent.ACTION_MOVE, MotionEvent.ACTION_DOWN -> {
-//                val previewTextView = CustomKeyPreview(context, height = keyTextView.height * 2)
-//                previewTextView.text = text
-//                addView(previewTextView, params)
-//                return true
-//            }
-//            MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP -> {
-//                if (childCount > 0) {
-//                    removeViewAt(childCount - 1)
-//                }
-//                return true
-//            }
-//        }
-//        Log.d("///Amos", text.toString())
-//        event?.let { pointer ->
-//            val viewHitRect = Rect()
-//            getHitRect(viewHitRect)
-//            if (viewHitRect.contains(pointer.x.toInt(), pointer.y.toInt())) {
-//                if (pointerId == -1) {
-//                    pointerId = pointer.getPointerId(pointer.actionIndex)
-//                    val previewTextView = CustomKeyPreview(context, height = keyTextView.height * 2)
-//                    previewTextView.text = text
-//                    addView(previewTextView, params)
-//                    return true
-//                } else {
-//                    if (pointerId == pointer.getPointerId(pointer.actionIndex)) {
-//
-//                    }
-//                }
-//            }
-//        }
-//        return false
-//    }
 }
 
 class CustomKeyTextView @JvmOverloads constructor(
@@ -119,7 +71,11 @@ class CustomKeyTextView @JvmOverloads constructor(
 
         textSize = size ?: DEFAULT_TEXT_SIZE
         textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+        isFocusable = false
+        isFocusableInTouchMode = false
     }
+
 
     companion object {
         const val DEFAULT_TEXT_SIZE = 12.0f
