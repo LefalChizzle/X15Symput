@@ -1,5 +1,6 @@
 package com.amosgwa.lisukeyboard.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -24,13 +25,14 @@ class CustomKeyView @JvmOverloads constructor(
         @DrawableRes var keyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val keyTextView = CustomKeyTextView(
+    val keyTextView = CustomKeyTextView(
             context,
             color = textColor,
             size = textSize
     )
 
     init {
+        isClickable = true
         // Set the key background.
         background = keyBackground
 
@@ -71,11 +73,7 @@ class CustomKeyTextView @JvmOverloads constructor(
 
         textSize = size ?: DEFAULT_TEXT_SIZE
         textAlignment = View.TEXT_ALIGNMENT_CENTER
-
-        isFocusable = false
-        isFocusableInTouchMode = false
     }
-
 
     companion object {
         const val DEFAULT_TEXT_SIZE = 12.0f

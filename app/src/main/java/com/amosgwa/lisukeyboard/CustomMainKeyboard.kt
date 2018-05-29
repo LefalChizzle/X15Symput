@@ -9,12 +9,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.view.MotionEvent
-import com.amosgwa.lisukeyboard.keyboard.GwaKeyboard
-import com.amosgwa.lisukeyboard.keyboard.GwaKeyboardView
-import com.amosgwa.lisukeyboard.keyboard.OnLanguageSelectionListener
 import android.content.res.TypedArray
-import android.util.Log
-import android.view.ViewGroup
+import android.util.SparseArray
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.CustomKeyboardView
@@ -32,6 +28,8 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
     private var languageXmlRes: MutableList<Int> = mutableListOf()
     private var languageShiftXmlRes: MutableList<Int> = mutableListOf()
     private var languageSymbolXmlRes: MutableList<Int> = mutableListOf()
+
+    private var keyboards: SparseArray<CustomKeyboard> = SparseArray()
 
     private var preferences: KeyboardPreferences? = null
     private var lastSavedLanguageIdx: Int = 0
@@ -64,11 +62,14 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         keyboardShift = CustomKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
         keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
 
+        keyboards.append(TYPE_NORMAL, keyboardNormal)
+        keyboards.append(TYPE_SHIFT, keyboardShift)
+        keyboards.append(TYPE_SYMBOL, keyboardSymbol)
+
         customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
         customKeyboardView.keyboardViewListener = this
-        customKeyboardView.keyboard = keyboardNormal
-        customKeyboardView.keyboards = mutableListOf(keyboardNormal, keyboardShift, keyboardSymbol)
-        customKeyboardView.currentIndex = 0
+        customKeyboardView.keyboards = keyboards
+        customKeyboardView.currentKeyboardType = 0
 
         return customKeyboardView
     }
@@ -141,21 +142,19 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
                 }
             }
             KEYCODE_ABC -> {
-                customKeyboardView.keyboard = keyboardNormal
-                customKeyboardView.currentIndex = 0
-                customKeyboardView.invalidate()
+                customKeyboardView.currentKeyboardType = TYPE_NORMAL
                 return
             }
             Keyboard.KEYCODE_SHIFT -> {
-                customKeyboardView.keyboard = keyboardShift
-                customKeyboardView.currentIndex = 1
-                customKeyboardView.invalidate()
+                customKeyboardView.currentKeyboardType = TYPE_SHIFT
                 return
             }
             KEYCODE_UNSHIFT -> {
-                customKeyboardView.keyboard = keyboardNormal
-                customKeyboardView.currentIndex = 0
-                customKeyboardView.invalidate()
+                customKeyboardView.currentKeyboardType = TYPE_NORMAL
+                return
+            }
+            KEYCODE_123 -> {
+                customKeyboardView.currentKeyboardType = TYPE_SYMBOL
                 return
             }
             KEYCODE_MYA_TI_MYA_NA -> {
@@ -181,10 +180,8 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
             }
         }
         // Switch back to normal if the selected page type is shift.
-        if (customKeyboardView.keyboard?.type == TYPE_SHIFT) {
-            customKeyboardView.keyboard = keyboardNormal
-            customKeyboardView.currentIndex = 0
-            customKeyboardView.invalidate()
+        if (customKeyboardView.currentKeyboard().type == TYPE_SHIFT) {
+            customKeyboardView.currentKeyboardType = TYPE_NORMAL
         }
     }
 
@@ -230,7 +227,6 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         const val TYPE_NORMAL = 0
         const val TYPE_SHIFT = 1
         const val TYPE_SYMBOL = 2
-
 
         const val RES_IDX = 1
         const val SHIFT_IDX = 2

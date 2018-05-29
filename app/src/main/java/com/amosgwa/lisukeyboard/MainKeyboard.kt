@@ -173,11 +173,7 @@ class MainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
                 keyboardView?.invalidateAllKeys()
                 return
             }
-            KEYCODE_123 -> {
-                keyboardView?.keyboard = keyboardSymbol
-                keyboardView?.invalidateAllKeys()
-                return
-            }
+
             KEYCODE_123 -> {
                 keyboardView?.keyboard = keyboardSymbol
                 keyboardView?.invalidateAllKeys()
