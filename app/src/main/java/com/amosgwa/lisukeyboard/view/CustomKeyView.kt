@@ -17,6 +17,7 @@ class CustomKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
+        var repeatable: Boolean = false,
         var codes: IntArray? = null,
         var label: String? = null,
         var icon: Drawable? = null,

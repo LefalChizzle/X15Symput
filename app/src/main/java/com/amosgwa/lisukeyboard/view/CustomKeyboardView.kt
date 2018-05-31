@@ -21,20 +21,18 @@ class CustomKeyboardView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
-    private val renderedKeys = mutableListOf<CustomKeyPreview>()
-    private val pressedKeys = SparseArray<CustomKeyView>()
 
-    private lateinit var mHandler: Handler
+    private lateinit var keyboardHandler: Handler
 
     var currentX = 0
     var currentY = 0
 
+    // Styles
     var keyTextColor: Int = 0
     var keyTextSize: Float = 0.0f
     var keyBackground: Drawable? = null
 
-    var keyboardViewListener: KeyboardView.OnKeyboardActionListener? = null
-
+    // Keyboards
     var keyboards: SparseArray<CustomKeyboard> by Delegates.observable(SparseArray()) { _, _, _ ->
         preloadKeyViews()
     }
@@ -44,7 +42,17 @@ class CustomKeyboardView @JvmOverloads constructor(
         addKeyViews()
     }
 
+    // Keys
+    private val renderedKeys = mutableListOf<CustomKeyPreview>()
+    private val pressedKeys = SparseArray<CustomKeyView>()
     private var preloadedRowsWithKeyViews = SparseArray<MutableList<MutableList<CustomKeyView>>>()
+    private val repeatingKey: CustomKeyView? = null
+
+    // Listeners
+    var keyboardViewListener: KeyboardView.OnKeyboardActionListener? = null
+
+    // Gesture detector
+    private lateinit var gestureDetector: GestureDetector
 
     fun currentKeyboard(): CustomKeyboard {
         return keyboards[currentKeyboardType]
@@ -69,10 +77,37 @@ class CustomKeyboardView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        mHandler = Handler()
-        val r = Runnable {
+        initGestureDetector()
+        keyboardHandler = Handler(Handler.Callback { msg ->
+            when (msg.what) {
+                MSG_REPEAT -> {
+                    val pointerId = msg.obj
+                    if (pointerId is Int && sendKey(pressedKeys[pointerId])) {
+                        val repeatMsg = Message.obtain(keyboardHandler, MSG_REPEAT)
+                        repeatMsg.obj = pointerId
+                        keyboardHandler.sendMessageDelayed(repeatMsg, REPEAT_INTERVAL.toLong())
+                    }
+                }
+            }
+            false
+        })
+    }
 
-        }
+    private fun repeatKey(): Boolean {
+        return true
+    }
+
+    private fun initGestureDetector() {
+        gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onLongPress(e: MotionEvent?) {
+                val pressedKey = e?.let { detectKey(it.x, it.y) }
+                if (pressedKey?.repeatable == true) {
+                    val msg = keyboardHandler.obtainMessage(MSG_REPEAT)
+                    msg.obj = e.getPointerId(e.actionIndex)
+                    keyboardHandler.sendMessageDelayed(msg, REPEAT_DELAY.toLong())
+                }
+            }
+        })
     }
 
     private fun addKeyViews() {
@@ -120,6 +155,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                 val keyBackgroundCopy = keyBackground?.constantState?.newDrawable()?.mutate()
                 val keyView = CustomKeyView(
                         context,
+                        repeatable = key.repeatable,
                         codes = key.codes,
                         label = key.label?.toString(),
                         icon = key.icon,
@@ -164,32 +200,30 @@ class CustomKeyboardView @JvmOverloads constructor(
         return displayMetrics
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-//        when (event?.action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                val pressedKey = CustomKeyPreview(context, height = 100)
-//                pressedKey.setBackgroundColor(context.resources.getColor(R.color.pink))
-//                pressedKey.x = currentX
-//                pressedKey.y = currentY
-//                currentX += 100
-//                currentY += 10
-//
-//                renderPressedKey(pressedKey)
-//            }
-//            MotionEvent.ACTION_UP -> {
-//                clearRenderedKeys()
-//            }
-//        }
-//        return true
-//    }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
-        if (event == null) return true
+        if (event == null) {
+            return true
+        }
+        return processTouchEvent(event)
+    }
+
+    private fun processTouchEvent(event: MotionEvent): Boolean {
+        /*
+        * Determine if the click is a long press or not first.
+        * */
+        gestureDetector.onTouchEvent(event)
         val pointerIndex = event.actionIndex
         val pointerId = event.getPointerId(pointerIndex)
         when (event.actionMasked) {
+            MotionEvent.ACTION_MOVE -> {
+                // Check if the pointer is moved out of range for the key.
+                // If so, remove it.
+                val key = detectKey(event.getX(pointerIndex), event.getY(pointerIndex))
+                if (key != pressedKeys[pointerId]) {
+                    pressedKeys.remove(pointerId)
+                }
+            }
             MotionEvent.ACTION_DOWN,
             MotionEvent.ACTION_POINTER_DOWN -> {
                 detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
@@ -202,11 +236,18 @@ class CustomKeyboardView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_POINTER_UP -> {
-                sendKey(pointerId)
+                val key = pressedKeys.get(pointerId)
+                sendKey(key)
+                pressedKeys.remove(pointerId)
+                removeMessages()
                 return false
             }
         }
         return false
+    }
+
+    private fun removeMessages() {
+        keyboardHandler.removeMessages(MSG_REPEAT)
     }
 
     /*
@@ -236,18 +277,18 @@ class CustomKeyboardView @JvmOverloads constructor(
         return null
     }
 
-    private fun sendKey(pointerId: Int) {
-        if (pressedKeys.size() == 0) return
-        pressedKeys.get(pointerId).codes?.let { codes ->
-            if (codes.isEmpty()) return
+    private fun sendKey(key: CustomKeyView?): Boolean {
+        key?.codes?.let { codes ->
+            if (codes.isEmpty()) return false
             codes.first().let { primaryCode ->
                 val timings = TimingLogger("", "populateKeyViews")
                 keyboardViewListener?.onKey(primaryCode, codes)
                 timings.addSplit("Keyboard listener called")
                 timings.dumpToLog()
-                pressedKeys.remove(pointerId)
+                return true
             }
         }
+        return false
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -274,20 +315,12 @@ class CustomKeyboardView @JvmOverloads constructor(
     }
 
     companion object {
-        var pointers = 0
+        // Messages for handler
+        const val MSG_REPEAT = 0
 
-        // Message for handler
-        fun logTimeDiff(start: Long, end: Long, tag: String) {
-            Log.d(tag, "${(end - start) / 1000} micro second")
-        }
+        const val REPEAT_INTERVAL = 50 // ~20 keys per second
+        const val REPEAT_DELAY = 400
 
         const val LOG_TAG = "AMOS"
-    }
-
-    interface OnKeyboardActionListener {
-        fun onPress()
-        fun onKey()
-        fun onRelease()
-        fun onSwipe()
     }
 }
