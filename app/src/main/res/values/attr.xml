@@ -20,5 +20,6 @@
 
     <declare-styleable name="CustomKey">
         <attr name="subLabel" />
+        <attr name="isChangeLanguageKey" format="boolean" />
     </declare-styleable>
 </resources>

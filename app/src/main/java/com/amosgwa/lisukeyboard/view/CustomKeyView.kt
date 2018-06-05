@@ -1,11 +1,9 @@
 package com.amosgwa.lisukeyboard.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.inputmethodservice.KeyboardView
 import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
 import android.util.AttributeSet

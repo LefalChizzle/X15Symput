@@ -93,10 +93,6 @@ class CustomKeyboardView @JvmOverloads constructor(
         })
     }
 
-    private fun repeatKey(): Boolean {
-        return true
-    }
-
     private fun initGestureDetector() {
         gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onLongPress(e: MotionEvent?) {
@@ -108,6 +104,13 @@ class CustomKeyboardView @JvmOverloads constructor(
                 }
             }
         })
+    }
+
+    /*
+    * This is to put in
+    * */
+    fun changeLanguage() {
+
     }
 
     private fun addKeyViews() {
@@ -144,7 +147,8 @@ class CustomKeyboardView @JvmOverloads constructor(
         }
     }
 
-    private fun getKeyViews(rows: List<List<CustomKey>>): MutableList<MutableList<CustomKeyView>> {
+
+    private fun getKeyViews(rows: List<List<CustomKey>>, keyboard: CustomKeyboard): MutableList<MutableList<CustomKeyView>> {
         val keyViews = mutableListOf<MutableList<CustomKeyView>>()
         rows.forEach { row ->
             // Keep track of the row keys.
@@ -168,6 +172,10 @@ class CustomKeyboardView @JvmOverloads constructor(
                         key.height
                 )
                 keyView.layoutParams = params
+                // Update the language for the key that is assigned with isChange
+                if (key.isChangeLanguageKey == true) {
+                    keyView.updateLabel(keyboard.language)
+                }
                 // Keeps track of all of the key views
                 rowKeyViews.add(keyView)
             }
@@ -181,9 +189,10 @@ class CustomKeyboardView @JvmOverloads constructor(
     private fun preloadKeyViews() {
         for (i in 0 until keyboards.size()) {
             val key = keyboards.keyAt(i)
-            keyboards.get(key).getRows().let { rows ->
+            val kbd = keyboards.get(key)
+            kbd.getRows().let { rows ->
                 val timings = TimingLogger(LOG_TAG, "preloadKeyViews")
-                preloadedRowsWithKeyViews.append(key, getKeyViews(rows))
+                preloadedRowsWithKeyViews.append(key, getKeyViews(rows, kbd))
                 timings.addSplit("preloadKeyViews")
                 timings.dumpToLog()
             }

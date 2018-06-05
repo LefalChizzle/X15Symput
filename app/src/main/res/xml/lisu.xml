@@ -186,8 +186,8 @@
             android:keyWidth="10%p" />
         <Key
             android:codes="32"
-            android:keyIcon="@drawable/ic_space"
-            android:keyWidth="50%p" />
+            android:keyWidth="50%p"
+            app:isChangeLanguageKey="true" />
         <Key
             android:codes="46"
             android:keyLabel="."

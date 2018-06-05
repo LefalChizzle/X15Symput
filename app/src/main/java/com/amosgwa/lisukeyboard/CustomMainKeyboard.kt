@@ -58,9 +58,9 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
     }
 
     override fun onCreateInputView(): View? {
-        keyboardNormal = CustomKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL)
-        keyboardShift = CustomKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT)
-        keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL)
+        keyboardNormal = CustomKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL, languageNames[lastSavedLanguageIdx])
+        keyboardShift = CustomKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT, languageNames[lastSavedLanguageIdx])
+        keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL, languageNames[lastSavedLanguageIdx])
 
         keyboards.append(TYPE_NORMAL, keyboardNormal)
         keyboards.append(TYPE_SHIFT, keyboardShift)
