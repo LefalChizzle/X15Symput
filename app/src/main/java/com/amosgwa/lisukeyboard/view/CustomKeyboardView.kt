@@ -28,8 +28,8 @@ class CustomKeyboardView @JvmOverloads constructor(
     var currentY = 0
 
     // Styles
-    var keyTextColor: Int = 0
-    var keyTextSize: Float = 0.0f
+    var globalKeyTextColor: Int = 0
+    var globalKeyTextSize: Float = 0.0f
     var keyBackground: Drawable? = null
 
     // Keyboards
@@ -64,8 +64,8 @@ class CustomKeyboardView @JvmOverloads constructor(
         * where we set the styles for the children views.
         * */
         val a = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboardView)
-        keyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.default_key_text_color))
-        keyTextSize = a.getDimension(R.styleable.CustomKeyboardView_keyTextSize, CustomKeyTextView.DEFAULT_TEXT_SIZE)
+        globalKeyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.default_key_text_color))
+        globalKeyTextSize = a.getDimension(R.styleable.CustomKeyboardView_keyTextSize, CustomKeyTextView.DEFAULT_TEXT_SIZE)
         keyBackground = a.getDrawable(R.styleable.CustomKeyboardView_keyBackground)
 
         // recycle the typed array
@@ -159,13 +159,10 @@ class CustomKeyboardView @JvmOverloads constructor(
                 val keyBackgroundCopy = keyBackground?.constantState?.newDrawable()?.mutate()
                 val keyView = CustomKeyView(
                         context,
-                        repeatable = key.repeatable,
-                        codes = key.codes,
-                        label = key.label?.toString(),
-                        icon = key.icon,
-                        textColor = keyTextColor,
-                        textSize = keyTextSize,
-                        keyBackground = keyBackgroundCopy
+                        key = key,
+                        globalTextColor = globalKeyTextColor,
+                        globalTextSize = globalKeyTextSize,
+                        globalKeyBackground = keyBackgroundCopy
                 )
                 val params = LinearLayout.LayoutParams(
                         key.width,

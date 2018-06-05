@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:keyHeight="@dimen/key_height">
 
     <Row>
@@ -150,15 +151,17 @@
             android:codes="@integer/keycode_sym"
             android:keyEdgeFlags="left"
             android:keyLabel="123"
-            android:keyWidth="15%p" />
+            android:keyWidth="15%p"
+            app:keyTextSize="6dp" />
         <Key
             android:codes="@integer/keycode_switch_next_keyboard"
             android:keyIcon="@drawable/ic_language"
             android:keyWidth="10%p" />
         <Key
             android:codes="32"
-            android:keyIcon="@drawable/ic_space"
-            android:keyWidth="50%p" />
+            android:keyWidth="50%p"
+            app:isChangeLanguageKey="true"
+            app:keyTextSize="6dp" />
         <Key
             android:codes="63"
             android:keyLabel="?"

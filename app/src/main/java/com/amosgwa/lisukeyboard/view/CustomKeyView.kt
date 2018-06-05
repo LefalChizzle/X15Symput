@@ -10,30 +10,34 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.*
 import com.amosgwa.lisukeyboard.R
+import com.amosgwa.lisukeyboard.keyboard.CustomKey
 
 class CustomKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
-        var repeatable: Boolean = false,
-        var codes: IntArray? = null,
-        var label: String? = null,
-        var icon: Drawable? = null,
-        @ColorInt var textColor: Int? = null,
-        var textSize: Float? = null,
-        @DrawableRes var keyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
+        var key: CustomKey? = null,
+        @ColorInt var globalTextColor: Int? = null,
+        var globalTextSize: Float? = null,
+        @DrawableRes var globalKeyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    val keyTextView = CustomKeyTextView(
+    val repeatable: Boolean? = key?.repeatable
+    val codes: IntArray? = key?.codes
+    val label: String? = key?.label?.toString()
+    val icon: Drawable? = key?.icon
+
+    private val keyTextView = CustomKeyTextView(
             context,
-            color = textColor,
-            size = textSize
+            color = globalTextColor,
+            size = if (key?.textSize == 0.0F) globalTextSize else key?.textSize
     )
 
     init {
+        // Activate the press states on the text views.
         isClickable = true
         // Set the key background.
-        background = keyBackground
+        background = globalKeyBackground
 
         // Center the text view inside the FrameLayout and style the text view.
         val childLayoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
