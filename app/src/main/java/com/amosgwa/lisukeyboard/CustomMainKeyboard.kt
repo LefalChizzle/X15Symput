@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.view.MotionEvent
 import android.content.res.TypedArray
+import android.util.Log
 import android.util.SparseArray
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
@@ -107,22 +108,26 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         languagesArray.recycle()
     }
 
-    override fun swipeRight() {
-    }
-
     override fun onPress(primaryCode: Int) {
     }
 
     override fun onRelease(primaryCode: Int) {
     }
 
+    override fun swipeRight() {
+        Log.d("///AMOS", "SWIPE RIGHT")
+    }
+
     override fun swipeLeft() {
+        Log.d("///AMOS", "SWIPE LEFT")
     }
 
     override fun swipeUp() {
+        Log.d("///AMOS", "SWIPE UP")
     }
 
     override fun swipeDown() {
+        Log.d("///AMOS", "SWIPE DOWN")
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {

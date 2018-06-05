@@ -23,6 +23,7 @@ class CustomKeyboardView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private lateinit var keyboardHandler: Handler
+    private lateinit var longClickHandler: Handler
 
     var currentX = 0
     var currentY = 0
@@ -46,7 +47,6 @@ class CustomKeyboardView @JvmOverloads constructor(
     private val renderedKeys = mutableListOf<CustomKeyPreview>()
     private val pressedKeys = SparseArray<CustomKeyView>()
     private var preloadedRowsWithKeyViews = SparseArray<MutableList<MutableList<CustomKeyView>>>()
-    private val repeatingKey: CustomKeyView? = null
 
     // Listeners
     var keyboardViewListener: KeyboardView.OnKeyboardActionListener? = null
@@ -91,17 +91,46 @@ class CustomKeyboardView @JvmOverloads constructor(
             }
             false
         })
+
+        // A handler to send after a delayed message from a long click.
+        longClickHandler = Handler(Handler.Callback { lngClkMsg ->
+            when (lngClkMsg.what) {
+                MSG_LONG_CLICK -> {
+                    val pointerId = lngClkMsg.obj
+                    val msg = keyboardHandler.obtainMessage(MSG_REPEAT)
+                    msg.obj = pointerId
+                    keyboardHandler.sendMessageDelayed(msg, REPEAT_DELAY.toLong())
+                }
+            }
+            false
+        })
     }
 
     private fun initGestureDetector() {
         gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onLongPress(e: MotionEvent?) {
-                val pressedKey = e?.let { detectKey(it.x, it.y) }
-                if (pressedKey?.repeatable == true) {
-                    val msg = keyboardHandler.obtainMessage(MSG_REPEAT)
-                    msg.obj = e.getPointerId(e.actionIndex)
-                    keyboardHandler.sendMessageDelayed(msg, REPEAT_DELAY.toLong())
+            override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+                var result = false
+                val distanceY = e2.y - e1.y
+                val distanceX = e2.x - e1.x
+                if (Math.abs(distanceX) > Math.abs(distanceY) &&
+                        Math.abs(distanceX) > SWIPE_THRESHOLD &&
+                        Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (distanceX > 0) {
+                        keyboardViewListener?.swipeRight()
+                    } else {
+                        keyboardViewListener?.swipeLeft()
+                    }
+                    result = true
+                } else if (Math.abs(distanceY) > SWIPE_THRESHOLD &&
+                        Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (distanceY > 0) {
+                        keyboardViewListener?.swipeDown()
+                    } else {
+                        keyboardViewListener?.swipeUp()
+                    }
+                    result = true
                 }
+                return result
             }
         })
     }
@@ -215,44 +244,50 @@ class CustomKeyboardView @JvmOverloads constructor(
     }
 
     private fun processTouchEvent(event: MotionEvent): Boolean {
-        /*
-        * Determine if the click is a long press or not first.
-        * */
-        gestureDetector.onTouchEvent(event)
-        val pointerIndex = event.actionIndex
-        val pointerId = event.getPointerId(pointerIndex)
-        when (event.actionMasked) {
-            MotionEvent.ACTION_MOVE -> {
-                // Check if the pointer is moved out of range for the key.
-                // If so, remove it.
-                val key = detectKey(event.getX(pointerIndex), event.getY(pointerIndex))
-                if (key != pressedKeys[pointerId]) {
+        if (!gestureDetector.onTouchEvent(event)) {
+            val pointerIndex = event.actionIndex
+            val pointerId = event.getPointerId(pointerIndex)
+            when (event.actionMasked) {
+                MotionEvent.ACTION_MOVE -> {
+                    // Check if the pointer is moved out of range for the key.
+                    // If so, remove it.
+                    val key = detectKey(event.getX(pointerIndex), event.getY(pointerIndex))
+                    if (key != pressedKeys[pointerId]) {
+                        pressedKeys.remove(pointerId)
+                    }
+                }
+                MotionEvent.ACTION_DOWN,
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
+                        val timings = TimingLogger(LOG_TAG, "populateKeyViews")
+                        pressedKeys.append(pointerId, pressedKey)
+                        if (pressedKey.repeatable == true) {
+                            /*
+                            * Determine if the click is a long press on the repeatable keys.
+                            * */
+                            val msg = longClickHandler.obtainMessage(MSG_LONG_CLICK)
+                            msg.obj = pointerId
+                            longClickHandler.sendMessageDelayed(msg, android.view.ViewConfiguration.getLongPressTimeout().toLong())
+                        }
+                        timings.addSplit("Action Down")
+                        timings.dumpToLog()
+                    }
+                    return false
+                }
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_POINTER_UP -> {
+                    sendKey(pressedKeys.get(pointerId))
                     pressedKeys.remove(pointerId)
+                    removeMessages()
+                    return false
                 }
-            }
-            MotionEvent.ACTION_DOWN,
-            MotionEvent.ACTION_POINTER_DOWN -> {
-                detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
-                    val timings = TimingLogger(LOG_TAG, "populateKeyViews")
-                    pressedKeys.append(pointerId, pressedKey)
-                    timings.addSplit("Action Down")
-                    timings.dumpToLog()
-                }
-                return false
-            }
-            MotionEvent.ACTION_UP,
-            MotionEvent.ACTION_POINTER_UP -> {
-                val key = pressedKeys.get(pointerId)
-                sendKey(key)
-                pressedKeys.remove(pointerId)
-                removeMessages()
-                return false
             }
         }
         return false
     }
 
     private fun removeMessages() {
+        longClickHandler.removeMessages(MSG_LONG_CLICK)
         keyboardHandler.removeMessages(MSG_REPEAT)
     }
 
@@ -273,7 +308,6 @@ class CustomKeyboardView @JvmOverloads constructor(
                     row.forEach { key ->
                         if (x - rowLinearLayout.left in key.left..key.right &&
                                 y - rowLinearLayout.top in key.top..key.bottom) {
-                            Log.d(LOG_TAG, "pressed : ${key.label}")
                             return key
                         }
                     }
@@ -287,6 +321,7 @@ class CustomKeyboardView @JvmOverloads constructor(
         key?.codes?.let { codes ->
             if (codes.isEmpty()) return false
             codes.first().let { primaryCode ->
+                Log.d(LOG_TAG, "pressed : ${key.label}")
                 val timings = TimingLogger("", "populateKeyViews")
                 keyboardViewListener?.onKey(primaryCode, codes)
                 timings.addSplit("Keyboard listener called")
@@ -323,10 +358,14 @@ class CustomKeyboardView @JvmOverloads constructor(
     companion object {
         // Messages for handler
         const val MSG_REPEAT = 0
+        const val MSG_LONG_CLICK = 1
 
         const val REPEAT_INTERVAL = 50 // ~20 keys per second
         const val REPEAT_DELAY = 400
 
         const val LOG_TAG = "AMOS"
+
+        const val SWIPE_THRESHOLD = 100
+        const val SWIPE_VELOCITY_THRESHOLD = 100
     }
 }
