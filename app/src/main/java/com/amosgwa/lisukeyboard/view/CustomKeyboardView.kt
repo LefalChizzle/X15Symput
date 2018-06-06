@@ -111,7 +111,7 @@ class CustomKeyboardView @JvmOverloads constructor(
     private fun initGestureDetector() {
         gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                var isChangeLanguageSwipe = false
+                var isChangeLanguageSwipe = 0x000
                 var direction = 0
                 var swipeThreshold = width / 2
 
@@ -119,11 +119,11 @@ class CustomKeyboardView @JvmOverloads constructor(
                 val e2PointerId = e2.getPointerId(e2.actionIndex)
                 if (e1PointerId != e2PointerId) return false
                 // Check if the swipe is within the area of the language switch key.
-                val e1Key = detectKey(e1.getX(e1.actionIndex), e1.getY(e1.actionIndex)) as CustomKeyView?
-                val e2Key = detectKey(e2.getX(e2.actionIndex), e2.getY(e1.actionIndex)) as CustomKeyView?
+                val e1Key = detectKey(e1.getX(e1.actionIndex), e1.getY(e1.actionIndex))
+                val e2Key = detectKey(e2.getX(e2.actionIndex), e2.getY(e1.actionIndex))
                 if (e1Key?.isChangeLanguage == true &&
                         e2Key?.isChangeLanguage == true) {
-                    isChangeLanguageSwipe = true
+                    isChangeLanguageSwipe = 0x001 // 0x001 for being inside the key view.
                     swipeThreshold = e1Key.width / 2
                 }
                 var result = false
@@ -139,7 +139,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                         keyboardViewListener?.onSwipeLeft()
                         KeyboardActionListener.SWIPE_DIRECTION_LEFT
                     }
-                    isChangeLanguageSwipe = isChangeLanguageSwipe and true
+                    isChangeLanguageSwipe = isChangeLanguageSwipe or 0x010 // 0x011 for both being in the key view and swiping right or left.
                     result = true
                 } else if (Math.abs(distanceY) > height / 2 &&
                         Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
@@ -150,7 +150,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                     }
                     result = true
                 }
-                if (isChangeLanguageSwipe) {
+                if (isChangeLanguageSwipe == 0x011) {
                     keyboardViewListener?.onChangeKeyboardSwipe(direction)
                 }
                 return result
