@@ -3,7 +3,6 @@ package com.amosgwa.lisukeyboard
 import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
-import android.inputmethodservice.KeyboardView
 import android.media.AudioManager
 import android.view.KeyEvent
 import android.view.View
@@ -15,9 +14,11 @@ import android.util.SparseArray
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.CustomKeyboardView
+import com.amosgwa.lisukeyboard.view.KeyboardActionListener
+import kotlin.properties.Delegates
 
 
-class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener {
+class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     private lateinit var customKeyboardView: CustomKeyboardView
 
@@ -33,6 +34,23 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
     private var keyboards: SparseArray<CustomKeyboard> = SparseArray()
 
     private var preferences: KeyboardPreferences? = null
+
+    private var currentSelectedLanguageIdx by Delegates.observable(0) { _, _, newValue ->
+        keyboardNormal = CustomKeyboard(this, languageXmlRes[newValue], TYPE_NORMAL, languageNames[newValue])
+        keyboardShift = CustomKeyboard(this, languageShiftXmlRes[newValue], TYPE_SHIFT, languageNames[newValue])
+        keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[newValue], TYPE_SYMBOL, languageNames[newValue])
+
+        keyboards.clear()
+        keyboards.append(TYPE_NORMAL, keyboardNormal)
+        keyboards.append(TYPE_SHIFT, keyboardShift)
+        keyboards.append(TYPE_SYMBOL, keyboardSymbol)
+
+//        customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
+        customKeyboardView.keyboards = keyboards
+        customKeyboardView.currentKeyboardType = TYPE_NORMAL
+        customKeyboardView.invalidate()
+    }
+
     private var lastSavedLanguageIdx: Int = 0
         set(value) {
             field = value
@@ -70,7 +88,7 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
         customKeyboardView.keyboardViewListener = this
         customKeyboardView.keyboards = keyboards
-        customKeyboardView.currentKeyboardType = 0
+        customKeyboardView.currentKeyboardType = TYPE_NORMAL
 
         return customKeyboardView
     }
@@ -108,26 +126,29 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         languagesArray.recycle()
     }
 
-    override fun onPress(primaryCode: Int) {
-    }
-
-    override fun onRelease(primaryCode: Int) {
-    }
-
-    override fun swipeRight() {
+    override fun onSwipeRight() {
         Log.d("///AMOS", "SWIPE RIGHT")
     }
 
-    override fun swipeLeft() {
+    override fun onSwipeLeft() {
         Log.d("///AMOS", "SWIPE LEFT")
     }
 
-    override fun swipeUp() {
+    override fun onSwipeUp() {
         Log.d("///AMOS", "SWIPE UP")
     }
 
-    override fun swipeDown() {
+    override fun onSwipeDown() {
         Log.d("///AMOS", "SWIPE DOWN")
+    }
+
+    override fun onChangeKeyboardSwipe(direction: Int) {
+        changeLanguage(direction)
+    }
+
+    private fun changeLanguage(direction: Int) {
+        currentSelectedLanguageIdx = ((currentSelectedLanguageIdx + direction) + languageNames.size) % languageNames.size
+        Log.d("///AMOS", "CHANGE DIRECTION ${currentSelectedLanguageIdx}")
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
@@ -211,9 +232,6 @@ class CustomMainKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionLi
         KEYCODE_MYA_TI = resources.getInteger(R.integer.keycode_mya_ti)
         KEYCODE_MYA_NA = resources.getInteger(R.integer.keycode_mya_na)
         KEYCODE_NA_PO = resources.getInteger(R.integer.keycode_na_po)
-    }
-
-    override fun onText(text: CharSequence?) {
     }
 
     companion object {

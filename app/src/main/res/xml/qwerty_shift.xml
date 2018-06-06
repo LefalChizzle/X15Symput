@@ -103,6 +103,7 @@
             android:keyLabel="K" />
         <Key
             android:codes="76"
+            android:keyEdgeFlags="right"
             android:keyLabel="L" />
     </Row>
 
@@ -147,11 +148,11 @@
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">
         <Key
-
             android:codes="@integer/keycode_sym"
             android:keyEdgeFlags="left"
             android:keyLabel="+!="
-            android:keyWidth="15%p" />
+            android:keyWidth="15%p"
+            app:keyTextSize="6dp" />
         <Key
             android:codes="@integer/keycode_switch_next_keyboard"
             android:keyIcon="@drawable/ic_language"
@@ -159,10 +160,11 @@
         <Key
             android:codes="32"
             android:keyWidth="50%p"
-            app:isChangeLanguageKey="true" />
+            app:isChangeLanguageKey="true"
+            app:keyTextSize="6dp" />
         <Key
-            android:codes="46"
-            android:keyLabel="."
+            android:codes="63"
+            android:keyLabel="?"
             android:keyWidth="10%p" />
         <Key
             android:codes="@integer/keycode_done"

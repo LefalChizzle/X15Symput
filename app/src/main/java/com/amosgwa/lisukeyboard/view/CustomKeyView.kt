@@ -26,6 +26,7 @@ class CustomKeyView @JvmOverloads constructor(
     val codes: IntArray? = key?.codes
     val label: String? = key?.label?.toString()
     val icon: Drawable? = key?.icon
+    val isChangeLanguage: Boolean? = key?.isChangeLanguageKey
 
     private val keyTextView = CustomKeyTextView(
             context,

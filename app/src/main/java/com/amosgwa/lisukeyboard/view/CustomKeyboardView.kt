@@ -28,6 +28,8 @@ class CustomKeyboardView @JvmOverloads constructor(
     var currentX = 0
     var currentY = 0
 
+    private var swipeThreshold: Int = 0
+
     // Styles
     var globalKeyTextColor: Int = 0
     var globalKeyTextSize: Float = 0.0f
@@ -49,7 +51,7 @@ class CustomKeyboardView @JvmOverloads constructor(
     private var preloadedRowsWithKeyViews = SparseArray<MutableList<MutableList<CustomKeyView>>>()
 
     // Listeners
-    var keyboardViewListener: KeyboardView.OnKeyboardActionListener? = null
+    var keyboardViewListener: KeyboardActionListener? = null
 
     // Gesture detector
     private lateinit var gestureDetector: GestureDetector
@@ -109,26 +111,47 @@ class CustomKeyboardView @JvmOverloads constructor(
     private fun initGestureDetector() {
         gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+                var isChangeLanguageSwipe = false
+                var direction = 0
+                var swipeThreshold = width / 2
+
+                val e1PointerId = e1.getPointerId(e1.actionIndex)
+                val e2PointerId = e2.getPointerId(e2.actionIndex)
+                if (e1PointerId != e2PointerId) return false
+                // Check if the swipe is within the area of the language switch key.
+                val e1Key = detectKey(e1.getX(e1.actionIndex), e1.getY(e1.actionIndex)) as CustomKeyView?
+                val e2Key = detectKey(e2.getX(e2.actionIndex), e2.getY(e1.actionIndex)) as CustomKeyView?
+                if (e1Key?.isChangeLanguage == true &&
+                        e2Key?.isChangeLanguage == true) {
+                    isChangeLanguageSwipe = true
+                    swipeThreshold = e1Key.width / 2
+                }
                 var result = false
                 val distanceY = e2.y - e1.y
                 val distanceX = e2.x - e1.x
                 if (Math.abs(distanceX) > Math.abs(distanceY) &&
-                        Math.abs(distanceX) > SWIPE_THRESHOLD &&
+                        Math.abs(distanceX) > swipeThreshold &&
                         Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (distanceX > 0) {
-                        keyboardViewListener?.swipeRight()
+                    direction = if (distanceX > 0) {
+                        keyboardViewListener?.onSwipeRight()
+                        KeyboardActionListener.SWIPE_DIRECTION_RIGHT
                     } else {
-                        keyboardViewListener?.swipeLeft()
+                        keyboardViewListener?.onSwipeLeft()
+                        KeyboardActionListener.SWIPE_DIRECTION_LEFT
                     }
+                    isChangeLanguageSwipe = isChangeLanguageSwipe and true
                     result = true
-                } else if (Math.abs(distanceY) > SWIPE_THRESHOLD &&
+                } else if (Math.abs(distanceY) > height / 2 &&
                         Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (distanceY > 0) {
-                        keyboardViewListener?.swipeDown()
+                        keyboardViewListener?.onSwipeDown()
                     } else {
-                        keyboardViewListener?.swipeUp()
+                        keyboardViewListener?.onSwipeUp()
                     }
                     result = true
+                }
+                if (isChangeLanguageSwipe) {
+                    keyboardViewListener?.onChangeKeyboardSwipe(direction)
                 }
                 return result
             }
@@ -200,6 +223,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                 keyView.layoutParams = params
                 // Update the language for the key that is assigned with isChange
                 if (key.isChangeLanguageKey == true) {
+                    swipeThreshold = key.width / 2
                     keyView.updateLabel(keyboard.language)
                 }
                 // Keeps track of all of the key views
@@ -213,6 +237,7 @@ class CustomKeyboardView @JvmOverloads constructor(
     }
 
     private fun preloadKeyViews() {
+        preloadedRowsWithKeyViews.clear()
         for (i in 0 until keyboards.size()) {
             val key = keyboards.keyAt(i)
             val kbd = keyboards.get(key)
@@ -365,7 +390,20 @@ class CustomKeyboardView @JvmOverloads constructor(
 
         const val LOG_TAG = "AMOS"
 
-        const val SWIPE_THRESHOLD = 100
         const val SWIPE_VELOCITY_THRESHOLD = 100
+    }
+}
+
+interface KeyboardActionListener {
+    fun onKey(primaryCode: Int, keyCodes: IntArray?)
+    fun onSwipeLeft()
+    fun onSwipeRight()
+    fun onSwipeUp()
+    fun onSwipeDown()
+    fun onChangeKeyboardSwipe(direction: Int)
+
+    companion object {
+        const val SWIPE_DIRECTION_LEFT = -1
+        const val SWIPE_DIRECTION_RIGHT = 1
     }
 }
