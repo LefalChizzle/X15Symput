@@ -163,8 +163,8 @@
             app:isChangeLanguageKey="true"
             app:keyTextSize="6dp" />
         <Key
-            android:codes="63"
-            android:keyLabel="?"
+            android:codes="@integer/keycode_na_po_mya_na"
+            android:keyLabel="ꓹꓼ"
             android:keyWidth="10%p" />
         <Key
             android:codes="@integer/keycode_done"

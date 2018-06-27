@@ -150,7 +150,7 @@
         <Key
             android:codes="@integer/keycode_sym"
             android:keyEdgeFlags="left"
-            android:keyLabel="+!="
+            android:keyLabel="\?123"
             android:keyWidth="15%p"
             app:keyTextSize="6dp" />
         <Key
@@ -163,8 +163,8 @@
             app:isChangeLanguageKey="true"
             app:keyTextSize="6dp" />
         <Key
-            android:codes="63"
-            android:keyLabel="?"
+            android:codes="44"
+            android:keyLabel=","
             android:keyWidth="10%p" />
         <Key
             android:codes="@integer/keycode_done"

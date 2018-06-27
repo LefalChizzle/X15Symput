@@ -83,8 +83,8 @@
             android:codes="92"
             android:keyLabel="\\" />
         <Key
-            android:codes="@integer/keycode_na_po_mya_na"
-            android:keyLabel="ꓹꓼ" />
+            android:codes="42"
+            android:keyLabel="*" />
         <Key
             android:codes="40"
             android:keyLabel="(" />
@@ -125,14 +125,14 @@
             android:codes="45"
             android:keyLabel="-" />
         <Key
-            android:codes="42"
-            android:keyLabel="*" />
-        <Key
             android:codes="60"
             android:keyLabel="&lt;" />
         <Key
             android:codes="62"
             android:keyLabel="&gt;" />
+        <Key
+            android:codes="63"
+            android:keyLabel="\?" />
         <Key
             android:codes="@integer/keycode_delete"
             android:isRepeatable="true"
@@ -160,8 +160,8 @@
             app:isChangeLanguageKey="true"
             app:keyTextSize="6dp" />
         <Key
-            android:codes="44"
-            android:keyLabel=","
+            android:codes="46"
+            android:keyLabel="."
             android:keyWidth="10%p" />
         <Key
             android:codes="@integer/keycode_done"
