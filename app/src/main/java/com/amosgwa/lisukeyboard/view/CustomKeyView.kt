@@ -28,32 +28,45 @@ class CustomKeyView @JvmOverloads constructor(
     val icon: Drawable? = key?.icon
     val isChangeLanguage: Boolean? = key?.isChangeLanguageKey
 
-    private val keyTextView = CustomKeyTextView(
-            context,
-            color = globalTextColor,
-            size = if (key?.textSize == 0.0F) globalTextSize else key?.textSize
-    )
+    lateinit var keyTextView: CustomKeyTextView
 
     init {
         // Activate the press states on the text views.
         isClickable = true
         // Set the key background.
-        background = globalKeyBackground
-
-        // Center the text view inside the FrameLayout and style the text view.
-        val childLayoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        childLayoutParams.gravity = Gravity.CENTER
-        keyTextView.layoutParams = childLayoutParams
-
-        // Icons get priority in the key view.
-        if (icon != null) {
-            val imageView = ImageView(context)
-            imageView.layoutParams = childLayoutParams
-            imageView.setImageDrawable(icon)
-            addView(imageView)
-        } else {
-            keyTextView.text = label
-            addView(keyTextView)
+        key?.let { key ->
+            keyTextView = CustomKeyTextView(
+                    context,
+                    color = globalTextColor,
+                    size = if (key.textSize == 0.0F) globalTextSize else key.textSize
+            )
+            // If it is the edge key expand the width to fill.
+            layoutParams = if (key.isEdge()) {
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1.0F)
+            } else {
+                LinearLayout.LayoutParams(key.width, key.height)
+            }
+            val textViewWidth = key.width * 0.95
+            val textViewHeight = key.height * 0.95
+            // Tell the parent view how this to be laid out.
+            val childLayoutParams = FrameLayout.LayoutParams(textViewWidth.toInt(), textViewHeight.toInt())
+            when {
+                key.isLeftEdge() -> childLayoutParams.gravity = Gravity.END
+                key.isRightEdge() -> childLayoutParams.gravity = Gravity.START
+                else -> childLayoutParams.gravity = Gravity.CENTER
+            }
+            keyTextView.layoutParams = childLayoutParams
+            if (icon != null) {
+                background = globalKeyBackground
+                val imageView = ImageView(context)
+                imageView.layoutParams = childLayoutParams
+                imageView.setImageDrawable(icon)
+                addView(imageView)
+            } else {
+                keyTextView.text = label
+                keyTextView.background = globalKeyBackground
+                addView(keyTextView)
+            }
         }
     }
 
@@ -77,6 +90,7 @@ class CustomKeyTextView @JvmOverloads constructor(
 
         textSize = size ?: DEFAULT_TEXT_SIZE
         textAlignment = View.TEXT_ALIGNMENT_CENTER
+        gravity = Gravity.CENTER
     }
 
     companion object {

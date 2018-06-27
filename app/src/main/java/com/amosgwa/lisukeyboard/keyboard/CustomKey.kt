@@ -18,4 +18,16 @@ class CustomKey(res: Resources?, parent: Keyboard.Row?, x: Int, y: Int, parser: 
         textSize = a?.getDimension(R.styleable.CustomKey_keyTextSize, 0.0F)
         a?.recycle()
     }
+
+    fun isRightEdge(): Boolean {
+        return edgeFlags and Keyboard.EDGE_RIGHT == Keyboard.EDGE_RIGHT
+    }
+
+    fun isLeftEdge(): Boolean {
+        return edgeFlags and Keyboard.EDGE_LEFT == Keyboard.EDGE_LEFT
+    }
+
+    fun isEdge(): Boolean {
+        return isRightEdge() || isLeftEdge()
+    }
 }

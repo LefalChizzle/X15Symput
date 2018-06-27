@@ -14,6 +14,9 @@ import android.view.*
 import com.amosgwa.lisukeyboard.keyboard.CustomKey
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
 import kotlin.properties.Delegates
+import android.R.attr.button
+import android.graphics.Rect
+import android.view.TouchDelegate
 
 
 class CustomKeyboardView @JvmOverloads constructor(
@@ -124,7 +127,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                 if (e1Key?.isChangeLanguage == true &&
                         e2Key?.isChangeLanguage == true) {
                     isChangeLanguageSwipe = 0x001 // 0x001 for being inside the key view.
-                    swipeThreshold = e1Key.width / 2
+                    swipeThreshold = e1Key.width / 4
                 }
                 var result = false
                 val distanceY = e2.y - e1.y
@@ -139,7 +142,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                         keyboardViewListener?.onSwipeLeft()
                         KeyboardActionListener.SWIPE_DIRECTION_LEFT
                     }
-                    isChangeLanguageSwipe = isChangeLanguageSwipe or 0x010 // 0x011 for both being in the key view and swiping right or left.
+                    isChangeLanguageSwipe = isChangeLanguageSwipe or 0x010 // 0x011 for both being in the change language key view and swiping right or left.
                     result = true
                 } else if (Math.abs(distanceY) > height / 2 &&
                         Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
@@ -216,11 +219,6 @@ class CustomKeyboardView @JvmOverloads constructor(
                         globalTextSize = globalKeyTextSize,
                         globalKeyBackground = keyBackgroundCopy
                 )
-                val params = LinearLayout.LayoutParams(
-                        key.width,
-                        key.height
-                )
-                keyView.layoutParams = params
                 // Update the language for the key that is assigned with isChange
                 if (key.isChangeLanguageKey == true) {
                     swipeThreshold = key.width / 2
@@ -229,6 +227,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                 // Keeps track of all of the key views
                 rowKeyViews.add(keyView)
             }
+
             // Key tracks of the rows with key views.
             keyViews.add(rowKeyViews.toMutableList())
             rowKeyViews.clear()
@@ -390,7 +389,7 @@ class CustomKeyboardView @JvmOverloads constructor(
 
         const val LOG_TAG = "AMOS"
 
-        const val SWIPE_VELOCITY_THRESHOLD = 100
+        const val SWIPE_VELOCITY_THRESHOLD = 50
     }
 }
 

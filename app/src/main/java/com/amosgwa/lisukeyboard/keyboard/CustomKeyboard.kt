@@ -13,12 +13,10 @@ class CustomKeyboard(context: Context?, val xmlLayoutResId: Int, val type: Int, 
     fun getRows(): MutableList<List<CustomKey>> {
         val rows = mutableListOf<List<CustomKey>>()
         var row = mutableListOf<CustomKey>()
-        for (key in this.keys) {
-            val rightEdge = key.edgeFlags and Keyboard.EDGE_RIGHT
-            if (rightEdge == 0) {
-                row.add(key as CustomKey)
-            } else {
-                row.add(key as CustomKey)
+        @Suppress("UNCHECKED_CAST")
+        (this.keys as MutableList<CustomKey>).forEach { key ->
+            row.add(key)
+            if (key.isRightEdge()) {
                 rows.add(row)
                 row = mutableListOf()
             }
