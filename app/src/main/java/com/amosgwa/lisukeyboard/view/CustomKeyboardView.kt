@@ -104,7 +104,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                     val pointerId = lngClkMsg.obj
                     val msg = keyboardHandler.obtainMessage(MSG_REPEAT)
                     msg.obj = pointerId
-                    keyboardHandler.sendMessageDelayed(msg, REPEAT_DELAY.toLong())
+                    keyboardHandler.sendMessage(msg)
                 }
             }
             false
@@ -291,7 +291,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                             * */
                             val msg = longClickHandler.obtainMessage(MSG_LONG_CLICK)
                             msg.obj = pointerId
-                            longClickHandler.sendMessageDelayed(msg, android.view.ViewConfiguration.getLongPressTimeout().toLong())
+                            longClickHandler.sendMessageDelayed(msg, LONG_PRESS_DELAY.toLong())
                         }
                         timings.addSplit("Action Down")
                         timings.dumpToLog()
@@ -383,9 +383,9 @@ class CustomKeyboardView @JvmOverloads constructor(
         // Messages for handler
         const val MSG_REPEAT = 0
         const val MSG_LONG_CLICK = 1
-
+        // Time intervals
+        const val LONG_PRESS_DELAY = 500
         const val REPEAT_INTERVAL = 50 // ~20 keys per second
-        const val REPEAT_DELAY = 400
 
         const val LOG_TAG = "AMOS"
 
