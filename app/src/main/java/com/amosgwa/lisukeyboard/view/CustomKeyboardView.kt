@@ -4,20 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
-import android.inputmethodservice.KeyboardView
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.Message
 import android.support.annotation.RequiresApi
 import android.util.*
+import android.view.*
 import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.R
-import android.view.*
 import com.amosgwa.lisukeyboard.keyboard.CustomKey
 import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
 import kotlin.properties.Delegates
-import android.R.attr.button
-import android.graphics.Rect
-import android.view.TouchDelegate
-import android.util.DisplayMetrics
 
 
 class CustomKeyboardView @JvmOverloads constructor(
@@ -163,13 +160,6 @@ class CustomKeyboardView @JvmOverloads constructor(
                 return result
             }
         })
-    }
-
-    /*
-    * This is to put in
-    * */
-    fun changeLanguage() {
-
     }
 
     private fun addKeyViews() {
