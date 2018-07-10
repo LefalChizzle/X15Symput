@@ -17,6 +17,7 @@ import kotlin.properties.Delegates
 import android.R.attr.button
 import android.graphics.Rect
 import android.view.TouchDelegate
+import android.util.DisplayMetrics
 
 
 class CustomKeyboardView @JvmOverloads constructor(
@@ -63,6 +64,9 @@ class CustomKeyboardView @JvmOverloads constructor(
         return keyboards[currentKeyboardType]
     }
 
+    // Current screen orientation
+    private var isLandscape = false
+
     init {
         /*
         * Load the styles from the keyboard xml for the child keys. Keyboard should be the only place
@@ -72,12 +76,12 @@ class CustomKeyboardView @JvmOverloads constructor(
         globalKeyTextColor = a.getColor(R.styleable.CustomKeyboardView_keyTextColor, context.getColor(R.color.default_key_text_color))
         globalKeyTextSize = a.getDimension(R.styleable.CustomKeyboardView_keyTextSize, CustomKeyTextView.DEFAULT_TEXT_SIZE)
         keyBackground = a.getDrawable(R.styleable.CustomKeyboardView_keyBackground)
-
         // recycle the typed array
         a.recycle()
-
         // Set orientation for the rows
         orientation = VERTICAL
+        // Determine the current screen orientation
+        determineScreenMode()
     }
 
     override fun onAttachedToWindow() {
@@ -202,8 +206,8 @@ class CustomKeyboardView @JvmOverloads constructor(
         }
     }
 
-
-    private fun getKeyViews(rows: List<List<CustomKey>>, keyboard: CustomKeyboard): MutableList<MutableList<CustomKeyView>> {
+    // Create views for each individual keys for a keyboard
+    private fun getKeyViews(rows: List<List<CustomKey>>, keyboardLanguage: String): MutableList<MutableList<CustomKeyView>> {
         val keyViews = mutableListOf<MutableList<CustomKeyView>>()
         rows.forEach { row ->
             // Keep track of the row keys.
@@ -217,12 +221,13 @@ class CustomKeyboardView @JvmOverloads constructor(
                         key = key,
                         globalTextColor = globalKeyTextColor,
                         globalTextSize = globalKeyTextSize,
+                        isLandscape = isLandscape,
                         globalKeyBackground = keyBackgroundCopy
                 )
                 // Update the language for the key that is assigned with isChange
                 if (key.isChangeLanguageKey == true) {
                     swipeThreshold = key.width / 2
-                    keyView.updateLabel(keyboard.language)
+                    keyView.updateLabel(keyboardLanguage)
                 }
                 // Keeps track of all of the key views
                 rowKeyViews.add(keyView)
@@ -242,7 +247,7 @@ class CustomKeyboardView @JvmOverloads constructor(
             val kbd = keyboards.get(key)
             kbd.getRows().let { rows ->
                 val timings = TimingLogger(LOG_TAG, "preloadKeyViews")
-                preloadedRowsWithKeyViews.append(key, getKeyViews(rows, kbd))
+                preloadedRowsWithKeyViews.append(key, getKeyViews(rows, kbd.language))
                 timings.addSplit("preloadKeyViews")
                 timings.dumpToLog()
             }
@@ -257,6 +262,11 @@ class CustomKeyboardView @JvmOverloads constructor(
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         return displayMetrics
+    }
+
+    private fun determineScreenMode() {
+        val displayMetrics = getDisplayMetrics()
+        isLandscape = displayMetrics.heightPixels < displayMetrics.widthPixels
     }
 
     @SuppressLint("ClickableViewAccessibility")

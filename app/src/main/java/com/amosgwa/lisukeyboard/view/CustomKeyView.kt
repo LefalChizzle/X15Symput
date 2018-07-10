@@ -16,6 +16,7 @@ class CustomKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
+        val isLandscape: Boolean = false,
         var key: CustomKey? = null,
         @ColorInt var globalTextColor: Int? = null,
         var globalTextSize: Float? = null,
@@ -28,7 +29,7 @@ class CustomKeyView @JvmOverloads constructor(
     val icon: Drawable? = key?.icon
     val isChangeLanguage: Boolean? = key?.isChangeLanguageKey
 
-    lateinit var keyTextView: CustomKeyTextView
+    private lateinit var keyTextView: CustomKeyTextView
 
     init {
         // Activate the press states on the text views.
@@ -53,14 +54,23 @@ class CustomKeyView @JvmOverloads constructor(
                 key.isRightEdge() -> childLayoutParams.gravity = Gravity.START or Gravity.CENTER_VERTICAL
                 else -> childLayoutParams.gravity = Gravity.CENTER
             }
-            keyTextView.layoutParams = childLayoutParams
             if (icon != null) {
+                // Create padding based on the orientation of the device for the key icons.
+                val leftRightPadding = (key.width
+                        * if (isLandscape) LANDSCAPE_WIDTH_PADDING_RATIO else PORTRAIT_WIDTH_PADDING_RATIO)
+                        .toInt()
+                val topBottomPadding = (key.width
+                        * if (isLandscape) LANDSCAPE_HEIGHT_PADDING_RATIO else PORTRAIT_HEIGHT_PADDING_RATIO)
+                        .toInt()
+
                 val imageView = ImageView(context)
                 imageView.layoutParams = childLayoutParams
+                imageView.setPadding(leftRightPadding, topBottomPadding, leftRightPadding, topBottomPadding)
                 imageView.setImageDrawable(icon)
                 imageView.background = globalKeyBackground
                 addView(imageView)
             } else {
+                keyTextView.layoutParams = childLayoutParams
                 keyTextView.text = label
                 keyTextView.background = globalKeyBackground
                 addView(keyTextView)
@@ -70,6 +80,13 @@ class CustomKeyView @JvmOverloads constructor(
 
     fun updateLabel(newLabel: String) {
         keyTextView.text = newLabel
+    }
+
+    companion object {
+        const val LANDSCAPE_WIDTH_PADDING_RATIO = 0.08
+        const val LANDSCAPE_HEIGHT_PADDING_RATIO = 0.08
+        const val PORTRAIT_WIDTH_PADDING_RATIO = 0.12
+        const val PORTRAIT_HEIGHT_PADDING_RATIO = 0.12
     }
 }
 
