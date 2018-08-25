@@ -115,12 +115,11 @@ class CustomKeyTextView @JvmOverloads constructor(
 }
 
 class CustomKeyPreview @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = R.style.CustomKeyPreviewDefaultStyle, height: Int
-) : TextView(context, attrs, defStyleAttr, defStyleRes) {
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = R.style.CustomKeyPreviewDefaultStyle
+) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
     var x = 0
     var y = 0
-
-    init {
-        this.height = height
-    }
 }

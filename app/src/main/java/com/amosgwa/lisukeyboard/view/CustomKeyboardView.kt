@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Handler
 import android.os.Message
-import android.support.annotation.RequiresApi
 import android.util.*
 import android.view.*
 import android.widget.LinearLayout
@@ -26,8 +24,6 @@ class CustomKeyboardView @JvmOverloads constructor(
     private lateinit var keyboardHandler: Handler
     private lateinit var longClickHandler: Handler
 
-    var currentX = 0
-    var currentY = 0
 
     private var swipeThreshold: Int = 0
 
@@ -47,9 +43,12 @@ class CustomKeyboardView @JvmOverloads constructor(
     }
 
     // Keys
-    private val renderedKeys = mutableListOf<CustomKeyPreview>()
     private val pressedKeys = SparseArray<CustomKeyView>()
     private var preloadedRowsWithKeyViews = SparseArray<MutableList<MutableList<CustomKeyView>>>()
+
+    // Preview Keys
+    private lateinit var MOD_KEYS: List<Int>
+    private val renderedKeys = mutableListOf<CustomKeyPreview>()
 
     // Listeners
     var keyboardViewListener: KeyboardActionListener? = null
@@ -79,6 +78,8 @@ class CustomKeyboardView @JvmOverloads constructor(
         orientation = VERTICAL
         // Determine the current screen orientation
         determineScreenMode()
+        // Get list of modifier keys
+        generateModKeysList()
     }
 
     override fun onAttachedToWindow() {
@@ -284,7 +285,7 @@ class CustomKeyboardView @JvmOverloads constructor(
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
                         val timings = TimingLogger(LOG_TAG, "populateKeyViews")
-                        pressedKeys.append(pointerId, pressedKey)
+                        addPressedKey(pointerId, pressedKey)
                         if (pressedKey.repeatable == true) {
                             /*
                             * Determine if the click is a long press on the repeatable keys.
@@ -308,6 +309,11 @@ class CustomKeyboardView @JvmOverloads constructor(
             }
         }
         return false
+    }
+
+    private fun addPressedKey(id: Int, keyView: CustomKeyView) {
+        pressedKeys.append(id, keyView)
+        renderKeyPreview(keyView)
     }
 
     private fun removeMessages() {
@@ -356,19 +362,56 @@ class CustomKeyboardView @JvmOverloads constructor(
         return false
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun renderPressedKey(pressedKey: CustomKeyPreview) {
-        val windowManager: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val params = WindowManager.LayoutParams(100, 100,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSPARENT)
-        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-        params.gravity = Gravity.TOP or Gravity.START
-        params.x = pressedKey.x
-        params.y = pressedKey.y
-        windowManager.addView(pressedKey, params)
-        renderedKeys.add(pressedKey)
+    private fun renderKeyPreview(pressedKey: CustomKeyView) {
+        pressedKey.key?.let { key ->
+            // If the key isn't any of the modifying key, render it
+            var isModKey = false
+            key.codes.forEach {
+                isModKey = isModKey or MOD_KEYS.contains(it)
+                if(!isModKey) return@forEach
+            }
+
+            if (!isModKey) {
+                val keyPreviewWidth = key.width
+                val windowManager: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                val params = WindowManager.LayoutParams(keyPreviewWidth.toInt(), pressedKey.height * 2,
+                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                        PixelFormat.TRANSPARENT)
+                params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                params.gravity = Gravity.START or Gravity.TOP
+                params.verticalMargin
+                // Get the location of the keys on screen
+                val location = IntArray(2)
+                pressedKey.getLocationOnScreen(location)
+                val x = location[0]
+                val y = location[1]
+                params.x = x
+                params.y = y
+                val keyPreview = CustomKeyPreview(context)
+                // Add the preview key view to the window manager
+                windowManager.addView(keyPreview, params)
+//        renderedKeys.add(pressedKey)
+            }
+        }
+    }
+
+    fun generateModKeysList() {
+        context.resources.let { res ->
+            MOD_KEYS = listOf(
+                    res.getInteger(R.integer.keycode_delete),
+                    res.getInteger(R.integer.keycode_abc),
+                    res.getInteger(R.integer.keycode_alt),
+                    res.getInteger(R.integer.keycode_cancel),
+                    res.getInteger(R.integer.keycode_done),
+                    res.getInteger(R.integer.keycode_mode_change),
+                    res.getInteger(R.integer.keycode_shift),
+                    res.getInteger(R.integer.keycode_space),
+                    res.getInteger(R.integer.keycode_switch_next_keyboard),
+                    res.getInteger(R.integer.keycode_unshift),
+                    res.getInteger(R.integer.keycode_sym)
+            )
+        }
     }
 
     private fun clearRenderedKeys() {
