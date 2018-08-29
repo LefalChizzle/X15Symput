@@ -1,42 +1,41 @@
-*.iml
-.gradle
-/.idea
-/.idea
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
+# Built application files
+/*/build/
 /build
-/captures
-.externalNativeBuild
-/.idea/caches
-.idea/misc.xml
 
-# Ant
-bin
-gen
-build.xml
-ant.properties
+# Crashlytics configuations
+com_crashlytics_export_strings.xml
+
+# Local configuration file (sdk path, etc)
 local.properties
 
-# OSX Noise
-.DS_Store
-tmp
+# Gradle generated files
+.gradle/
 
-# IntelliJ idea
-out
-.idea
+# Signing files
+.signing/
+
+# User-specific configurations
+.idea/libraries/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/caches/
+.idea/codeStyles/Project.xml
+.idea/dbnavigator.xml
+.idea/.name
+.idea/compiler.xml
+.idea/copyright/profiles_settings.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/scopes/scope_settings.xml
+.idea/vcs.xml
 *.iml
-*.ipr
-*.iws
-classes
-captures
 
-# Gradle
-build
-.gradle
-
-# Maven
-target
-release.properties
-pom.xml.*
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
