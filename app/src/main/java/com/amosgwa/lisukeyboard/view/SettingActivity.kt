@@ -12,6 +12,9 @@ import android.os.SystemClock
 import android.provider.Settings
 import com.amosgwa.lisukeyboard.extensions.showToast
 import android.support.v7.app.AppCompatActivity
+import android.content.ComponentName
+import android.view.View
+
 
 class SettingActivity : AppCompatActivity() {
     private var binding: ActivitySettingBinding? = null
@@ -33,6 +36,11 @@ class SettingActivity : AppCompatActivity() {
             binding?.editField?.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0f, 0f, 0))
             binding?.editField?.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0f, 0f, 0))
         }, 900)
+    }
+
+    fun OpenLanguageSetting(v: View) {
+        val intent = Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
+        startActivity(intent)
     }
 
     private fun checkDrawOverlayPermission() {

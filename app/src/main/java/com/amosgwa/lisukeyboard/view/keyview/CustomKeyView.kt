@@ -1,4 +1,4 @@
-package com.amosgwa.lisukeyboard.view
+package com.amosgwa.lisukeyboard.view.keyview
 
 import android.content.Context
 import android.graphics.Color
@@ -10,7 +10,7 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.*
 import com.amosgwa.lisukeyboard.R
-import com.amosgwa.lisukeyboard.keyboard.CustomKey
+import com.amosgwa.lisukeyboard.keyboardinflater.CustomKey
 
 class CustomKeyView @JvmOverloads constructor(
         context: Context,
@@ -100,17 +100,10 @@ class CustomKeyTextView @JvmOverloads constructor(
 ) : TextView(context, attrs, defStyleAttr, defStyleRes) {
     init {
         background = ColorDrawable(Color.TRANSPARENT)
-
-        setTextColor(color ?: DEFAULT_TEXT_COLOR)
-
-        textSize = size ?: DEFAULT_TEXT_SIZE
+        setTextColor(color ?: resources.getColor(R.color.default_key_text_color, null))
+        textSize = size ?: resources.getDimension(R.dimen.default_key_text_size)
         textAlignment = View.TEXT_ALIGNMENT_CENTER
         gravity = Gravity.CENTER
-    }
-
-    companion object {
-        const val DEFAULT_TEXT_SIZE = 12.0f
-        const val DEFAULT_TEXT_COLOR = Color.BLACK
     }
 }
 

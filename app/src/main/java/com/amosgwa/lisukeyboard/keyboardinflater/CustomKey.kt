@@ -1,4 +1,4 @@
-package com.amosgwa.lisukeyboard.keyboard
+package com.amosgwa.lisukeyboard.keyboardinflater
 
 import android.content.res.Resources
 import android.content.res.XmlResourceParser

@@ -2,4 +2,7 @@
 <resources>
     <dimen name="key_height">60dp</dimen>
     <dimen name="bottom_keys_height">65dp</dimen>
+
+    <!--Default values-->
+    <dimen name="default_key_text_size">12dp</dimen>
 </resources>

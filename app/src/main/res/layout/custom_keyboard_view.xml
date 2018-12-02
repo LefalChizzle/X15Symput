@@ -166,31 +166,31 @@
         <!--android:clipChildren="false"-->
         <!--android:clipToPadding="false">-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="c" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="C" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="c" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="c" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
@@ -204,109 +204,31 @@
         <!--android:clipChildren="false"-->
         <!--android:clipToPadding="false">-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="A" />-->
-
-        <!--</LinearLayout>-->
-
-        <!--<LinearLayout-->
-
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:clipChildren="false"-->
-        <!--android:clipToPadding="false">-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="B" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="B" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="B" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="B" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="B" />-->
-
-        <!--</LinearLayout>-->
-
-        <!--<LinearLayout-->
-
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:clipChildren="false"-->
-        <!--android:clipToPadding="false">-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="A" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="A" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="A" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--app:text="A" />-->
-
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
@@ -321,31 +243,109 @@
         <!--android:clipChildren="false"-->
         <!--android:clipToPadding="false">-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="B" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="B" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="B" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="B" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="B" />-->
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:clipChildren="false"-->
+        <!--android:clipToPadding="false">-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->
         <!--app:text="A" />-->
 
-        <!--<com.amosgwa.lisukeyboard.view.CustomKeyView-->
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="A" />-->
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:clipChildren="false"-->
+        <!--android:clipToPadding="false">-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="A" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="A" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="A" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--app:text="A" />-->
+
+        <!--<com.amosgwa.lisukeyboard.view.keyview.CustomKeyView-->
         <!--android:layout_width="0dp"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_weight="1"-->

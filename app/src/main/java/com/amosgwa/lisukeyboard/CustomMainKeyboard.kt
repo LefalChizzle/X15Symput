@@ -1,26 +1,29 @@
 package com.amosgwa.lisukeyboard
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
 import android.media.AudioManager
-import android.view.KeyEvent
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.view.MotionEvent
-import android.content.res.TypedArray
 import android.util.Log
 import android.util.SparseArray
+import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
+import com.amosgwa.lisukeyboard.common.PageType.Companion.SHIFT
+import com.amosgwa.lisukeyboard.common.PageType.Companion.SYMBOL
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
-import com.amosgwa.lisukeyboard.keyboard.CustomKeyboard
-import com.amosgwa.lisukeyboard.view.CustomKeyboardView
-import com.amosgwa.lisukeyboard.view.KeyboardActionListener
+import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
+import com.amosgwa.lisukeyboard.view.inputmethodview.CustomInputMethodView
+import com.amosgwa.lisukeyboard.view.inputmethodview.KeyboardActionListener
 import kotlin.properties.Delegates
 
 
 class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
-    private lateinit var customKeyboardView: CustomKeyboardView
+    private lateinit var customInputMethodView: CustomInputMethodView
 
     private lateinit var keyboardNormal: CustomKeyboard
     private lateinit var keyboardShift: CustomKeyboard
@@ -31,37 +34,23 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
     private var languageShiftXmlRes: MutableList<Int> = mutableListOf()
     private var languageSymbolXmlRes: MutableList<Int> = mutableListOf()
 
-    private var keyboards: SparseArray<CustomKeyboard> = SparseArray()
+    private var mapOfKeyboardsOfLanguage: HashMap<String, SparseArray<CustomKeyboard>> = HashMap()
 
     private var preferences: KeyboardPreferences? = null
 
     private var currentSelectedLanguageIdx by Delegates.observable(0) { _, _, newValue ->
-        keyboardNormal = CustomKeyboard(this, languageXmlRes[newValue], TYPE_NORMAL, languageNames[newValue])
-        keyboardShift = CustomKeyboard(this, languageShiftXmlRes[newValue], TYPE_SHIFT, languageNames[newValue])
-        keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[newValue], TYPE_SYMBOL, languageNames[newValue])
+        val language = languageNames[newValue]
+        val keyboards = mapOfKeyboardsOfLanguage[language]
+        keyboards?.let {
+            customInputMethodView.updateKeyboardLanguage(language)
+        }
+    }
 
-        keyboards.clear()
-        keyboards.append(TYPE_NORMAL, keyboardNormal)
-        keyboards.append(TYPE_SHIFT, keyboardShift)
-        keyboards.append(TYPE_SYMBOL, keyboardSymbol)
-
-//        customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
-        customKeyboardView.keyboards = keyboards
-        customKeyboardView.currentKeyboardType = TYPE_NORMAL
-        customKeyboardView.invalidate()
+    private var currentKeyboardPage by Delegates.observable(NORMAL) { _, _, newPage ->
+        customInputMethodView.updateKeyboardPage(newPage)
     }
 
     private var lastSavedLanguageIdx: Int = 0
-        set(value) {
-            field = value
-//            preferences?.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, value)
-//            keyboardNormal = GwaKeyboard(applicationContext, languageXmlRes[value], TYPE_NORMAL)
-//            keyboardShift = GwaKeyboard(applicationContext, languageShiftXmlRes[value], TYPE_SHIFT)
-//            keyboardSymbol = GwaKeyboard(applicationContext, languageSymbolXmlRes[value], TYPE_SYMBOL)
-//            keyboardView?.keyboard = keyboardNormal
-//            keyboardView?.currentLanguage = languageNames[value]
-//            keyboardView?.invalidateAllKeys()
-        }
 
     override fun onCreate() {
         super.onCreate()
@@ -77,24 +66,20 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
     }
 
     override fun onCreateInputView(): View? {
-        keyboardNormal = CustomKeyboard(this, languageXmlRes[lastSavedLanguageIdx], TYPE_NORMAL, languageNames[lastSavedLanguageIdx])
-        keyboardShift = CustomKeyboard(this, languageShiftXmlRes[lastSavedLanguageIdx], TYPE_SHIFT, languageNames[lastSavedLanguageIdx])
-        keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes[lastSavedLanguageIdx], TYPE_SYMBOL, languageNames[lastSavedLanguageIdx])
-
-        keyboards.append(TYPE_NORMAL, keyboardNormal)
-        keyboards.append(TYPE_SHIFT, keyboardShift)
-        keyboards.append(TYPE_SYMBOL, keyboardSymbol)
-
-        customKeyboardView = layoutInflater.inflate(R.layout.keyboard, null) as CustomKeyboardView
-        customKeyboardView.keyboardViewListener = this
-        customKeyboardView.keyboards = keyboards
-        customKeyboardView.currentKeyboardType = TYPE_NORMAL
-
-        return customKeyboardView
+        customInputMethodView = layoutInflater.inflate(R.layout.keyboard, null) as CustomInputMethodView
+        val language = languageNames[lastSavedLanguageIdx]
+        val keyboard = mapOfKeyboardsOfLanguage[language]
+        keyboard?.let {
+            customInputMethodView.prepareAllKeyboardsForRendering(mapOfKeyboardsOfLanguage.values.toList(), keyboard)
+            customInputMethodView.keyboardViewListener = this
+            customInputMethodView.updateKeyboardLanguage(language)
+        }
+        return customInputMethodView
     }
 
     private fun loadLanguages() {
         val languagesArray = resources.obtainTypedArray(R.array.languages)
+        val keyboards: SparseArray<CustomKeyboard> = SparseArray()
         var eachLanguageTypedArray: TypedArray? = null
         for (i in 0 until languagesArray.length()) {
             val id = languagesArray.getResourceId(i, -1)
@@ -119,10 +104,20 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
                 languageShiftXmlRes.add(shiftXmlRes)
                 languageSymbolXmlRes.add(symbolXmlRes)
             }
+
+
+            keyboardNormal = CustomKeyboard(this, languageXmlRes.last(), NORMAL, languageNames.last())
+            keyboardShift = CustomKeyboard(this, languageShiftXmlRes.last(), SHIFT, languageNames.last())
+            keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes.last(), SYMBOL, languageNames.last())
+
+            keyboards.clear()
+            keyboards.append(NORMAL, keyboardNormal)
+            keyboards.append(SHIFT, keyboardShift)
+            keyboards.append(SYMBOL, keyboardSymbol)
+            mapOfKeyboardsOfLanguage[languageNames.last()] = keyboards.clone()
         }
-        if (eachLanguageTypedArray != null) {
-            eachLanguageTypedArray.recycle()
-        }
+
+        eachLanguageTypedArray?.recycle()
         languagesArray.recycle()
     }
 
@@ -148,7 +143,7 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     private fun changeLanguage(direction: Int) {
         currentSelectedLanguageIdx = ((currentSelectedLanguageIdx + direction) + languageNames.size) % languageNames.size
-        Log.d("///AMOS", "CHANGE DIRECTION ${currentSelectedLanguageIdx}")
+        Log.d("///AMOS", "CHANGE DIRECTION $currentSelectedLanguageIdx")
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
@@ -168,19 +163,19 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
                 }
             }
             KEYCODE_ABC -> {
-                customKeyboardView.currentKeyboardType = TYPE_NORMAL
+                currentKeyboardPage = NORMAL
                 return
             }
             Keyboard.KEYCODE_SHIFT -> {
-                customKeyboardView.currentKeyboardType = TYPE_SHIFT
+                currentKeyboardPage = SHIFT
                 return
             }
             KEYCODE_UNSHIFT -> {
-                customKeyboardView.currentKeyboardType = TYPE_NORMAL
+                currentKeyboardPage = NORMAL
                 return
             }
             KEYCODE_123 -> {
-                customKeyboardView.currentKeyboardType = TYPE_SYMBOL
+                currentKeyboardPage = SYMBOL
                 return
             }
             KEYCODE_MYA_TI_MYA_NA -> {
@@ -206,8 +201,8 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
             }
         }
         // Switch back to normal if the selected page type is shift.
-        if (customKeyboardView.currentKeyboard().type == TYPE_SHIFT) {
-            customKeyboardView.currentKeyboardType = TYPE_NORMAL
+        if (currentKeyboardPage == SHIFT) {
+            currentKeyboardPage = NORMAL
         }
     }
 
@@ -246,10 +241,6 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
         var KEYCODE_NA_PO = KEYCODE_NONE
         var KEYCODE_MYA_NA = KEYCODE_NONE
         var KEYCODE_MYA_TI = KEYCODE_NONE
-
-        const val TYPE_NORMAL = 0
-        const val TYPE_SHIFT = 1
-        const val TYPE_SYMBOL = 2
 
         const val RES_IDX = 1
         const val SHIFT_IDX = 2
