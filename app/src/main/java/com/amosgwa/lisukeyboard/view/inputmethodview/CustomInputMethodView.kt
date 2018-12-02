@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
+import android.os.AsyncTask
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
@@ -18,8 +19,10 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.BuildConfig
 import com.amosgwa.lisukeyboard.R
-import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
+import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
+import com.amosgwa.lisukeyboard.extensions.contains
+import com.amosgwa.lisukeyboard.extensions.forEach
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKey
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
 import com.amosgwa.lisukeyboard.utilities.MsTimer
@@ -75,30 +78,30 @@ class CustomInputMethodView @JvmOverloads constructor(
     /**
      * Collection of key views that has been already inflated for languages.
      */
-    var preloadedKeyboardViews = HashMap<String, InputMethodKeyboard>()
+    var preloadedKeyboardViews = SparseArray<InputMethodKeyboard>()
 
     // Keyboards (Normal, Shift, Number pages)
     private var currentKeyboardLanguage: String? = null
 
-    fun prepareAllKeyboardsForRendering(keyboards: List<SparseArray<CustomKeyboard>>, currentKeyboard: SparseArray<CustomKeyboard>) {
-        val currentLanguage = currentKeyboard[NORMAL]?.language
-        currentLanguage?.let {
-            generateKeyboardViews(currentKeyboard)
-            // Generate the below in the background.
-            keyboards.filter {
-                it[NORMAL]?.language != currentLanguage
-            }.map {
-                generateKeyboardViews(it)
+    fun prepareAllKeyboardsForRendering(
+            keyboards: SparseArray<SparseArray<CustomKeyboard>>,
+            currentLanguageIdx: Int
+    ) {
+        generateKeyboardViews(keyboards[currentLanguageIdx], currentLanguageIdx)
+
+        // Generate other keyboard views in the background
+        AsyncTask.execute {
+            keyboards.forEach { key, value ->
+                if (key != currentLanguageIdx) {
+                    generateKeyboardViews(value, key)
+                }
             }
         }
     }
 
-    fun generateKeyboardViews(keyboard: SparseArray<CustomKeyboard>) {
-        val language = keyboard[NORMAL]?.language
-        language?.let {
-            if (!preloadedKeyboardViews.contains(it)) {
-                preloadedKeyboardViews[it] = getKeyboardWithViews(keyboard)
-            }
+    private fun generateKeyboardViews(keyboard: SparseArray<CustomKeyboard>, languageIdx: Int) {
+        if (!preloadedKeyboardViews.contains(languageIdx)) {
+            preloadedKeyboardViews.put(languageIdx, getKeyboardWithViews(keyboard))
         }
     }
 
@@ -224,9 +227,8 @@ class CustomInputMethodView @JvmOverloads constructor(
         })
     }
 
-    fun updateKeyboardLanguage(language: String) {
-        currentKeyboardLanguage = language
-        preloadedKeyboardViews[language]?.let {
+    fun updateKeyboardLanguage(languageIdx: Int) {
+        preloadedKeyboardViews[languageIdx]?.let {
             keyViewsForCurrentKeyboard = it
         }
         invalidate()
@@ -354,9 +356,6 @@ class CustomInputMethodView @JvmOverloads constructor(
                 MotionEvent.ACTION_DOWN,
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
-                        Log.d(LOG_TAG, "ActionDown")
-                        val timer = MsTimer()
-                        timer.start()
                         addPressedKey(pointerId, pressedKey)
                         if (pressedKey.repeatable == true) {
                             /*
@@ -366,8 +365,6 @@ class CustomInputMethodView @JvmOverloads constructor(
                             msg.obj = pointerId
                             longClickHandler.sendMessageDelayed(msg, LONG_PRESS_DELAY.toLong())
                         }
-                        timer.end()
-                        timer.print(LOG_TAG)
                     }
                     return false
                 }

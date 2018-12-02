@@ -34,15 +34,14 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
     private var languageShiftXmlRes: MutableList<Int> = mutableListOf()
     private var languageSymbolXmlRes: MutableList<Int> = mutableListOf()
 
-    private var mapOfKeyboardsOfLanguage: HashMap<String, SparseArray<CustomKeyboard>> = HashMap()
+    private var keyboardsOfLanguages = SparseArray<SparseArray<CustomKeyboard>>()
 
     private var preferences: KeyboardPreferences? = null
 
     private var currentSelectedLanguageIdx by Delegates.observable(0) { _, _, newValue ->
-        val language = languageNames[newValue]
-        val keyboards = mapOfKeyboardsOfLanguage[language]
+        val keyboards = keyboardsOfLanguages[newValue]
         keyboards?.let {
-            customInputMethodView.updateKeyboardLanguage(language)
+            customInputMethodView.updateKeyboardLanguage(newValue)
         }
     }
 
@@ -67,12 +66,11 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     override fun onCreateInputView(): View? {
         customInputMethodView = layoutInflater.inflate(R.layout.keyboard, null) as CustomInputMethodView
-        val language = languageNames[lastSavedLanguageIdx]
-        val keyboard = mapOfKeyboardsOfLanguage[language]
+        val keyboard = keyboardsOfLanguages[lastSavedLanguageIdx]
         keyboard?.let {
-            customInputMethodView.prepareAllKeyboardsForRendering(mapOfKeyboardsOfLanguage.values.toList(), keyboard)
+            customInputMethodView.prepareAllKeyboardsForRendering(keyboardsOfLanguages, lastSavedLanguageIdx)
             customInputMethodView.keyboardViewListener = this
-            customInputMethodView.updateKeyboardLanguage(language)
+            customInputMethodView.updateKeyboardLanguage(lastSavedLanguageIdx)
         }
         return customInputMethodView
     }
@@ -105,7 +103,6 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
                 languageSymbolXmlRes.add(symbolXmlRes)
             }
 
-
             keyboardNormal = CustomKeyboard(this, languageXmlRes.last(), NORMAL, languageNames.last())
             keyboardShift = CustomKeyboard(this, languageShiftXmlRes.last(), SHIFT, languageNames.last())
             keyboardSymbol = CustomKeyboard(this, languageSymbolXmlRes.last(), SYMBOL, languageNames.last())
@@ -114,7 +111,7 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
             keyboards.append(NORMAL, keyboardNormal)
             keyboards.append(SHIFT, keyboardShift)
             keyboards.append(SYMBOL, keyboardSymbol)
-            mapOfKeyboardsOfLanguage[languageNames.last()] = keyboards.clone()
+            keyboardsOfLanguages.put(i, keyboards.clone())
         }
 
         eachLanguageTypedArray?.recycle()
@@ -122,19 +119,27 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
     }
 
     override fun onSwipeRight() {
-        Log.d("///AMOS", "SWIPE RIGHT")
+        if (BuildConfig.DEBUG) {
+            Log.d("///AMOS", "SWIPE RIGHT")
+        }
     }
 
     override fun onSwipeLeft() {
-        Log.d("///AMOS", "SWIPE LEFT")
+        if (BuildConfig.DEBUG) {
+            Log.d("///AMOS", "SWIPE LEFT")
+        }
     }
 
     override fun onSwipeUp() {
-        Log.d("///AMOS", "SWIPE UP")
+        if (BuildConfig.DEBUG) {
+            Log.d("///AMOS", "SWIPE UP")
+        }
     }
 
     override fun onSwipeDown() {
-        Log.d("///AMOS", "SWIPE DOWN")
+        if (BuildConfig.DEBUG) {
+            Log.d("///AMOS", "SWIPE DOWN")
+        }
     }
 
     override fun onChangeKeyboardSwipe(direction: Int) {
@@ -143,7 +148,9 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     private fun changeLanguage(direction: Int) {
         currentSelectedLanguageIdx = ((currentSelectedLanguageIdx + direction) + languageNames.size) % languageNames.size
-        Log.d("///AMOS", "CHANGE DIRECTION $currentSelectedLanguageIdx")
+        if (BuildConfig.DEBUG) {
+            Log.d("///AMOS", "CHANGE DIRECTION $currentSelectedLanguageIdx")
+        }
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
