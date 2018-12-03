@@ -227,18 +227,29 @@ class CustomInputMethodView @JvmOverloads constructor(
         })
     }
 
+    /**
+     * Update the input method view to a different language keyboard with [NORMAL] page as starting
+     * page and call [updateKeyboardPage] to redraw.
+     */
     fun updateKeyboardLanguage(languageIdx: Int) {
+        // Get the preloadedKyeboardViews with the new languageIdx and assign it to current keyboard
+        // to render.
         preloadedKeyboardViews[languageIdx]?.let {
             keyViewsForCurrentKeyboard = it
         }
-        invalidate()
-        populateKeyViews(NORMAL)
+        // Set the starting page to Normal
+        currentKeyboardPage = NORMAL
+
+        updateKeyboardPage(currentKeyboardPage)
     }
 
-    fun updateKeyboardPage(page: Int) {
-        currentKeyboardPage = page
+    /**
+     * Update the current keyboard page to a specified page type and redraw.
+     */
+    fun updateKeyboardPage(pageType: Int) {
+        currentKeyboardPage = pageType
         invalidate()
-        populateKeyViews(page)
+        populateKeyViews(pageType)
     }
 
     /**
@@ -246,7 +257,8 @@ class CustomInputMethodView @JvmOverloads constructor(
      * @Param type This is from CustomMainKeyboardView.Type
      * */
     private fun populateKeyViews(type: Int) {
-        // Check if the size of
+        // Check if the size of the rows of the pages are the same. If so, reuse the previous
+        // row layout.
         if (keyViewsForCurrentKeyboard.pages[type].size == childCount) {
             // Use the existing row linear layouts.
             keyViewsForCurrentKeyboard.pages[type].forEachIndexed { idx, row ->
@@ -255,7 +267,7 @@ class CustomInputMethodView @JvmOverloads constructor(
                 row.forEach { key -> rowLinearLayout.addView(key) }
             }
         } else {
-            removeAllKeyViews() // Remove parents of the key views.
+            removeAllKeyViews() // Remove keys from the parent view
             removeAllViews() // Remove all of the row Linear Layout
             keyViewsForCurrentKeyboard.pages[type].forEach { row ->
                 val rowLinearLayout = LinearLayout(context)
