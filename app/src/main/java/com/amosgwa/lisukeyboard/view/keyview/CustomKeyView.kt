@@ -2,6 +2,7 @@ package com.amosgwa.lisukeyboard.view.keyview
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
@@ -16,11 +17,11 @@ class CustomKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
+        var labelPaint: Paint,
+        var subLabelPaint: Paint,
         val isLandscape: Boolean = false,
         var key: CustomKey? = null,
-        @ColorInt var globalTextColor: Int? = null,
-        var globalTextSize: Float? = null,
-        @DrawableRes var globalKeyBackground: Drawable? = ColorDrawable(Color.TRANSPARENT)
+        @DrawableRes var globalKeyBackground: Int = android.R.color.transparent
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     val repeatable: Boolean? = key?.repeatable
@@ -29,18 +30,27 @@ class CustomKeyView @JvmOverloads constructor(
     val icon: Drawable? = key?.icon
     val isChangeLanguage: Boolean? = key?.isChangeLanguageKey
 
-    private lateinit var keyTextView: CustomKeyTextView
+    private lateinit var keyTextView: KeyView
 
     init {
         // Activate the press states on the text views.
         isClickable = true
         // Set the key background.
         key?.let { key ->
-            keyTextView = CustomKeyTextView(
+            //            keyTextView = CustomKeyTextView(
+//                    context,
+//                    color = globalTextColor,
+//                    size = if (key.textSize == 0.0F) globalTextSize else key.textSize
+//            )
+            keyTextView = KeyView(
                     context,
-                    color = globalTextColor,
-                    size = if (key.textSize == 0.0F) globalTextSize else key.textSize
+                    key = key,
+                    labelPaint = labelPaint,
+                    subLabelPaint = subLabelPaint,
+                    normalStateColorRes = R.color.blue_light,
+                    pressStateColorRes = R.color.pink
             )
+
             // If it is the edge key expand the width to fill.
             layoutParams = if (key.isEdge()) {
                 LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1.0F)
@@ -67,19 +77,20 @@ class CustomKeyView @JvmOverloads constructor(
                 imageView.layoutParams = childLayoutParams
                 imageView.setPadding(leftRightPadding, topBottomPadding, leftRightPadding, topBottomPadding)
                 imageView.setImageDrawable(icon)
-                imageView.background = globalKeyBackground
+//                imageView.background = globalKeyBackground
+                imageView.background = context.getDrawable(globalKeyBackground)
                 addView(imageView)
             } else {
                 keyTextView.layoutParams = childLayoutParams
-                keyTextView.text = label
-                keyTextView.background = globalKeyBackground
+//                keyTextView.background = globalKeyBackground
+//                keyTextView.background = context.getDrawable(globalKeyBackground)
                 addView(keyTextView)
             }
         }
     }
 
     fun updateLabel(newLabel: String) {
-        keyTextView.text = newLabel
+        keyTextView.label = newLabel
     }
 
     companion object {

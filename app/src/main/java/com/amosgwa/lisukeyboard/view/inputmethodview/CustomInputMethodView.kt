@@ -2,6 +2,7 @@ package com.amosgwa.lisukeyboard.view.inputmethodview
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
@@ -23,7 +24,6 @@ import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
 import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
 import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.extensions.forEach
-import com.amosgwa.lisukeyboard.keyboardinflater.CustomKey
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
 import com.amosgwa.lisukeyboard.utilities.MsTimer
 import com.amosgwa.lisukeyboard.view.keyview.CustomKeyPreview
@@ -52,7 +52,7 @@ class CustomInputMethodView @JvmOverloads constructor(
      */
     private var globalKeyTextColor: Int = 0
     private var globalKeyTextSize: Float = 0.0f
-    var keyBackground: Drawable? = null
+    private var keyBackground: Int
 
     /**
      * Currently pressed keys. This is a map from touch finger id to the key view.
@@ -68,7 +68,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     /**
      * Collection of modifier/special keys. The integers are defined in the resources/integers
      */
-    private lateinit var MOD_KEYS: List<Int>
+    private lateinit var modifierKeys: List<Int>
     /**
      * Collection of currently rendered preview keys.
      */
@@ -78,43 +78,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     /**
      * Collection of key views that has been already inflated for languages.
      */
-    var preloadedKeyboardViews = SparseArray<InputMethodKeyboard>()
-
-    // Keyboards (Normal, Shift, Number pages)
-    private var currentKeyboardLanguage: String? = null
-
-    fun prepareAllKeyboardsForRendering(
-            keyboards: SparseArray<SparseArray<CustomKeyboard>>,
-            currentLanguageIdx: Int
-    ) {
-        generateKeyboardViews(keyboards[currentLanguageIdx], currentLanguageIdx)
-
-        // Generate other keyboard views in the background
-        AsyncTask.execute {
-            keyboards.forEach { key, value ->
-                if (key != currentLanguageIdx) {
-                    generateKeyboardViews(value, key)
-                }
-            }
-        }
-    }
-
-    private fun generateKeyboardViews(keyboard: SparseArray<CustomKeyboard>, languageIdx: Int) {
-        if (!preloadedKeyboardViews.contains(languageIdx)) {
-            preloadedKeyboardViews.put(languageIdx, getKeyboardWithViews(keyboard))
-        }
-    }
-
-    private fun getKeyboardWithViews(currentKeyboard: SparseArray<CustomKeyboard>): InputMethodKeyboard {
-        val inputMethodKeyboard = InputMethodKeyboard()
-        for (type in PAGE_TYPES) {
-            val page = currentKeyboard.get(type)
-            page.formattedKeyList.let { keys ->
-                inputMethodKeyboard.addKeys(type, getKeyViews(keys, page.language))
-            }
-        }
-        return inputMethodKeyboard
-    }
+    private var preloadedKeyboardViews = SparseArray<InputMethodKeyboard>()
 
     private var currentKeyboardPage: Int = NORMAL
 
@@ -127,6 +91,11 @@ class CustomInputMethodView @JvmOverloads constructor(
     // Current screen orientation
     private var isLandscape = false
 
+
+    // Paint for the key views
+    val subKeyPaint = Paint()
+    val keyPaint = Paint()
+
     init {
         /*
         * Load the styles from the keyboard xml for the child keys. Keyboard should be the only place
@@ -135,7 +104,7 @@ class CustomInputMethodView @JvmOverloads constructor(
         val a = context.obtainStyledAttributes(attrs, R.styleable.CustomInputMethodView)
         globalKeyTextColor = a.getColor(R.styleable.CustomInputMethodView_keyTextColor, context.getColor(R.color.default_key_text_color))
         globalKeyTextSize = a.getDimension(R.styleable.CustomInputMethodView_keyTextSize, resources.getDimension(R.dimen.default_key_text_size))
-        keyBackground = a.getDrawable(R.styleable.CustomInputMethodView_keyBackground)
+        keyBackground = a.getResourceId(R.styleable.CustomInputMethodView_keyBackground, android.R.color.transparent)
         // recycle the typed array
         a.recycle()
         // Set orientation for the rows
@@ -144,6 +113,62 @@ class CustomInputMethodView @JvmOverloads constructor(
         determineScreenMode()
         // Get list of modifier keys
         generateModKeysList()
+        // Prepare paints for the key views
+        subKeyPaint.isAntiAlias = true
+        //TODO Change the colors
+        subKeyPaint.color = resources.getColor(R.color.subKeyTextColor, null)
+        subKeyPaint.textSize = resources.getDimension(R.dimen.default_sub_key_text_size)
+
+        keyPaint.isAntiAlias
+        //TODO Change the colors
+        keyPaint.color = resources.getColor(R.color.default_key_text_color, null)
+        keyPaint.textSize = resources.getDimension(R.dimen.default_key_text_size)
+    }
+
+    /**
+     * Preload the key views for all of the provided [keyboards]. Load the current language first and
+     * load the other languages in the background.
+     */
+    fun prepareAllKeyboardsForRendering(
+            keyboards: SparseArray<SparseArray<CustomKeyboard>>,
+            currentLanguageIdx: Int
+    ) {
+        // Generate other keyboard views in the background
+        AsyncTask.execute {
+            keyboards.forEach { key, value ->
+                if (key != currentLanguageIdx) {
+                    generateKeyboardViews(value, key)
+                }
+            }
+        }
+        generateKeyboardViews(keyboards[currentLanguageIdx], currentLanguageIdx)
+    }
+
+    /**
+     * Generate keyboard views and add them to the preloaded keyboard views.
+     */
+    private fun generateKeyboardViews(keyboard: SparseArray<CustomKeyboard>, languageIdx: Int) {
+
+        if (!preloadedKeyboardViews.contains(languageIdx)) {
+            val inputMethodKeyboard = InputMethodKeyboard()
+            PAGE_TYPES.forEach { type ->
+                keyboard.get(type).let { page ->
+                    page.formattedKeyList.let { keys ->
+                        inputMethodKeyboard.generateKeyViews(
+                                context,
+                                type,
+                                keys,
+                                page.language,
+                                keyBackground,
+                                keyPaint,
+                                subKeyPaint,
+                                isLandscape
+                        )
+                    }
+                }
+            }
+            preloadedKeyboardViews.put(languageIdx, inputMethodKeyboard)
+        }
     }
 
     override fun onAttachedToWindow() {
@@ -292,43 +317,6 @@ class CustomInputMethodView @JvmOverloads constructor(
         }
     }
 
-    // Create views for each individual keys for a keyboard
-    /**
-     * Generate key views for each row of keys
-     * @param keys These keys are in 2d list.
-     */
-    private fun getKeyViews(keys: List<List<CustomKey>>, keyboardLanguage: String): MutableList<MutableList<CustomKeyView>> {
-        val keyViews = mutableListOf<MutableList<CustomKeyView>>()
-        keys.forEach { rowOfKeys ->
-            // Keep track of the row keys.
-            val rowKeyViews = mutableListOf<CustomKeyView>()
-            // Create row linear layout for the key views.
-            rowOfKeys.forEach { key ->
-                // The background of the key has to be duplicate since the keys have different widths.
-                val keyBackgroundCopy = keyBackground?.constantState?.newDrawable()?.mutate()
-                val keyView = CustomKeyView(
-                        context,
-                        key = key,
-                        globalTextColor = globalKeyTextColor,
-                        globalTextSize = globalKeyTextSize,
-                        isLandscape = isLandscape,
-                        globalKeyBackground = keyBackgroundCopy
-                )
-                // Update the language for the key that is assigned with isChange
-                if (key.isChangeLanguageKey) {
-                    keyView.updateLabel(keyboardLanguage)
-                }
-                // Keeps track of all of the key views
-                rowKeyViews.add(keyView)
-            }
-
-            // Key tracks of the rows with key views.
-            keyViews.add(rowKeyViews.toMutableList())
-            rowKeyViews.clear()
-        }
-        return keyViews
-    }
-
     /*
     * Returns the size of the display.
     * */
@@ -347,9 +335,10 @@ class CustomInputMethodView @JvmOverloads constructor(
     @SuppressLint("ClickableViewAccessibility")
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
         if (event == null) {
-            return true
+            return false
         }
-        return processTouchEvent(event)
+        processTouchEvent(event)
+        return super.onInterceptTouchEvent(event)
     }
 
     private fun processTouchEvent(event: MotionEvent): Boolean {
@@ -451,7 +440,7 @@ class CustomInputMethodView @JvmOverloads constructor(
             // If the key isn't any of the modifying key, render it
             var isModKey = false
             key.codes.forEach {
-                isModKey = isModKey or MOD_KEYS.contains(it)
+                isModKey = isModKey or modifierKeys.contains(it)
                 if (!isModKey) return@forEach
             }
 
@@ -482,7 +471,7 @@ class CustomInputMethodView @JvmOverloads constructor(
 
     fun generateModKeysList() {
         context.resources.let { res ->
-            MOD_KEYS = listOf(
+            modifierKeys = listOf(
                     res.getInteger(R.integer.keycode_delete),
                     res.getInteger(R.integer.keycode_abc),
                     res.getInteger(R.integer.keycode_alt),
