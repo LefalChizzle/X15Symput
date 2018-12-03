@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.PixelFormat
-import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Message
@@ -19,6 +18,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.BuildConfig
+import com.amosgwa.lisukeyboard.CustomMainKeyboard
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
 import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
@@ -62,9 +62,8 @@ class CustomInputMethodView @JvmOverloads constructor(
     /**
      * Collection of views for the currently selected keyboard. 2D array is for pages and key views.
      */
-    private var keyViewsForCurrentKeyboard = InputMethodKeyboard()
+    private var currentKeyboard = InputMethodKeyboard()
 
-    // Preview Keys
     /**
      * Collection of modifier/special keys. The integers are defined in the resources/integers
      */
@@ -74,27 +73,32 @@ class CustomInputMethodView @JvmOverloads constructor(
      */
     private val renderedPreviewKeys = mutableListOf<CustomKeyPreview>()
 
-    // Cache preloaded keyboard view
     /**
      * Collection of key views that has been already inflated for languages.
      */
     private var preloadedKeyboardViews = SparseArray<InputMethodKeyboard>()
 
+    /**
+     * Page of the currently selected keyboard [currentKeyboard]
+     */
     private var currentKeyboardPage: Int = NORMAL
 
-    // Listeners
+    /**
+     * Listener for [CustomMainKeyboard]
+     */
     var keyboardViewListener: KeyboardActionListener? = null
 
-    // Gesture detector
+    /**
+     * Gesture detector for fling (changing language), down, up, and repeat
+     */
     private lateinit var gestureDetector: GestureDetector
 
     // Current screen orientation
     private var isLandscape = false
 
-
     // Paint for the key views
-    val subKeyPaint = Paint()
-    val keyPaint = Paint()
+    private val subKeyPaint = Paint()
+    private val keyPaint = Paint()
 
     init {
         /*
@@ -105,21 +109,28 @@ class CustomInputMethodView @JvmOverloads constructor(
         globalKeyTextColor = a.getColor(R.styleable.CustomInputMethodView_keyTextColor, context.getColor(R.color.default_key_text_color))
         globalKeyTextSize = a.getDimension(R.styleable.CustomInputMethodView_keyTextSize, resources.getDimension(R.dimen.default_key_text_size))
         keyBackground = a.getResourceId(R.styleable.CustomInputMethodView_keyBackground, android.R.color.transparent)
+
         // recycle the typed array
         a.recycle()
+
         // Set orientation for the rows
         orientation = VERTICAL
+
         // Determine the current screen orientation
         determineScreenMode()
+
         // Get list of modifier keys
         generateModKeysList()
+
         // Prepare paints for the key views
         subKeyPaint.isAntiAlias = true
+        subKeyPaint.textAlign = Paint.Align.CENTER
         //TODO Change the colors
         subKeyPaint.color = resources.getColor(R.color.subKeyTextColor, null)
         subKeyPaint.textSize = resources.getDimension(R.dimen.default_sub_key_text_size)
 
         keyPaint.isAntiAlias
+        keyPaint.textAlign = Paint.Align.CENTER
         //TODO Change the colors
         keyPaint.color = resources.getColor(R.color.default_key_text_color, null)
         keyPaint.textSize = resources.getDimension(R.dimen.default_key_text_size)
@@ -260,7 +271,7 @@ class CustomInputMethodView @JvmOverloads constructor(
         // Get the preloadedKyeboardViews with the new languageIdx and assign it to current keyboard
         // to render.
         preloadedKeyboardViews[languageIdx]?.let {
-            keyViewsForCurrentKeyboard = it
+            currentKeyboard = it
         }
         // Set the starting page to Normal
         currentKeyboardPage = NORMAL
@@ -284,9 +295,9 @@ class CustomInputMethodView @JvmOverloads constructor(
     private fun populateKeyViews(type: Int) {
         // Check if the size of the rows of the pages are the same. If so, reuse the previous
         // row layout.
-        if (keyViewsForCurrentKeyboard.pages[type].size == childCount) {
+        if (currentKeyboard.pages[type].size == childCount) {
             // Use the existing row linear layouts.
-            keyViewsForCurrentKeyboard.pages[type].forEachIndexed { idx, row ->
+            currentKeyboard.pages[type].forEachIndexed { idx, row ->
                 val rowLinearLayout = getChildAt(idx) as LinearLayout
                 rowLinearLayout.removeAllViews()
                 row.forEach { key -> rowLinearLayout.addView(key) }
@@ -294,7 +305,7 @@ class CustomInputMethodView @JvmOverloads constructor(
         } else {
             removeAllKeyViews() // Remove keys from the parent view
             removeAllViews() // Remove all of the row Linear Layout
-            keyViewsForCurrentKeyboard.pages[type].forEach { row ->
+            currentKeyboard.pages[type].forEach { row ->
                 val rowLinearLayout = LinearLayout(context)
                 rowLinearLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                 rowLinearLayout.orientation = HORIZONTAL
@@ -309,7 +320,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     * Remove the parents of the keys in order to add new keys to the view.
     * */
     private fun removeAllKeyViews() {
-        keyViewsForCurrentKeyboard.pages[currentKeyboardPage].forEach { row ->
+        currentKeyboard.pages[currentKeyboardPage].forEach { row ->
             row.forEach { key ->
                 val parent = key.parent as ViewGroup?
                 parent?.removeView(key)
@@ -396,7 +407,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     * the key view's bounds. If so, find the key in that row.
     * */
     private fun detectKey(x: Float, y: Float): CustomKeyView? {
-        keyViewsForCurrentKeyboard.pages[currentKeyboardPage].forEach { row ->
+        currentKeyboard.pages[currentKeyboardPage].forEach { row ->
             // Each row is composed in linear layout. Thus, we have to use it to find which row
             // the pointer falls into.
             val rowLinearLayout = row.first().parent as LinearLayout?
