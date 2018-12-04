@@ -4,9 +4,6 @@
     android:id="@+id/keyboardNormal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/grey"
-    app:keyBackground="@drawable/key_background"
-    app:keyTextColor="@color/blue_dark"
     app:keyTextSize="8dp" />
 
 

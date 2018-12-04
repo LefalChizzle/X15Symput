@@ -2,7 +2,6 @@ package com.amosgwa.lisukeyboard.view.inputmethodview
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.os.AsyncTask
 import android.os.Handler
@@ -22,6 +21,7 @@ import com.amosgwa.lisukeyboard.CustomMainKeyboard
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
 import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
+import com.amosgwa.lisukeyboard.common.Styles
 import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.extensions.forEach
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
@@ -50,9 +50,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     /**
      * Styling for each key from [R.styleable.CustomInputMethodView]
      */
-    private var globalKeyTextColor: Int = 0
     private var globalKeyTextSize: Float = 0.0f
-    private var keyBackground: Int
 
     /**
      * Currently pressed keys. This is a map from touch finger id to the key view.
@@ -96,19 +94,15 @@ class CustomInputMethodView @JvmOverloads constructor(
     // Current screen orientation
     private var isLandscape = false
 
-    // Paint for the key views
-    private val subKeyPaint = Paint()
-    private val keyPaint = Paint()
-
     init {
+        setBackgroundColor(Styles.keyboardStyle.keyboardBackground)
+
         /*
         * Load the styles from the keyboard xml for the child keys. Keyboard should be the only place
         * where we set the styles for the children views.
         * */
         val a = context.obtainStyledAttributes(attrs, R.styleable.CustomInputMethodView)
-        globalKeyTextColor = a.getColor(R.styleable.CustomInputMethodView_keyTextColor, context.getColor(R.color.default_key_text_color))
         globalKeyTextSize = a.getDimension(R.styleable.CustomInputMethodView_keyTextSize, resources.getDimension(R.dimen.default_key_text_size))
-        keyBackground = a.getResourceId(R.styleable.CustomInputMethodView_keyBackground, android.R.color.transparent)
 
         // recycle the typed array
         a.recycle()
@@ -123,17 +117,8 @@ class CustomInputMethodView @JvmOverloads constructor(
         generateModKeysList()
 
         // Prepare paints for the key views
-        subKeyPaint.isAntiAlias = true
-        subKeyPaint.textAlign = Paint.Align.CENTER
-        //TODO Change the colors
-        subKeyPaint.color = resources.getColor(R.color.subKeyTextColor, null)
-        subKeyPaint.textSize = resources.getDimension(R.dimen.default_sub_key_text_size)
-
-        keyPaint.isAntiAlias
-        keyPaint.textAlign = Paint.Align.CENTER
-        //TODO Change the colors
-        keyPaint.color = resources.getColor(R.color.default_key_text_color, null)
-        keyPaint.textSize = resources.getDimension(R.dimen.default_key_text_size)
+        Styles.keyStyle.subLabelPaint.textSize = resources.getDimension(R.dimen.default_sub_key_text_size)
+        Styles.keyStyle.labelPaint.textSize = resources.getDimension(R.dimen.default_key_text_size)
     }
 
     /**
@@ -159,7 +144,6 @@ class CustomInputMethodView @JvmOverloads constructor(
      * Generate keyboard views and add them to the preloaded keyboard views.
      */
     private fun generateKeyboardViews(keyboard: SparseArray<CustomKeyboard>, languageIdx: Int) {
-
         if (!preloadedKeyboardViews.contains(languageIdx)) {
             val inputMethodKeyboard = InputMethodKeyboard()
             PAGE_TYPES.forEach { type ->
@@ -170,9 +154,6 @@ class CustomInputMethodView @JvmOverloads constructor(
                                 type,
                                 keys,
                                 page.language,
-                                keyBackground,
-                                keyPaint,
-                                subKeyPaint,
                                 isLandscape
                         )
                     }
@@ -245,7 +226,6 @@ class CustomInputMethodView @JvmOverloads constructor(
                         KeyboardActionListener.SWIPE_DIRECTION_LEFT
                     }
                     isChangeLanguageSwipe = isChangeLanguageSwipe or 0x010 // 0x011 for both being in the change language key view and swiping right or left.
-                    result = true
                 } else if (Math.abs(distanceY) > height / 2 &&
                         Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (distanceY > 0) {
@@ -253,10 +233,10 @@ class CustomInputMethodView @JvmOverloads constructor(
                     } else {
                         keyboardViewListener?.onSwipeUp()
                     }
-                    result = true
                 }
                 if (isChangeLanguageSwipe == 0x011) {
                     keyboardViewListener?.onChangeKeyboardSwipe(direction)
+                    result = true
                 }
                 return result
             }
@@ -282,20 +262,25 @@ class CustomInputMethodView @JvmOverloads constructor(
     /**
      * Update the current keyboard page to a specified page type and redraw.
      */
-    fun updateKeyboardPage(pageType: Int) {
+    fun updateKeyboardPage(pageType: Int, isForce: Boolean = false) {
         currentKeyboardPage = pageType
         invalidate()
-        populateKeyViews(pageType)
+        populateKeyViews(pageType, isForce)
     }
 
     /**
      * Populate the key views based on the type of the page
      * @Param type This is from CustomMainKeyboardView.Type
      * */
-    private fun populateKeyViews(type: Int) {
+    private fun populateKeyViews(type: Int, isForce: Boolean) {
+        // TODO Debug why this can be null
+        if (currentKeyboard.pages[type] == null) {
+            return
+        }
+
         // Check if the size of the rows of the pages are the same. If so, reuse the previous
         // row layout.
-        if (currentKeyboard.pages[type].size == childCount) {
+        if (currentKeyboard.pages[type].size == childCount && !isForce) {
             // Use the existing row linear layouts.
             currentKeyboard.pages[type].forEachIndexed { idx, row ->
                 val rowLinearLayout = getChildAt(idx) as LinearLayout
@@ -352,44 +337,49 @@ class CustomInputMethodView @JvmOverloads constructor(
         return super.onInterceptTouchEvent(event)
     }
 
-    private fun processTouchEvent(event: MotionEvent): Boolean {
+    private fun processTouchEvent(event: MotionEvent) {
         if (!gestureDetector.onTouchEvent(event)) {
             val pointerIndex = event.actionIndex
             val pointerId = event.getPointerId(pointerIndex)
             when (event.actionMasked) {
                 MotionEvent.ACTION_MOVE -> {
-                    // Check if the pointer is moved out of range for the key.
-                    // If so, remove it.
-                    val key = detectKey(event.getX(pointerIndex), event.getY(pointerIndex))
-                    if (key != pressedKeys[pointerId]) {
-                        pressedKeys.remove(pointerId)
-                    }
+                    detectKey(event.getX(pointerIndex), event.getY(pointerIndex), pointerId, true)
                 }
                 MotionEvent.ACTION_DOWN,
                 MotionEvent.ACTION_POINTER_DOWN -> {
-                    detectKey(event.getX(pointerIndex), event.getY(pointerIndex))?.let { pressedKey ->
-                        addPressedKey(pointerId, pressedKey)
-                        if (pressedKey.repeatable == true) {
-                            /*
-                            * Determine if the click is a long press on the repeatable keys.
-                            * */
-                            val msg = longClickHandler.obtainMessage(MSG_LONG_CLICK)
-                            msg.obj = pointerId
-                            longClickHandler.sendMessageDelayed(msg, LONG_PRESS_DELAY.toLong())
-                        }
-                    }
-                    return false
+                    detectKey(event.getX(pointerIndex), event.getY(pointerIndex), pointerId, false)
                 }
+                MotionEvent.ACTION_HOVER_EXIT,
                 MotionEvent.ACTION_UP,
                 MotionEvent.ACTION_POINTER_UP -> {
                     sendKey(pressedKeys.get(pointerId))
                     pressedKeys.remove(pointerId)
                     removeMessages()
-                    return false
                 }
             }
         }
-        return false
+    }
+
+    private fun detectKey(x: Float, y: Float, pointerId: Int, isMove: Boolean) {
+        detectKey(x, y)?.let { pressedKey ->
+            // Prevent the repeatable key from repeating upon touch moving out of its view
+            if (isMove) {
+                if (pressedKeys.get(pointerId) != pressedKey
+                        && pressedKeys.get(pointerId).repeatable == true) {
+                    removeMessages()
+                }
+            }
+
+            addPressedKey(pointerId, pressedKey)
+            if (pressedKey.repeatable == true && !isMove) {
+                /*
+                * Determine if the click is a long press on the repeatable keys.
+                * */
+                val msg = longClickHandler.obtainMessage(MSG_LONG_CLICK)
+                msg.obj = pointerId
+                longClickHandler.sendMessageDelayed(msg, LONG_PRESS_DELAY.toLong())
+            }
+        }
     }
 
     private fun addPressedKey(id: Int, keyView: CustomKeyView) {
@@ -435,11 +425,7 @@ class CustomInputMethodView @JvmOverloads constructor(
                 if (BuildConfig.DEBUG) {
                     Log.d(LOG_TAG, "pressed : ${key.label}")
                 }
-                val timer = MsTimer()
-                timer.start()
                 keyboardViewListener?.onKey(primaryCode, codes)
-                timer.end()
-                timer.print(LOG_TAG)
                 return true
             }
         }

@@ -2,47 +2,56 @@ package com.amosgwa.lisukeyboard.view.keyview
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Point
+import android.graphics.PorterDuff
 import android.graphics.Rect
-import android.support.annotation.ColorRes
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.amosgwa.lisukeyboard.R
+import com.amosgwa.lisukeyboard.common.Styles
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKey
+import kotlin.math.min
 
 
 class KeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
-        defStyleRes: Int = R.style.CustomKeyDefaultStyle,
         val key: CustomKey,
-        private val labelPaint: Paint,
-        private val subLabelPaint: Paint,
-        @ColorRes val normalStateColorRes: Int,
-        @ColorRes val pressStateColorRes: Int
+        val isLandscape: Boolean
 ) : View(
         context,
         attrs,
-        defStyleAttr,
-        defStyleRes
+        defStyleAttr
 ) {
-
-    private var normalBackgroundColor: Int = resources.getColor(normalStateColorRes, null)
-    private var pressedBackgroundColor: Int = resources.getColor(pressStateColorRes, null)
-
     private var isKeyPressed: Boolean = false
+
+    // Settings for the key
+    private val cornerRadius = 15F
+
+    private val widthPaddingRatio = 0.07F
+    private var widthPadding = 0F
+
+    private val heightPaddingRatio = 0.05F
+    private var heightPadding = 0F
+
+    private val shadowHeightRatio = 0.06F
+    private var shadowHeight = 0F
+
+    init {
+        // Set this view's background to transparent
+        setBackgroundColor(Color.TRANSPARENT)
+    }
+
     var label = key.label as String?
         set(value) {
             field = value
             invalidate()
         }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        drawCustomKeys(canvas)
-    }
 
     override fun onTouchEvent(me: MotionEvent?): Boolean {
         when (me?.actionMasked) {
@@ -68,29 +77,150 @@ class KeyView @JvmOverloads constructor(
         return true
     }
 
-    private fun drawCustomKeys(canvas: Canvas) {
-        // Draw canvas background
-        canvas.drawColor(if (isKeyPressed) pressedBackgroundColor else normalBackgroundColor)
 
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        drawBackground(canvas)
+
+        if (key.icon !== null) {
+            drawIcon(canvas)
+        } else {
+            drawLabel(canvas)
+        }
+
+        // Draw arrows for a change language key
+        if (key.isChangeLanguageKey) {
+            drawArrowsForLanguage(canvas)
+        }
+    }
+
+    private fun drawBackground(canvas: Canvas) {
+        // Set canvas background to transparent
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.OVERLAY)
+
+        // Change color based on key press state
+        Styles.keyStyle.backgroundPaint.color = if (isKeyPressed) {
+            Styles.keyStyle.pressedBackgroundColor
+        } else {
+            Styles.keyStyle.normalBackgroundColor
+        }
+
+        // Calculate the padding for the background
+        widthPadding = canvas.width * widthPaddingRatio
+        heightPadding = canvas.height * heightPaddingRatio
+
+        shadowHeight = canvas.height * shadowHeightRatio
+
+        // Draw rounded rectangle background
+        canvas.drawRoundRect(
+                widthPadding,
+                heightPadding,
+                canvas.width.toFloat() - widthPadding,
+                canvas.height.toFloat() - heightPadding,
+                cornerRadius,
+                cornerRadius,
+                Styles.keyStyle.shadowPaint
+        )
+        canvas.drawRoundRect(
+                widthPadding,
+                heightPadding,
+                canvas.width.toFloat() - widthPadding,
+                canvas.height.toFloat() - heightPadding - shadowHeight,
+                cornerRadius,
+                cornerRadius,
+                Styles.keyStyle.backgroundPaint
+        )
+    }
+
+    private fun drawIcon(canvas: Canvas) {
+        val dimension = min(canvas.width, canvas.height) * .8
+        val widthOffset = ((canvas.width - dimension) / 2).toInt()
+        val heightOffset = ((canvas.height - dimension) / 2).toInt()
+        key.icon.setBounds(
+                widthOffset,
+                heightOffset,
+                (widthOffset + dimension).toInt(),
+                (heightOffset + dimension).toInt()
+        )
+        key.icon.draw(canvas)
+    }
+
+    private fun drawLabel(canvas: Canvas) {
         // Draw the label on the key
         label?.let {
-            drawCenter(canvas, labelPaint, it)
+            drawCenter(canvas, Styles.keyStyle.labelPaint, it)
         }
 
         // Draw the sub label on the key
         if (key.subLabel != null) {
-            val paddingX = key.width * 0.35
-            val paddingY = key.height * 0.35
-            val startX = (key.width + key.x - paddingX).toFloat()
-            val startY = (paddingY + key.y).toFloat()
-            canvas.drawText(key.subLabel as String, startX, startY, subLabelPaint)
+            val dimension = min(canvas.width, canvas.height)
+            val xPaddingRatio: Float = if (isLandscape) .9F else .58F
+            val yPaddingRatio: Float = if (isLandscape) .35F else .42F
+            canvas.drawText(
+                    key.subLabel as String,
+                    dimension * xPaddingRatio,
+                    dimension * yPaddingRatio,
+                    Styles.keyStyle.subLabelPaint
+            )
         }
+
+    }
+
+    private fun drawArrowsForLanguage(canvas: Canvas) {
+        val height = (canvas.height * 0.20).toInt()
+        // Left side arrow
+        drawTriangle(
+                (height + canvas.width * widthPaddingRatio).toInt(),
+                ((canvas.height / 2) - height / 2),
+                height,
+                false,
+                Styles.keyStyle.arrowPaint,
+                canvas
+        )
+        // Right side arrow
+        drawTriangle(
+                (canvas.width - (2 * height + canvas.width * widthPaddingRatio)).toInt(),
+                ((canvas.height / 2) - height / 2),
+                height,
+                true,
+                Styles.keyStyle.arrowPaint,
+                canvas
+        )
+    }
+
+    private fun drawTriangle(
+            x: Int,
+            y: Int,
+            width: Int,
+            isRight: Boolean,
+            paint: Paint,
+            canvas: Canvas
+    ) {
+        // Right
+        var pA = Point(x, y)
+        var pB = Point(x + width, y + width / 2)
+        var pC = Point(x, y + width)
+
+        // Left
+        if (!isRight) {
+            pA = Point(x + width, y)
+            pB = Point(x, y + width / 2)
+            pC = Point(x + width, y + width)
+        }
+
+        val path = Path().apply {
+            fillType = Path.FillType.EVEN_ODD
+            moveTo(pA.x.toFloat(), pA.y.toFloat())
+            lineTo(pB.x.toFloat(), pB.y.toFloat())
+            lineTo(pC.x.toFloat(), pC.y.toFloat())
+            close()
+        }
+        canvas.drawPath(path, paint)
     }
 
     private fun drawCenter(canvas: Canvas, paint: Paint, text: String) {
         val xPos = canvas.width / 2.0F
         val yPos = (canvas.height / 2.0F - (paint.descent() + paint.ascent()) / 2)
-        //((textPaint.descent() + textPaint.ascent()) / 2) is the distance from the baseline to the center.
         canvas.drawText(text, xPos, yPos, paint)
     }
 }

@@ -1,20 +1,30 @@
 package com.amosgwa.lisukeyboard
 
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.TypedArray
 import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
 import android.media.AudioManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.support.annotation.ColorInt
+import android.support.annotation.ColorRes
 import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import com.amosgwa.lisukeyboard.common.KeyStyle
+import com.amosgwa.lisukeyboard.common.KeyboardStyle
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
 import com.amosgwa.lisukeyboard.common.PageType.Companion.SHIFT
 import com.amosgwa.lisukeyboard.common.PageType.Companion.SYMBOL
+import com.amosgwa.lisukeyboard.common.Styles
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
+import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.inputmethodview.CustomInputMethodView
 import com.amosgwa.lisukeyboard.view.inputmethodview.KeyboardActionListener
@@ -38,15 +48,12 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     private var preferences: KeyboardPreferences? = null
 
-    private var currentSelectedLanguageIdx by Delegates.observable(0) { _, _, newValue ->
-        val keyboards = keyboardsOfLanguages[newValue]
-        keyboards?.let {
-            customInputMethodView.updateKeyboardLanguage(newValue)
-        }
-    }
+    private var currentSelectedLanguageIdx = 0
 
-    private var currentKeyboardPage by Delegates.observable(NORMAL) { _, _, newPage ->
-        customInputMethodView.updateKeyboardPage(newPage)
+    private var currentKeyboardPage by Delegates.observable<Int?>(null) { _, _, newPage ->
+        newPage?.let {
+            customInputMethodView.updateKeyboardPage(newPage)
+        }
     }
 
     private var lastSavedLanguageIdx: Int = 0
@@ -54,14 +61,59 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
     override fun onCreate() {
         super.onCreate()
         loadKeyCodes()
+        initKeyboards()
+    }
+
+    override fun onInitializeInterface() {
+        initKeyboards()
+        super.onInitializeInterface()
+    }
+
+    private fun initKeyboards() {
+        resetLoadedData()
         loadLanguages()
+        loadStyles()
         loadSharedPreferences()
+    }
+
+    private fun resetLoadedData() {
+        languageNames.clear()
+        languageXmlRes.clear()
+        languageShiftXmlRes.clear()
+        languageSymbolXmlRes.clear()
+        keyboardsOfLanguages.clear()
+        currentSelectedLanguageIdx = 0
+        currentKeyboardPage = null
+    }
+
+    private fun renderCurrentLanguage() {
+        if (keyboardsOfLanguages.contains(currentSelectedLanguageIdx)) {
+            customInputMethodView.updateKeyboardLanguage(currentSelectedLanguageIdx)
+        }
     }
 
     private fun loadSharedPreferences() {
 //        preferences = KeyboardPreferences(applicationContext)
 //        lastSavedLanguageIdx = preferences?.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, 0)
 //                ?: 0
+    }
+
+    private fun loadStyles() {
+        // Load the styles and store them as Singleton values
+        Styles.keyboardStyle = KeyboardStyle(getColorInt(R.color.default_keyboard_background_color))
+
+        Styles.keyStyle = KeyStyle(
+                getColorInt(R.color.default_key_normal_background_color),
+                getColorInt(R.color.default_key_pressed_background_color),
+                getColorInt(R.color.default_key_shadow_color),
+                getColorInt(R.color.default_key_label_color),
+                getColorInt(R.color.default_key_sub_label_color)
+        )
+    }
+
+    @ColorInt
+    private fun getColorInt(@ColorRes res: Int): Int {
+        return resources.getColor(res, null)
     }
 
     override fun onCreateInputView(): View? {
@@ -151,10 +203,13 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
         if (BuildConfig.DEBUG) {
             Log.d("///AMOS", "CHANGE DIRECTION $currentSelectedLanguageIdx")
         }
+        renderCurrentLanguage()
     }
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
         val inputConnection = currentInputConnection
+        // TODO Only vibrate and play click upon changing setting
+        vibrate()
         playClick(primaryCode)
         when (primaryCode) {
             Keyboard.KEYCODE_DELETE -> {
@@ -210,6 +265,15 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
         // Switch back to normal if the selected page type is shift.
         if (currentKeyboardPage == SHIFT) {
             currentKeyboardPage = NORMAL
+        }
+    }
+
+    private fun vibrate() {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(20, 150))
+        } else {
+            vibrator.vibrate(20)
         }
     }
 

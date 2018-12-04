@@ -5,16 +5,12 @@ import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
-import android.view.MotionEvent
-import android.os.SystemClock
-import android.provider.Settings
 import com.amosgwa.lisukeyboard.extensions.showToast
-import android.support.v7.app.AppCompatActivity
-import android.content.ComponentName
-import android.view.View
-
 
 class SettingActivity : AppCompatActivity() {
     private var binding: ActivitySettingBinding? = null
@@ -22,20 +18,6 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         checkDrawOverlayPermission()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_setting)
-        showKeyboard()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        showKeyboard()
-    }
-
-    fun showKeyboard() {
-        binding?.editField?.postDelayed({
-            binding?.editField?.requestFocus()
-            binding?.editField?.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0f, 0f, 0))
-            binding?.editField?.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0f, 0f, 0))
-        }, 900)
     }
 
     fun OpenLanguageSetting(v: View) {
