@@ -45,8 +45,6 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     private var keyboardsOfLanguages = SparseArray<SparseArray<CustomKeyboard>>()
 
-    private lateinit var preferences: KeyboardPreferences
-
     private var currentSelectedLanguageIdx = 0
 
     private var currentKeyboardPage by Delegates.observable<Int?>(null) { _, _, newPage ->
@@ -54,6 +52,8 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
             customInputMethodView.updateKeyboardPage(newPage)
         }
     }
+
+    private lateinit var preferences: KeyboardPreferences
 
     override fun onCreate() {
         super.onCreate()
