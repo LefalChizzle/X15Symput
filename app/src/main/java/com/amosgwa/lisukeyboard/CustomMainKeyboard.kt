@@ -1,7 +1,6 @@
 package com.amosgwa.lisukeyboard
 
 import android.content.Context
-import android.content.res.Configuration
 import android.content.res.TypedArray
 import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
@@ -46,7 +45,7 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     private var keyboardsOfLanguages = SparseArray<SparseArray<CustomKeyboard>>()
 
-    private var preferences: KeyboardPreferences? = null
+    private lateinit var preferences: KeyboardPreferences
 
     private var currentSelectedLanguageIdx = 0
 
@@ -56,10 +55,9 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
         }
     }
 
-    private var lastSavedLanguageIdx: Int = 0
-
     override fun onCreate() {
         super.onCreate()
+        preferences = KeyboardPreferences(applicationContext)
         loadKeyCodes()
         initKeyboards()
     }
@@ -82,7 +80,6 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
         languageShiftXmlRes.clear()
         languageSymbolXmlRes.clear()
         keyboardsOfLanguages.clear()
-        currentSelectedLanguageIdx = 0
         currentKeyboardPage = null
     }
 
@@ -93,9 +90,7 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
     }
 
     private fun loadSharedPreferences() {
-//        preferences = KeyboardPreferences(applicationContext)
-//        lastSavedLanguageIdx = preferences?.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE, 0)
-//                ?: 0
+        currentSelectedLanguageIdx = preferences.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE_IDX, 0)
     }
 
     private fun loadStyles() {
@@ -118,11 +113,11 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
 
     override fun onCreateInputView(): View? {
         customInputMethodView = layoutInflater.inflate(R.layout.keyboard, null) as CustomInputMethodView
-        val keyboard = keyboardsOfLanguages[lastSavedLanguageIdx]
+        val keyboard = keyboardsOfLanguages[currentSelectedLanguageIdx]
         keyboard?.let {
-            customInputMethodView.prepareAllKeyboardsForRendering(keyboardsOfLanguages, lastSavedLanguageIdx)
+            customInputMethodView.prepareAllKeyboardsForRendering(keyboardsOfLanguages, currentSelectedLanguageIdx)
             customInputMethodView.keyboardViewListener = this
-            customInputMethodView.updateKeyboardLanguage(lastSavedLanguageIdx)
+            customInputMethodView.updateKeyboardLanguage(currentSelectedLanguageIdx)
         }
         return customInputMethodView
     }
@@ -198,11 +193,16 @@ class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
         changeLanguage(direction)
     }
 
+    private fun saveCurrentState() {
+        preferences.putInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE_IDX, currentSelectedLanguageIdx)
+    }
+
     private fun changeLanguage(direction: Int) {
         currentSelectedLanguageIdx = ((currentSelectedLanguageIdx + direction) + languageNames.size) % languageNames.size
         if (BuildConfig.DEBUG) {
             Log.d("///AMOS", "CHANGE DIRECTION $currentSelectedLanguageIdx")
         }
+        saveCurrentState()
         renderCurrentLanguage()
     }
 
