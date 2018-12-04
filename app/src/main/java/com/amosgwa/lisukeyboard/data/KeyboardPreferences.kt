@@ -25,7 +25,7 @@ class KeyboardPreferences(context: Context) {
     }
 
     fun getInt(key: String, defaultInt: Int): Int {
-        return preference.getInt(key, defaultInt) ?: defaultInt
+        return preference.getInt(key, defaultInt)
     }
 
     companion object {

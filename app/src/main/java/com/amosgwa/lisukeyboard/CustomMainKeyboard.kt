@@ -8,8 +8,8 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent

@@ -2,7 +2,7 @@ package com.amosgwa.lisukeyboard.common
 
 import android.graphics.Color
 import android.graphics.Paint
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 
 object Styles {
     lateinit var keyboardStyle: KeyboardStyle

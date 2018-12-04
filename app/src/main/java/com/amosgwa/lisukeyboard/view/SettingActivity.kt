@@ -1,13 +1,12 @@
 package com.amosgwa.lisukeyboard.view
 
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.app.AppCompatActivity
-import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
 import com.amosgwa.lisukeyboard.extensions.showToast
@@ -20,7 +19,7 @@ class SettingActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_setting)
     }
 
-    fun OpenLanguageSetting(v: View) {
+    fun openLanguageSetting() {
         val intent = Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
         startActivity(intent)
     }
