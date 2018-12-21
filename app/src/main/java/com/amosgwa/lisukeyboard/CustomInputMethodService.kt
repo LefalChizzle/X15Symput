@@ -30,7 +30,7 @@ import com.amosgwa.lisukeyboard.view.inputmethodview.KeyboardActionListener
 import kotlin.properties.Delegates
 
 
-class CustomMainKeyboard : InputMethodService(), KeyboardActionListener {
+class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
 
     private lateinit var customInputMethodView: CustomInputMethodView
 

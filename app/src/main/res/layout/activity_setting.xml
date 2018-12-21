@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.amosgwa.lisukeyboard.view.SettingActivity">
@@ -14,11 +15,10 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:onClick="openLanguageSetting"
             android:id="@+id/open_language_setting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set keyboard"
             app:layout_constraintTop_toBottomOf="@+id/edit_field" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>

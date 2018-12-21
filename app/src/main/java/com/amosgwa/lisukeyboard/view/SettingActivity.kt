@@ -12,11 +12,14 @@ import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
 import com.amosgwa.lisukeyboard.extensions.showToast
 
 class SettingActivity : AppCompatActivity() {
-    private var binding: ActivitySettingBinding? = null
+    lateinit var binding: ActivitySettingBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkDrawOverlayPermission()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_setting)
+        binding.openLanguageSetting.setOnClickListener {
+            openLanguageSetting()
+        }
     }
 
     fun openLanguageSetting() {

@@ -17,7 +17,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
 import com.amosgwa.lisukeyboard.BuildConfig
-import com.amosgwa.lisukeyboard.CustomMainKeyboard
+import com.amosgwa.lisukeyboard.CustomInputMethodService
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
 import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
@@ -25,7 +25,6 @@ import com.amosgwa.lisukeyboard.common.Styles
 import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.extensions.forEach
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
-import com.amosgwa.lisukeyboard.utilities.MsTimer
 import com.amosgwa.lisukeyboard.view.keyview.CustomKeyPreview
 import com.amosgwa.lisukeyboard.view.keyview.CustomKeyView
 
@@ -82,7 +81,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     private var currentKeyboardPage: Int = NORMAL
 
     /**
-     * Listener for [CustomMainKeyboard]
+     * Listener for [CustomInputMethodService]
      */
     var keyboardViewListener: KeyboardActionListener? = null
 
