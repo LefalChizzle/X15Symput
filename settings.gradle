@@ -2,5 +2,5 @@ include ':app'
 setBinding(new Binding([gradle: this]))
 evaluate(new File(
         settingsDir.parentFile,
-        'keyboardsetting/.android/include_flutter.groovy'
+        'lisuKeyboardSettingModule/.android/include_flutter.groovy'
 ))
