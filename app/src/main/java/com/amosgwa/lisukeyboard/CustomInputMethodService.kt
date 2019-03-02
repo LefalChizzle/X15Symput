@@ -1,6 +1,7 @@
 package com.amosgwa.lisukeyboard
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.TypedArray
 import android.inputmethodservice.InputMethodService
 import android.inputmethodservice.Keyboard
@@ -15,6 +16,7 @@ import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.amosgwa.lisukeyboard.common.KeyStyle
 import com.amosgwa.lisukeyboard.common.KeyboardStyle
@@ -23,6 +25,9 @@ import com.amosgwa.lisukeyboard.common.PageType.Companion.SHIFT
 import com.amosgwa.lisukeyboard.common.PageType.Companion.SYMBOL
 import com.amosgwa.lisukeyboard.common.Styles
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_SOUND
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_VIBRATION
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_NEEDS_RELOAD
 import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.inputmethodview.CustomInputMethodView
@@ -46,6 +51,8 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
     private var keyboardsOfLanguages = SparseArray<SparseArray<CustomKeyboard>>()
 
     private var currentSelectedLanguageIdx = 0
+    private var enableVibration = true
+    private var enableSound = true
 
     private var currentKeyboardPage by Delegates.observable<Int?>(null) { _, _, newPage ->
         newPage?.let {
@@ -57,9 +64,20 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
 
     override fun onCreate() {
         super.onCreate()
-        preferences = KeyboardPreferences(applicationContext)
+        initSharedPreference()
         loadKeyCodes()
         initKeyboards()
+    }
+
+    private fun initSharedPreference() {
+        preferences = KeyboardPreferences(applicationContext)
+    }
+
+    override fun onWindowShown() {
+        super.onWindowShown()
+        if (preferences.getBoolean(KEY_NEEDS_RELOAD)) {
+            loadSharedPreferences()
+        }
     }
 
     override fun onInitializeInterface() {
@@ -91,6 +109,8 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
 
     private fun loadSharedPreferences() {
         currentSelectedLanguageIdx = preferences.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE_IDX, 0)
+        enableVibration = preferences.getBoolean(KeyboardPreferences.KEY_ENABLE_VIBRATION)
+        enableSound = preferences.getBoolean(KeyboardPreferences.KEY_ENABLE_SOUND)
     }
 
     private fun loadStyles() {
@@ -208,9 +228,8 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
 
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
         val inputConnection = currentInputConnection
-        // TODO Only vibrate and play click upon changing setting
-        vibrate()
-        playClick(primaryCode)
+        if (enableVibration) vibrate()
+        if (enableSound) playClick(primaryCode)
         when (primaryCode) {
             Keyboard.KEYCODE_DELETE -> {
                 val selectedText: CharSequence? = inputConnection.getSelectedText(0)
