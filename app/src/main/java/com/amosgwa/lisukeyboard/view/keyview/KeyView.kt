@@ -153,13 +153,19 @@ class KeyView @JvmOverloads constructor(
 
         // Draw the sub label on the key
         if (key.subLabel != null) {
-            val dimension = min(canvas.width, canvas.height)
-            val xPaddingRatio: Float = if (isLandscape) .9F else .58F
-            val yPaddingRatio: Float = if (isLandscape) .35F else .42F
+            var multiplicativeWidthRatio = 1.5F
+            var multiplicativeHeightRatio = 1.5F
+            if (canvas.width / canvas.height < 0.75) {
+                multiplicativeWidthRatio = 1.1F
+            }
+
+            val xPadding = canvas.width - multiplicativeWidthRatio * Styles.keyStyle.subLabelPaint.textSize
+            val yPadding = multiplicativeHeightRatio * Styles.keyStyle.subLabelPaint.textSize
+
             canvas.drawText(
                     key.subLabel as String,
-                    dimension * xPaddingRatio,
-                    dimension * yPaddingRatio,
+                    xPadding,
+                    yPadding,
                     Styles.keyStyle.subLabelPaint
             )
         }
