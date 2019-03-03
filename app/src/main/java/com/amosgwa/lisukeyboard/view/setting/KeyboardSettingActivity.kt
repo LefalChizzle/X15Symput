@@ -1,10 +1,14 @@
 package com.amosgwa.lisukeyboard.view.setting
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences
@@ -12,11 +16,13 @@ import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_SO
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_VIBRATION
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_NEEDS_RELOAD
 import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
+import com.amosgwa.lisukeyboard.view.dialog.CustomDialog
 
 
-class KeyboardSettingActivity : Activity() {
+class KeyboardSettingActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingBinding
     private lateinit var preferences: KeyboardPreferences
+    private var enabledKeyboard: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +31,52 @@ class KeyboardSettingActivity : Activity() {
 
         setupActions()
     }
+
+    override fun onResume() {
+        super.onResume()
+        checkKeyboardEnabled()
+    }
+
+    private fun checkKeyboardEnabled() {
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).let {
+            enabledKeyboard = it.enabledInputMethodList.any { it.packageName == packageName }
+            val dialogShown = supportFragmentManager.findFragmentByTag(CustomDialog.TAG) != null
+            if (!enabledKeyboard && !dialogShown) {
+                // Show setting dialog
+                showEnableKeyboardDialog()
+            }
+
+            // Check if the keyboard has been picked
+            val imeSelected = Settings.Secure.getString(
+                    contentResolver,
+                    Settings.Secure.DEFAULT_INPUT_METHOD
+            ).contains(packageName)
+
+            if (enabledKeyboard && !imeSelected) {
+                Handler().postDelayed({ it.showInputMethodPicker() }, 500)
+            }
+        }
+    }
+
+    private fun showEnableKeyboardDialog() {
+        CustomDialog.Builder()
+                .title("Enable keyboard")
+                .message("Please enable the LISUKeyboard in the settings")
+                .positiveText("OK")
+                .listener(object : CustomDialog.Listener {
+                    override fun onPositiveSelect(dialog: CustomDialog) {
+                        dialog.dismiss()
+                        startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
+                    }
+
+                    override fun onNegativeSelect(dialog: CustomDialog) {
+                        dialog.dismiss()
+                    }
+                })
+                .build()
+                .show(supportFragmentManager, CustomDialog.TAG)
+    }
+
 
     private fun setupActions() {
         binding.enableVibration.apply {
