@@ -7,7 +7,7 @@ lisuKeyboard is an opensource Android custom keyboard for Lisu Language using Ko
 [Lisu](https://en.wikipedia.org/wiki/Lisu_language) is a language spoken by about 1.5 million across the globe. The script based on Latin was created 100 years ago, but the ability to write the language on computers is not widely available across different platforms. I have implemented a virtual keyboard for Lisu using Google Input tools, and this project is an effort to preserve the language by creating a custom Android keyboard. You can learn more about the language here, and learn more about my other projects [here](http://amosgwa.com).
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/6025663/39716517-d170e086-51ed-11e8-9396-c6561e15a8e4.png" width="50%">
+  <img src="https://user-images.githubusercontent.com/6025663/49764377-7c8c7180-fc8c-11e8-9920-cb7f43b793b7.png" width="50%">
 </p>
 
 # Contribution/Forking

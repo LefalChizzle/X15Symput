@@ -1,7 +1,7 @@
 package com.amosgwa.lisukeyboard.extensions
 
 import android.content.Context
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import android.widget.Toast
 
 fun Context.showToast(

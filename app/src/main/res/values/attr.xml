@@ -12,10 +12,17 @@
         <attr name="subLabel" />
     </declare-styleable>
 
-    <declare-styleable name="CustomKeyboardView">
+    <declare-styleable name="CustomInputMethodView">
         <attr name="keyTextColor" />
         <attr name="keyTextSize" />
         <attr name="keyBackground" />
+        <attr name="keyboardBackground" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="KeyView">
+        <attr name="keyShadowColor" format="color" />
+        <attr name="keyNormalBackground" format="color" />
+        <attr name="keyPressedBackground" format="color" />
     </declare-styleable>
 
     <declare-styleable name="CustomKey">

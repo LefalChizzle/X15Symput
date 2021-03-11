@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.amosgwa.lisukeyboard.view.CustomKeyboardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.amosgwa.lisukeyboard.view.inputmethodview.CustomInputMethodView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/keyboardNormal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/grey"
-    app:keyBackground="@drawable/key_background"
-    app:keyTextColor="@color/blue_dark"
     app:keyTextSize="8dp" />
 
 

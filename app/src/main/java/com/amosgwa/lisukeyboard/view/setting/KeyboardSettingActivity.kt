@@ -1,0 +1,119 @@
+package com.amosgwa.lisukeyboard.view.setting
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.os.Handler
+import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.amosgwa.lisukeyboard.R
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_SOUND
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_VIBRATION
+import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_NEEDS_RELOAD
+import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
+import com.amosgwa.lisukeyboard.view.dialog.CustomDialog
+
+
+class KeyboardSettingActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySettingBinding
+    private lateinit var preferences: KeyboardPreferences
+    private var enabledKeyboard: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_setting)
+        preferences = KeyboardPreferences(applicationContext)
+
+        setupActions()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkKeyboardEnabled()
+    }
+
+    private fun checkKeyboardEnabled() {
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).let {
+            enabledKeyboard = it.enabledInputMethodList.any { it.packageName == packageName }
+            val dialogShown = supportFragmentManager.findFragmentByTag(CustomDialog.TAG) != null
+            if (!enabledKeyboard && !dialogShown) {
+                // Show setting dialog
+                showEnableKeyboardDialog()
+            }
+
+            // Check if the keyboard has been picked
+            val imeSelected = Settings.Secure.getString(
+                    contentResolver,
+                    Settings.Secure.DEFAULT_INPUT_METHOD
+            ).contains(packageName)
+
+            if (enabledKeyboard && !imeSelected) {
+                Handler().postDelayed({ it.showInputMethodPicker() }, 500)
+            }
+        }
+    }
+
+    private fun showEnableKeyboardDialog() {
+        CustomDialog.Builder()
+                .title("Enable keyboard")
+                .message("Please enable the LISUKeyboard in the settings")
+                .positiveText("OK")
+                .listener(object : CustomDialog.Listener {
+                    override fun onPositiveSelect(dialog: CustomDialog) {
+                        dialog.dismiss()
+                        startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
+                    }
+
+                    override fun onNegativeSelect(dialog: CustomDialog) {
+                        dialog.dismiss()
+                    }
+                })
+                .build()
+                .show(supportFragmentManager, CustomDialog.TAG)
+    }
+
+
+    private fun setupActions() {
+        binding.enableVibration.apply {
+            isChecked = preferences.getBoolean(KEY_ENABLE_VIBRATION)
+            setOnClickListener {
+                isChecked = !isChecked
+                preferences.putBoolean(KEY_ENABLE_VIBRATION, isChecked)
+                preferences.putBoolean(KEY_NEEDS_RELOAD, true)
+            }
+        }
+
+        binding.enableSound.apply {
+            isChecked = preferences.getBoolean(KEY_ENABLE_SOUND)
+            setOnClickListener {
+                isChecked = !isChecked
+                preferences.putBoolean(KEY_ENABLE_SOUND, isChecked)
+                preferences.putBoolean(KEY_NEEDS_RELOAD, true)
+            }
+        }
+
+        binding.email.setOnClickListener {
+            val emailIntent = Intent(Intent.ACTION_SEND)
+
+            emailIntent.data = Uri.parse("mailto:")
+            emailIntent.type = "text/plain"
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[Lisu Keyboard Android] Feedback")
+
+            try {
+                startActivity(Intent.createChooser(emailIntent, "Send feedback..."))
+            } catch (ex: android.content.ActivityNotFoundException) {
+                Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    companion object {
+        const val email = "gwamosi@gmail.com"
+    }
+}

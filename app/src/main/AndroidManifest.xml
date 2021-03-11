@@ -3,21 +3,32 @@
     package="com.amosgwa.lisukeyboard">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".view.setting.KeyboardSettingActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
 
         <service
-            android:name=".CustomMainKeyboard"
+            android:name=".CustomInputMethodService"
             android:exported="false"
             android:label="LISUKeyboard"
             android:permission="android.permission.BIND_INPUT_METHOD">
-
             <meta-data
                 android:name="android.view.im"
                 android:resource="@xml/method" />
@@ -26,25 +37,5 @@
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
         </service>
-
-        <activity
-            android:name=".view.SettingActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:windowSoftInputMode="stateVisible|adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".view.LanguagePickerActivity"
-            android:documentLaunchMode="always"
-            android:excludeFromRecents="true"
-            android:screenOrientation="behind"
-            android:theme="@style/Theme.UserDialog"
-            android:windowSoftInputMode="stateUnchanged" />
     </application>
 </manifest>

@@ -4,34 +4,25 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="grey">#f0f1f1</color>
-    <color name="grey_medium">#cecece</color>
-    <color name="grey_a9">#a9a9a9</color>
-    <color name="sub_script_grey">#838383</color>
-    <color name="keyboard_grey">#696969</color>
-    <color name="grey_dark">#3e3e3e</color>
+    <color name="grey_light">#DADCDC</color>
+    <color name="grey">#CECDCE</color>
+    <color name="grey_medium">#818181</color>
+    <color name="grey_dark">#5e5e5e</color>
+    <color name="grey_darker">#434343</color>
 
+    <color name="blue">#45bef1</color>
     <color name="blue_dark">#37474f</color>
-    <color name="blue_light">#45bef1</color>
 
     <color name="white">#FFFFFF</color>
     <color name="pink">#EE92C2</color>
 
-    <color name="keyBackgroundColor">@color/grey</color>
-    <color name="keyboardDivider">@color/blue_dark</color>
-    <color name="keyboardPressed">@color/grey_medium</color>
-    <color name="keyTextColor">@color/blue_dark</color>
-    <color name="subKeyTextColor">@color/sub_script_grey</color>
-    <color name="languageTextColor">@color/grey_a9</color>
-
-    <color name="keyPreviewBackgroundColor">@color/colorAccent</color>
-    <color name="keyPreviewTextColor">@color/white</color>
-
-    <!--Custom Keyboard Colors-->
-    <color name="custom_keyboard_grey_medium">#cecece</color>
-    <color name="custom_keyboard_blue_dark">#37474f</color>
-    <color name="custom_keyboard_key_text_color">#fff</color>
-
     <!--Default colors-->
-    <color name="default_key_text_color">@color/grey_dark</color>
+    <!--Keyboard-->
+    <color name="default_keyboard_background_color">@color/grey_light</color>
+    <!--Key-->
+    <color name="default_key_label_color">@color/grey_darker</color>
+    <color name="default_key_normal_background_color">@color/white</color>
+    <color name="default_key_pressed_background_color">@color/grey</color>
+    <color name="default_key_shadow_color">@color/grey</color>
+    <color name="default_key_sub_label_color">@color/grey_medium</color>
 </resources>
