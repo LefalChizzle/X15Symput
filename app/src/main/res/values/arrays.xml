@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="languages">
-        <item>@array/lisu</item>
         <item>@array/english</item>
+        <item>@array/logic</item>
+        <item>@array/integrals</item>
+
     </array>
 
     <array name="english">
@@ -12,10 +14,17 @@
         <item>@xml/qwerty_symbol</item>
     </array>
 
-    <array name="lisu">
-        <item>ꓡꓲꓢꓴ</item>
-        <item>@xml/lisu</item>
-        <item>@xml/lisu_shift</item>
-        <item>@xml/symbol</item>
+    <array name="logic">
+        <item>Logic &amp; Sets</item>
+        <item>@xml/logic_sets</item>
+        <item>@xml/logic_sets_shift</item>
+        <item>@xml/logic_sets_symbol</item>
+    </array>
+
+    <array name="integrals">
+    <item>Integrals</item>
+    <item>@xml/integrals</item>
+    <item>@xml/integrals_shift</item>
+    <item>@xml/integrals_symbol</item>
     </array>
 </resources>
