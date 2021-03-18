@@ -2,7 +2,7 @@
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:keyHeight="@dimen/key_height"
-    android:verticalGap="0px">
+    android:verticalGap="0dp">
 
     <Row>
         <Key
@@ -38,73 +38,101 @@
             android:keyEdgeFlags="right"
             android:keyLabel="0" />
     </Row>
-
+    <!--First Page for Integrals -->
     <Row>
         <Key
-            android:codes="81"
+            android:codes="8747"
             android:keyEdgeFlags="left"
-            android:keyLabel="Q" />
+            android:keyLabel="∫"
+            android:popupKeyboard="@xml/popup"
+            app:subLabel="+" />
         <Key
-            android:codes="87"
-            android:keyLabel="W" />
+            android:codes="8748"
+            android:keyLabel="∬"
+            app:subLabel="-"
+            />
         <Key
-            android:codes="69"
-            android:keyLabel="E" />
+            android:codes="8749"
+            android:keyLabel="∭"
+            app:subLabel="∙"
+            />
         <Key
-            android:codes="82"
-            android:keyLabel="R" />
+            android:codes="8750"
+            android:keyLabel="∮"
+            app:subLabel="÷"
+            />
         <Key
-            android:codes="84"
-            android:keyLabel="T" />
+            android:codes="8751"
+            android:keyLabel="∯"
+            app:subLabel="="
+            />
         <Key
-            android:codes="89"
-            android:keyLabel="Y" />
+            android:codes="8752"
+            android:keyLabel="∰"
+            app:subLabel="&lt;"
+             />
         <Key
-            android:codes="85"
-            android:keyLabel="U" />
+            android:codes="8753"
+            android:keyLabel="∱"
+            app:subLabel="&gt;"
+             />
         <Key
-            android:codes="73"
-            android:keyLabel="I" />
+            android:codes="8754"
+            android:keyLabel="∲"
+            app:subLabel="≤"
+             />
         <Key
-            android:codes="79"
-            android:keyLabel="O" />
+            android:codes="8755"
+            android:keyLabel="∳"
+            app:subLabel="≥"
+             />
         <Key
-            android:codes="80"
+            android:codes="10764"
             android:keyEdgeFlags="right"
-            android:keyLabel="P" />
+            android:keyLabel="⨌"
+             />
     </Row>
 
     <Row>
         <Key
-            android:codes="65"
+            android:codes="10765"
             android:horizontalGap="5%p"
             android:keyEdgeFlags="left"
-            android:keyLabel="A" />
+            android:keyLabel="⨍"
+             />
         <Key
-            android:codes="83"
-            android:keyLabel="S" />
+            android:codes="10766"
+            android:keyLabel="⨎"
+             />
         <Key
-            android:codes="68"
-            android:keyLabel="D" />
+            android:codes="10767"
+            android:keyLabel="⨏"
+             />
         <Key
-            android:codes="70"
-            android:keyLabel="F" />
+            android:codes="10768"
+            android:keyLabel="⨐"
+             />
         <Key
-            android:codes="71"
-            android:keyLabel="G" />
+            android:codes="10769"
+            android:keyLabel="⨑"
+             />
         <Key
-            android:codes="72"
-            android:keyLabel="H" />
+            android:codes="10770"
+            android:keyLabel="⨒"
+             />
         <Key
-            android:codes="74"
-            android:keyLabel="J" />
+            android:codes="10771"
+            android:keyLabel="⨓"
+             />
         <Key
-            android:codes="75"
-            android:keyLabel="K" />
+            android:codes="10772"
+            android:keyLabel="⨔"
+             />
         <Key
-            android:codes="76"
+            android:codes="10773"
             android:keyEdgeFlags="right"
-            android:keyLabel="L" />
+            android:keyLabel="⨕"
+             />
     </Row>
 
     <Row>
@@ -113,29 +141,32 @@
             android:isModifier="true"
             android:isSticky="true"
             android:keyEdgeFlags="left"
-            android:keyIcon="@drawable/ic_keyboard_arrow_up_blue"
+            android:keyIcon="@drawable/ic_keyboard_arrow_up"
             android:keyWidth="15%p" />
         <Key
-            android:codes="90"
-            android:keyLabel="Z" />
+            android:codes="10774"
+            android:keyLabel="⨖"
+            />
         <Key
-            android:codes="88"
-            android:keyLabel="X" />
+            android:codes="10775"
+            android:keyLabel="⨗" />
         <Key
-            android:codes="67"
-            android:keyLabel="C" />
+            android:codes="8800"
+            android:keyLabel="≠" />
         <Key
-            android:codes="86"
-            android:keyLabel="V" />
+            android:codes="10776"
+            android:keyLabel="⨘" />
         <Key
-            android:codes="66"
-            android:keyLabel="B" />
+            android:codes="10777"
+            android:keyLabel="⨙"
+            />
         <Key
-            android:codes="78"
-            android:keyLabel="N" />
+            android:codes="10778"
+            android:keyLabel="⨚"
+            />
         <Key
-            android:codes="77"
-            android:keyLabel="M" />
+            android:codes="10779"
+            android:keyLabel="⨛" />
         <Key
             android:codes="@integer/keycode_delete"
             android:isRepeatable="true"
@@ -148,7 +179,7 @@
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">
         <Key
-            android:codes="@integer/keycode_sym"
+            android:codes="@integer/keycode_abc"
             android:keyEdgeFlags="left"
             android:keyLabel="\?123"
             android:keyWidth="15%p"
@@ -163,8 +194,8 @@
             app:isChangeLanguageKey="true"
             app:keyTextSize="6dp" />
         <Key
-            android:codes="44"
-            android:keyLabel=","
+            android:codes="46"
+            android:keyLabel="."
             android:keyWidth="10%p" />
         <Key
             android:codes="@integer/keycode_done"
