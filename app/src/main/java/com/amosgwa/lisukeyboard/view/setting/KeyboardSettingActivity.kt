@@ -16,6 +16,7 @@ import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_SO
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_VIBRATION
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_NEEDS_RELOAD
 import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
+import com.amosgwa.lisukeyboard.extensions.showToast
 import com.amosgwa.lisukeyboard.view.dialog.CustomDialog
 
 
@@ -23,17 +24,22 @@ class KeyboardSettingActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingBinding
     private lateinit var preferences: KeyboardPreferences
     private var enabledKeyboard: Boolean = false
+    private var shouldFinish: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_setting)
         preferences = KeyboardPreferences(applicationContext)
 
+        checkKeyboardEnabled()
         setupActions()
     }
 
     override fun onResume() {
         super.onResume()
+        if(shouldFinish){
+            return
+        }
         checkKeyboardEnabled()
     }
 
@@ -44,6 +50,7 @@ class KeyboardSettingActivity : AppCompatActivity() {
             if (!enabledKeyboard && !dialogShown) {
                 // Show setting dialog
                 showEnableKeyboardDialog()
+                shouldFinish = false
             }
 
             // Check if the keyboard has been picked
@@ -52,8 +59,12 @@ class KeyboardSettingActivity : AppCompatActivity() {
                     Settings.Secure.DEFAULT_INPUT_METHOD
             ).contains(packageName)
 
-            if (enabledKeyboard && !imeSelected) {
+            if (imeSelected) {
+                Toast.makeText(this, "Symput is already selected", Toast.LENGTH_SHORT).show()
+            }
+            else if (enabledKeyboard && !imeSelected) {
                 Handler().postDelayed({ it.showInputMethodPicker() }, 500)
+                shouldFinish = true
             }
         }
     }
@@ -61,8 +72,9 @@ class KeyboardSettingActivity : AppCompatActivity() {
     private fun showEnableKeyboardDialog() {
         CustomDialog.Builder()
                 .title("Enable keyboard")
-                .message("Please enable the LISUKeyboard in the settings")
+                .message("Please enable Symput in the settings")
                 .positiveText("OK")
+                .negativeText("Later")
                 .listener(object : CustomDialog.Listener {
                     override fun onPositiveSelect(dialog: CustomDialog) {
                         dialog.dismiss()
@@ -71,6 +83,7 @@ class KeyboardSettingActivity : AppCompatActivity() {
 
                     override fun onNegativeSelect(dialog: CustomDialog) {
                         dialog.dismiss()
+                        shouldFinish = true
                     }
                 })
                 .build()
@@ -79,6 +92,8 @@ class KeyboardSettingActivity : AppCompatActivity() {
 
 
     private fun setupActions() {
+        binding.chooseButton.setOnClickListener{checkKeyboardEnabled()}
+
         binding.enableVibration.apply {
             isChecked = preferences.getBoolean(KEY_ENABLE_VIBRATION)
             setOnClickListener {
