@@ -179,7 +179,7 @@
         android:keyHeight="@dimen/bottom_keys_height"
         android:rowEdgeFlags="bottom">
         <Key
-            android:codes="@integer/keycode_abc"
+            android:codes="@integer/keycode_sym"
             android:keyEdgeFlags="left"
             android:keyLabel="\?123"
             android:keyWidth="15%p"
