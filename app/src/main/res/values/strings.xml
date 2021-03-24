@@ -15,4 +15,6 @@
     </string>
     <string name="getting_started">Getting Started</string>
     <string name="choose_keyboard">Make Symput your keyboard</string>
+    <string name="action_test_keyboard">Test it out!</string>
+    <string name="enter_hint" >Enter some text here</string>
 </resources>

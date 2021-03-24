@@ -54,6 +54,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/chooseButton" />
 
+            <TextView
+                android:id="@+id/testKeyboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/action_test_keyboard"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/enable_sound" />
+
             <CheckedTextView
                 android:id="@+id/enable_vibration"
                 android:layout_width="0dp"
@@ -92,7 +103,7 @@
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/enable_sound" />
+                app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
 
             <TextView
                 android:id="@+id/aboutDescription"
@@ -108,12 +119,15 @@
             <TextView
                 android:id="@+id/footer_note"
                 android:layout_width="wrap_content"
-                android:layout_height="18dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp"
                 android:text="@string/please_send_feedback_to"
                 app:layout_constraintBottom_toTopOf="@+id/email"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/aboutDescription"
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/email"
@@ -124,6 +138,20 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/editTextTextMultiLine"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="@string/enter_hint"
+                android:inputType="textMultiLine"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/testKeyboard"
+                android:importantForAutofill="no" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
