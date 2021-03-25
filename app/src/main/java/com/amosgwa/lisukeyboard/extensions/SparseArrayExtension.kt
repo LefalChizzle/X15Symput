@@ -8,5 +8,4 @@ inline fun <T> SparseArray<T>.forEach(action: (key: Int, value: T) -> Unit) {
     }
 }
 
-inline operator fun <T> SparseArray<T>.contains(key: Int) = indexOfKey(key) >= 0
 

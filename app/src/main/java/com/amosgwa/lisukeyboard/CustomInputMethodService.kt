@@ -18,6 +18,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.util.containsKey
 import com.amosgwa.lisukeyboard.common.KeyStyle
 import com.amosgwa.lisukeyboard.common.KeyboardStyle
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
@@ -28,7 +29,6 @@ import com.amosgwa.lisukeyboard.data.KeyboardPreferences
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_SOUND
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_VIBRATION
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_NEEDS_RELOAD
-import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.inputmethodview.CustomInputMethodView
 import com.amosgwa.lisukeyboard.view.inputmethodview.KeyboardActionListener
@@ -102,15 +102,15 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
     }
 
     private fun renderCurrentLanguage() {
-        if (keyboardsOfLanguages.contains(currentSelectedLanguageIdx)) {
+        if (keyboardsOfLanguages.containsKey(currentSelectedLanguageIdx)) {
             customInputMethodView.updateKeyboardLanguage(currentSelectedLanguageIdx)
         }
     }
 
     private fun loadSharedPreferences() {
         currentSelectedLanguageIdx = preferences.getInt(KeyboardPreferences.KEY_CURRENT_LANGUAGE_IDX, 0)
-        enableVibration = preferences.getBoolean(KeyboardPreferences.KEY_ENABLE_VIBRATION)
-        enableSound = preferences.getBoolean(KeyboardPreferences.KEY_ENABLE_SOUND)
+        enableVibration = preferences.getBoolean(KEY_ENABLE_VIBRATION)
+        enableSound = preferences.getBoolean(KEY_ENABLE_SOUND)
     }
 
     private fun loadStyles() {
@@ -131,7 +131,7 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
         return resources.getColor(res, null)
     }
 
-    override fun onCreateInputView(): View? {
+    override fun onCreateInputView(): View {
         customInputMethodView = layoutInflater.inflate(R.layout.keyboard, null) as CustomInputMethodView
         val keyboard = keyboardsOfLanguages[currentSelectedLanguageIdx]
         keyboard?.let {

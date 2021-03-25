@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
@@ -16,13 +17,14 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
+import androidx.core.util.contains
 import com.amosgwa.lisukeyboard.BuildConfig
 import com.amosgwa.lisukeyboard.CustomInputMethodService
 import com.amosgwa.lisukeyboard.R
 import com.amosgwa.lisukeyboard.common.PageType.Companion.NORMAL
 import com.amosgwa.lisukeyboard.common.PageType.Companion.PAGE_TYPES
 import com.amosgwa.lisukeyboard.common.Styles
-import com.amosgwa.lisukeyboard.extensions.contains
 import com.amosgwa.lisukeyboard.extensions.forEach
 import com.amosgwa.lisukeyboard.keyboardinflater.CustomKeyboard
 import com.amosgwa.lisukeyboard.view.keyview.CustomKeyPreview
@@ -165,7 +167,7 @@ class CustomInputMethodView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         initGestureDetector()
-        keyboardHandler = Handler(Handler.Callback { msg ->
+        keyboardHandler = Handler { msg ->
             when (msg.what) {
                 MSG_REPEAT -> {
                     val pointerId = msg.obj
@@ -177,7 +179,7 @@ class CustomInputMethodView @JvmOverloads constructor(
                 }
             }
             false
-        })
+        }
 
         // A handler to send after a delayed message from a long click.
         longClickHandler = Handler(Handler.Callback { lngClkMsg ->
@@ -401,13 +403,13 @@ class CustomInputMethodView @JvmOverloads constructor(
             // the pointer falls into.
             val rowLinearLayout = row.first().parent as LinearLayout?
             rowLinearLayout?.let {
-                if (x in rowLinearLayout.left..rowLinearLayout.right &&
-                        y in rowLinearLayout.top..rowLinearLayout.bottom) {
+                if (x.toInt() in rowLinearLayout.left..rowLinearLayout.right &&
+                        y.toInt() in rowLinearLayout.top..rowLinearLayout.bottom) {
                     // Normalize the tap location because the position of the children view are
                     // relative to the parent's.
                     row.forEach { key ->
-                        if (x - rowLinearLayout.left in key.left..key.right &&
-                                y - rowLinearLayout.top in key.top..key.bottom) {
+                        if (x.toInt() - rowLinearLayout.left in key.left..key.right &&
+                                y.toInt() - rowLinearLayout.top in key.top..key.bottom) {
                             return key
                         }
                     }
@@ -431,6 +433,7 @@ class CustomInputMethodView @JvmOverloads constructor(
         return false
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun renderKeyPreview(pressedKey: CustomKeyView) {
         pressedKey.key?.let { key ->
             // If the key isn't any of the modifying key, render it
@@ -443,7 +446,7 @@ class CustomInputMethodView @JvmOverloads constructor(
             if (!isModKey) {
                 val keyPreviewWidth = key.width
                 val windowManager: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                val params = WindowManager.LayoutParams(keyPreviewWidth.toInt(), pressedKey.height * 2,
+                val params = WindowManager.LayoutParams(keyPreviewWidth, pressedKey.height * 2,
                         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                         PixelFormat.TRANSPARENT)
