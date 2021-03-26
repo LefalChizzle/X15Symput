@@ -251,6 +251,24 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
                 currentKeyboardPage = SHIFT
                 return
             }
+            -999 -> {
+                currentSelectedLanguageIdx = 2
+                renderCurrentLanguage()
+                return
+            }
+            -1004 ->{
+                currentSelectedLanguageIdx = 3
+                renderCurrentLanguage()
+            }
+            -1003 ->{
+                currentSelectedLanguageIdx = 0
+                renderCurrentLanguage()
+            }
+            -1000 ->{
+                currentSelectedLanguageIdx = 1
+                renderCurrentLanguage()
+            }
+
             KEYCODE_UNSHIFT -> {
                 currentKeyboardPage = NORMAL
                 return
