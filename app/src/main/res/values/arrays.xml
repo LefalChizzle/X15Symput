@@ -4,6 +4,7 @@
         <item>@array/english</item>
         <item>@array/logic</item>
         <item>@array/integrals</item>
+        <item>@array/math_menu</item>
 
     </array>
 
@@ -26,5 +27,12 @@
     <item>@xml/integrals</item>
     <item>@xml/integrals_shift</item>
     <item>@xml/integrals_symbol</item>
+    </array>
+
+    <array name="math_menu">
+        <item>Math Menu</item>
+        <item>@xml/math_menu</item>
+        <item>@xml/logic_sets_shift</item>
+        <item>@xml/logic_sets_symbol</item>
     </array>
 </resources>
