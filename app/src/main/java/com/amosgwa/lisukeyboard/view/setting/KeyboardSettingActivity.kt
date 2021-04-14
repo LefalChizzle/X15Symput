@@ -16,7 +16,6 @@ import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_SO
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_ENABLE_VIBRATION
 import com.amosgwa.lisukeyboard.data.KeyboardPreferences.Companion.KEY_NEEDS_RELOAD
 import com.amosgwa.lisukeyboard.databinding.ActivitySettingBinding
-import com.amosgwa.lisukeyboard.extensions.showToast
 import com.amosgwa.lisukeyboard.view.dialog.CustomDialog
 
 
@@ -112,23 +111,18 @@ class KeyboardSettingActivity : AppCompatActivity() {
             }
         }
 
-        binding.email.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SEND)
-
-            emailIntent.data = Uri.parse("mailto:")
-            emailIntent.type = "text/plain"
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[Lisu Keyboard Android] Feedback")
-
+        binding.weblink.setOnClickListener {
             try {
-                startActivity(Intent.createChooser(emailIntent, "Send feedback..."))
+                    val uriUrl = Uri.parse(url)
+                    val launchBrowser = Intent(Intent.ACTION_VIEW, uriUrl)
+                    startActivity(launchBrowser)
             } catch (ex: android.content.ActivityNotFoundException) {
-                Toast.makeText(this, "There is no email client installed.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "There is no browser installed.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     companion object {
-        const val email = "gwamosi@gmail.com"
+        const val url = "https://www.symput.com/feedback"
     }
 }

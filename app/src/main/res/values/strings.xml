@@ -10,10 +10,11 @@
     <string name="please_send_feedback_to">Want to give feedback?</string>
     <string name="about_us">About Us</string>
     <string name="about_us_description">
-        Our aim is to create a simple keyboard for every day's use,
+        Our aim is to create a mathematical keyboard that is simple enough for every day use.
     </string>
     <string name="getting_started">Getting Started</string>
     <string name="choose_keyboard">Make Symput your keyboard</string>
     <string name="action_test_keyboard">Test it out!</string>
     <string name="enter_hint" >Enter some text here</string>
+    <string name="app_logo">Symput Logo</string>
 </resources>
