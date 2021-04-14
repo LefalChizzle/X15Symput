@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:keyHeight="@dimen/key_height"
+    android:verticalGap="0px">
+
+    <Row>
+        <Key
+            android:codes="-999"
+            android:keyEdgeFlags="left"
+            android:keyLabel="Integral"
+            android:keyWidth="50%p"
+            app:keyTextSize="6dp" />
+        <Key
+            android:codes="-1000"
+            android:keyEdgeFlags="right"
+            android:keyLabel="Logic &amp; Sets"
+            android:keyWidth="50%p"
+            app:keyTextSize="6dp" />
+    </Row>
+
+
+    <Row>
+        <Key
+            android:codes="-1001"
+            android:keyEdgeFlags="left"
+            android:keyLabel="test"
+            android:keyWidth="50%p"
+            app:keyTextSize="6dp" />
+        <Key
+            android:codes="-1002"
+            android:keyEdgeFlags="right"
+            android:keyLabel="test"
+            android:keyWidth="50%p"
+            app:keyTextSize="6dp" />
+    </Row>
+
+    <Row>
+        android:keyHeight="@dimen/bottom_keys_height"
+        android:rowEdgeFlags="bottom">
+
+        <Key
+            android:codes="-1003"
+            android:horizontalGap="50dp"
+            android:keyEdgeFlags="right"
+            android:keyLabel="Normal"
+            android:keyWidth="50%p"
+            app:keyTextSize="6dp" />
+
+
+    </Row>
+</Keyboard>
