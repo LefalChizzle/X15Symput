@@ -178,27 +178,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp"
                 android:text="@string/please_send_feedback_to"
                 android:textColor="@color/white"
-                app:layout_constraintBottom_toTopOf="@+id/weblink"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/aboutDescription"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/aboutDescription" />
 
             <TextView
                 android:id="@+id/weblink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
+                android:layout_marginTop="8dp"
                 android:autoLink="web"
                 android:text="@string/symput_website"
                 android:textColorHighlight="@color/colorAccent"
                 android:textColorLink="@color/colorAccent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/footer_note" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
