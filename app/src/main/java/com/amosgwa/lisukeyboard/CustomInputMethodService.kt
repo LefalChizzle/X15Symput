@@ -268,6 +268,10 @@ class CustomInputMethodService : InputMethodService(), KeyboardActionListener {
                 currentSelectedLanguageIdx = 1
                 renderCurrentLanguage()
             }
+            -1001 ->{
+                currentSelectedLanguageIdx = 4
+                renderCurrentLanguage()
+            }
 
             KEYCODE_UNSHIFT -> {
                 currentKeyboardPage = NORMAL
