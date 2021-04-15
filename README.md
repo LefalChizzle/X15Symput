@@ -7,10 +7,6 @@ Symput is an android keyboard which offer math notation.
 The lack of math notation in standard android keyboard make it harder to have a conversation or discussion of a mathematical problem online.
 That is why we introduce symput, an android keyboard with all the math notation needed to have discussion of math's problems online easier.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/6025663/49764377-7c8c7180-fc8c-11e8-9920-cb7f43b793b7.png" width="50%">
-</p>
-
 # Keyboard Snippet
 Here is some snippet of the keyboard
 <p align="center">
