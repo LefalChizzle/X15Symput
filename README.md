@@ -2,19 +2,14 @@
   <img src="https://cloud.githubusercontent.com/assets/6025663/22899748/2a6972b8-f1e9-11e6-859c-d9cea2c9becf.png" width="50%">
 </p>
 
-lisuKeyboard is an opensource Android custom keyboard for Lisu Language using Kotlin.
+Symput is an android keyboard which offer math notation.
 
-[Lisu](https://en.wikipedia.org/wiki/Lisu_language) is a language spoken by about 1.5 million across the globe. The script based on Latin was created 100 years ago, but the ability to write the language on computers is not widely available across different platforms. I have implemented a virtual keyboard for Lisu using Google Input tools, and this project is an effort to preserve the language by creating a custom Android keyboard. You can learn more about the language here, and learn more about my other projects [here](http://amosgwa.com).
+The lack of math notation in standard android keyboard make it harder to have a conversation or discussion of a mathematical problem online.
+That is why we introduce symput, an android keyboard with all the math notation needed to have discussion of math's problems online easier.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/6025663/49764377-7c8c7180-fc8c-11e8-9920-cb7f43b793b7.png" width="50%">
 </p>
-
-# Contribution/Forking
-I would be very grateful if you are willing to contribute to this project. There are a lot of optimizations to be done.Then, I would love to get your feedbacks!
-
-# To Do
-- Create a setting page
 
 # License
 MIT License
