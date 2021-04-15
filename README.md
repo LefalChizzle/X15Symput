@@ -13,7 +13,15 @@ That is why we introduce symput, an android keyboard with all the math notation 
 
 # Keyboard Snippet
 Here is some snippet of the keyboard
-
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/66249947/114856878-8932ae80-9ddf-11eb-9544-c3decef4f149.jpg" width="50%">
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/66249947/114856719-57214c80-9ddf-11eb-9936-7bc81ec4a016.jpg" width="50%">
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/66249947/114856818-791acf00-9ddf-11eb-938d-bfb70a958b7c.jpg" width="50%">
+</p>
 
 
 
