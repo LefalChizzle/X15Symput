@@ -11,6 +11,12 @@ That is why we introduce symput, an android keyboard with all the math notation 
   <img src="https://user-images.githubusercontent.com/6025663/49764377-7c8c7180-fc8c-11e8-9920-cb7f43b793b7.png" width="50%">
 </p>
 
+# Keyboard Snippet
+Here is some snippet of the keyboard
+
+
+
+
 # License
 MIT License
 
