@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.amosgwa.lisukeyboard">
+    package="com.symput.mathkeyboard">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.setting.KeyboardSettingActivity"
+            android:name="com.symput.mathkeyboard.view.setting.KeyboardSettingActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -26,7 +26,7 @@
         </activity>
 
         <service
-            android:name=".CustomInputMethodService"
+            android:name="com.symput.mathkeyboard.CustomInputMethodService"
             android:exported="false"
             android:label="Symput"
             android:permission="android.permission.BIND_INPUT_METHOD">

@@ -1,0 +1,19 @@
+package com.symput.mathkeyboard.extensions
+
+import android.content.Context
+import androidx.annotation.StringRes
+import android.widget.Toast
+
+fun Context.showToast(
+        message: String,
+        duration: Int = Toast.LENGTH_SHORT
+) {
+    Toast.makeText(this, message, duration).show()
+}
+
+fun Context.showToast(
+        @StringRes resId: Int,
+        duration: Int = Toast.LENGTH_SHORT
+) {
+    Toast.makeText(this, resId, duration).show()
+}
