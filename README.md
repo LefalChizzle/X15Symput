@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/66249947/114859626-ebd97980-9de2-11eb-8fb4-21a71c52d8aa.png" width="50%">
+  <img src="https://user-images.githubusercontent.com/66249947/114859626-ebd97980-9de2-11eb-8fb4-21a71c52d8aa.png" width="20%">
 </p>
 
 Symput is an android keyboard which offer math notation.
