@@ -9,6 +9,9 @@ android {
     dataBinding {
         enabled = true
     }
+    lintOptions {
+        checkReleaseBuilds false
+    }
     defaultConfig {
         applicationId "com.symput.mathkeyboard"
         minSdkVersion 23
