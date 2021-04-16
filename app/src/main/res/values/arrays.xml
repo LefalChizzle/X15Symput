@@ -5,6 +5,7 @@
         <item>@array/logic</item>
         <item>@array/integrals</item>
         <item>@array/math_menu</item>
+        <item>@array/greek_key</item>
 
     </array>
 
@@ -34,5 +35,12 @@
         <item>@xml/math_menu</item>
         <item>@xml/logic_sets_shift</item>
         <item>@xml/logic_sets_symbol</item>
+    </array>
+
+    <array name="greek_key">
+        <item>Greek</item>
+        <item>@xml/greek</item>
+        <item>@xml/greek_shift</item>
+        <item>@xml/qwerty_symbol</item>
     </array>
 </resources>
